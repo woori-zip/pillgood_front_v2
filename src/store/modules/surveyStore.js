@@ -62,9 +62,9 @@ const actions = {
     commit('setLoading', true);
     try {
       const [questionsResponse, answersResponse, detailedQuestionsResponse] = await Promise.all([
-        axios.get('/admin/questions/list'),
-        axios.get('/admin/surveyanswers/list'),
-        axios.get('/detailed-questions/list')
+        axios.get('/api/questions/list'),
+        axios.get('/api/surveyanswers/list'),
+        axios.get('/api/detailed-questions/list')
       ]);
 
       console.log('questionsResponse:', questionsResponse.data);
@@ -155,7 +155,7 @@ const actions = {
     try {
       const token = store.state.member.token; // 인증 토큰 가져오기
       console.log('토큰 확인:', token); // 토큰 확인 로그
-      await axios.post('/admin/surveys/create', survey, {
+      await axios.post('/api/surveys/create', survey, {
         headers: { Authorization: `Bearer ${token}` } // 토큰 설정
       });
       console.log('Survey data sent to the server:', survey);
@@ -167,7 +167,7 @@ const actions = {
   async loadSurveyResult({ commit }, memberId) {
     commit('setLoading', true);
     try {
-      const response = await axios.get(`/admin/surveys/member/${memberId}`);
+      const response = await axios.get(`/api/surveys/member/${memberId}`);
       const surveyData = response.data[0];
       commit('setSurveyResult', surveyData);
     } catch (error) {

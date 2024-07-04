@@ -29,7 +29,7 @@ export default {
   methods: {
     async fetchProducts() {
       try {
-        const response = await axios.get('http://localhost:9095/products/list'); // 서버 주소와 엔드포인트 확인
+        const response = await axios.get('http://localhost:9095/api/products/list'); // 서버 주소와 엔드포인트 확인
         this.products = response.data;
         console.log('Fetched products:', this.products); // 디버깅 로그 추가
       } catch (error) {

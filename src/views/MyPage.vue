@@ -87,7 +87,7 @@ export default {
   methods: {
     async fetchUserProfile() {
       try {
-        const response = await axios.get('http://localhost:9095/members/mypage', { withCredentials: true });
+        const response = await axios.get('http://localhost:9095/api/members/mypage', { withCredentials: true });
         if (response.status === 200) {
           this.user = response.data;
         } else {
@@ -108,7 +108,7 @@ export default {
     },
     async verifyPassword() {
       try {
-        const verifyResponse = await axios.post('http://localhost:9095/members/verifyPassword', {
+        const verifyResponse = await axios.post('http://localhost:9095/api/members/verifyPassword', {
           memberId: this.user.memberUniqueId,
           password: this.password,
         });
@@ -125,7 +125,7 @@ export default {
     },
     async updateMember() {
       try {
-        const response = await axios.put(`http://localhost:9095/members/update/${this.user.memberUniqueId}`, this.user);
+        const response = await axios.put(`http://localhost:9095/api/members/update/${this.user.memberUniqueId}`, this.user);
         if (response.status === 200) {
           this.user = response.data;
           this.isEditing = false;

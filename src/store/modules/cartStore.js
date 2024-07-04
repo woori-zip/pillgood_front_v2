@@ -13,7 +13,7 @@ const mutations = {
 const actions = {
   async fetchCartItems({ commit }) {
     try {
-      const response = await axios.get('/carts/findbyid', { withCredentials: true });
+      const response = await axios.get('/api/carts/findbyid', { withCredentials: true });
       commit('setCartItems', response.data);
     } catch (error) {
       console.error('장바구니 항목 불러오기 에러: ', error);

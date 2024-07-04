@@ -97,7 +97,7 @@
     methods: {
       async fetchUserProfile() {
         try {
-          const response = await axios.get('http://localhost:9095/members/mypage', { withCredentials: true });
+          const response = await axios.get('http://localhost:9095/api/members/mypage', { withCredentials: true });
           if (response.status === 200) {
             this.user = response.data;
             this.recipient = this.user.name;
@@ -111,7 +111,7 @@
       },
       async fetchCoupons() {
         try {
-          const response = await axios.get('http://localhost:9095/ownedcoupons/findbyid', { withCredentials: true });
+          const response = await axios.get('http://localhost:9095/api/ownedcoupons/findbyid', { withCredentials: true });
           if (response.status === 200) {
             this.coupons = response.data;
           } else {
@@ -135,7 +135,7 @@
             ownedCouponId: this.ownedCouponId,
             subscriptionStatus: this.subscriptionStatus
           };
-          await axios.post('http://localhost:9095/orders/create', orderDetails, { withCredentials: true });
+          await axios.post('http://localhost:9095/api/orders/create', orderDetails, { withCredentials: true });
           alert('주문이 완료되었습니다.');
           this.$router.push('/');
         } catch (error) {

@@ -30,10 +30,10 @@ export default {
   },
   async created() {
     try {
-      // console.log('App created lifecycle hook');
+      console.log('App created lifecycle hook');
       await this.checkLoginStatus();
-      // console.log('checkLoginStatus 처리 완료');
-      // console.log("state의 memberId: " + this.memberId); // 상태 업데이트 확인
+      console.log('checkLoginStatus 처리 완료');
+      console.log("state의 memberId: " + this.memberId); // 상태 업데이트 확인
       if (this.isLoggedIn && this.memberId) {
         console.log('로그인됨, 사용자 정보 가져오는 중');
         await this.fetchMemberInfo(this.memberId);

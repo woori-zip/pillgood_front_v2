@@ -80,7 +80,7 @@ export default {
     methods: {
         async fetchProductDetails() {
             try {
-                const response = await axios.get(`http://localhost:9095/products/detail/${this.id}`);
+                const response = await axios.get(`http://localhost:9095/api/products/detail/${this.id}`);
                 this.product = response.data;
             } catch (error) {
                 console.error('Error fetching product details:', error);
@@ -100,7 +100,7 @@ export default {
                     productId: this.id,
                     productQuantity: this.quantity // 선택한 수량을 보냄
                 };
-                const response = await axios.post('http://localhost:9095/carts/create', cartItem, { withCredentials: true });
+                const response = await axios.post('http://localhost:9095/api/carts/create', cartItem, { withCredentials: true });
                 if (response.status === 201) {
                     console.log('장바구니에 추가되었습니다.');
                     this.$router.push({ name: 'Cart' });

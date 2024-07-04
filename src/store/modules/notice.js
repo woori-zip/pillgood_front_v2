@@ -11,7 +11,7 @@ const getters = {
 const actions = {
   async fetchNotices({ commit }) {
     try {
-      const response = await axios.get('/admin/notices/list');
+      const response = await axios.get('/api/notices/list');
       if (response.status === 200) {
         commit('setNotices', response.data);
         console.log('공지사항 조회 성공:', response.data);

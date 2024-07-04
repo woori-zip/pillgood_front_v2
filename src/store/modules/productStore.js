@@ -37,7 +37,7 @@ const actions = {
   },
   async fetchProducts({ commit }) {
     try {
-      const response = await axios.get('/products/list');
+      const response = await axios.get('/api/products/list');
       console.log('제품리스트조회response',response)
       if (response.status === 200) {
         const products = Array.isArray(response.data) && Array.isArray(response.data[0]) ? response.data[0] : response.data;
@@ -70,7 +70,7 @@ const actions = {
     async fetchProductDetails(_, productId) {
       try {
         // console.log(`Fetching product details for ID: ${productId}`);
-        const response = await axios.get(`/products/detail/${productId}`); // 요청 URL
+        const response = await axios.get(`/api/products/detail/${productId}`); // 요청 URL
         // console.log('Response:', response);
   
         if (response.status === 200) {

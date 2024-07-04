@@ -16,7 +16,7 @@ const mutations = {
 const actions = {
   async fetchNutrients({ commit }) {
     try {
-      const response = await axios.get('/admin/nutrients/list'); 
+      const response = await axios.get('/api/nutrients/list'); 
       // console.log('영양소 API 응답:', response.data); // 응답 데이터 로그
       if (response.status === 200) {
         commit('setNutrients', response.data);
