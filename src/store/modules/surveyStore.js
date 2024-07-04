@@ -64,7 +64,7 @@ const actions = {
       const [questionsResponse, answersResponse, detailedQuestionsResponse] = await Promise.all([
         axios.get('/admin/questions/list'),
         axios.get('/admin/surveyanswers/list'),
-        axios.get('/admin/detailed-questions/list')
+        axios.get('/detailed-questions/list')
       ]);
 
       console.log('questionsResponse:', questionsResponse.data);

@@ -19,15 +19,17 @@ const mutations = {
 };
 
 const actions = {
-  async login({ commit }, { email, password }) {
+  async login({ commit,dispatch }, { email, password }) {
     try {
       const response = await axios.post('/members/login', { email, password });
       if (response.status === 200) {
         const memberId = response.data.memberId;
         const token = response.data.token;
-        console.log("토근 확인:", token)
         localStorage.setItem('loggedIn', true);
         commit('setLoginState', { isLoggedIn: true, memberId, token });
+
+        // 로그인 후 사용자 정보 가져오기
+        await dispatch('fetchMemberInfo', memberId);
       }
     } catch (error) {
       console.error('axios 로그인 에러: ', error);

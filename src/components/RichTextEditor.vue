@@ -38,7 +38,7 @@ export default defineComponent({
 
         try {
           // 업로드할 API 경로 설정
-          const response = await axios.post('/admin/upload/image', formData, {
+          const response = await axios.post('/upload/image', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
