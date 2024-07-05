@@ -14,6 +14,7 @@ import MyPage from '../views/MyPage.vue';
 import ProductCreate from '../views/product/ProductCreate.vue';
 import AdminProductList from '../views/product/ProductList.vue';
 import ProductList from '../views/ProductList.vue'
+import ProductEdit from '../views/product/ProductEdit.vue'
 import ProductDetail from '../views/ProductDetail.vue'
 
 // notice
@@ -46,6 +47,7 @@ const routes = [
   // product
   { path: '/productcreate', component: ProductCreate, meta: { requiresAuth: true } }, // 인증 필요
   { path: '/admin/productlist', component: AdminProductList },
+  { path: '/productedit/:id', name: 'ProductEdit', component: ProductEdit, props: true },
   { path: '/productlist', component: ProductList },
   { path: '/product/:id' , name: 'ProductDetail', component: ProductDetail, props: true },
 

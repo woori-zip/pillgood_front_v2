@@ -28,7 +28,7 @@
           <td><input v-model="member.email" type="email" required /></td>
           <td>휴대폰번호</td>
           <td><input v-model="member.phoneNumber" type="text" required /></td>
-          <td>레벨</td>
+          <td>권한</td>
           <td>
             <select v-model="member.memberLevel" required>
               <option value="ADMIN">관리자</option>
@@ -37,9 +37,9 @@
           </td>
         </tr>
       </table>
-      <div class="form-actions">
-        <button type="submit" class="small-btn">저장</button>
-        <button type="button" class="small-btn" @click="cancelEdit">취소</button>
+      <div class="btn-container">
+        <button type="submit" class="btn btn-green">저장</button>
+        <button type="button" class="btn btn-gray" @click="cancelEdit">취소</button>
       </div>
     </form>
   </div>

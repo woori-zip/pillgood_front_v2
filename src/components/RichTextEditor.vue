@@ -85,6 +85,9 @@ export default defineComponent({
           console.log('에디터 내용 변경:', editorContent);
           content.value = editorContent;
         });
+
+        // 초기 내용을 설정
+        quillEditor.value.getQuill().root.innerHTML = content.value;
       }
     });
 
