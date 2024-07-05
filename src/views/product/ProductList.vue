@@ -11,7 +11,7 @@
       <input v-model="searchQuery" :disabled="!selectedFilter" placeholder="검색어를 입력하세요">
       <button class="small-btn" @click="resetFilters">초기화</button>
       <router-link class="small-btn" to="/productcreate">+제품 등록</router-link>
-      <router-link class="small-btn btn-green" to="/nutrientlist">성분 관리</router-link>
+      <router-link class="small-btn btn-green" to="/nutrientedit">성분 관리</router-link>
     </div>
     <table class="line-table">
       <thead>

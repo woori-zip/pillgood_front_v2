@@ -16,6 +16,7 @@ import AdminProductList from '../views/product/ProductList.vue';
 import ProductList from '../views/ProductList.vue'
 import ProductEdit from '../views/product/ProductEdit.vue'
 import ProductDetail from '../views/ProductDetail.vue'
+import NutrientEdit from '../views/product/NutrientEdit.vue'
 
 // notice
 import NoticeList from '../views/NoticeList.vue';
@@ -50,6 +51,7 @@ const routes = [
   { path: '/productedit/:id', name: 'ProductEdit', component: ProductEdit, props: true },
   { path: '/productlist', component: ProductList },
   { path: '/product/:id' , name: 'ProductDetail', component: ProductDetail, props: true },
+  { path: '/nutrientedit', component: NutrientEdit },
 
   // notice
   { path: '/noticelist', name: 'NoticeList', component: NoticeList },
