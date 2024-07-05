@@ -4,6 +4,10 @@ import Register from '../views/RegisterMember.vue';
 import Login from '../views/LoginView.vue';
 import ForgotPassword from '../views/ForgotPasswordView.vue';
 import ChangePassword from '../views/ChangePasswordView.vue';
+
+// member
+import MemberList from '../views/MemberList.vue';
+import MemberEdit from '../views/MemberEdit.vue';
 import MyPage from '../views/MyPage.vue';
 
 // product
@@ -36,6 +40,8 @@ const routes = [
   { path: '/forgotpassword', component: ForgotPassword },
   { path: '/changepassword', component: ChangePassword },
   { path: '/mypage', component: MyPage, meta: { requiresAuth: true } }, // 인증 필요
+  { path: '/memberlist', component: MemberList },
+  { path: '/memberedit', component: MemberEdit },
 
   // product
   { path: '/productcreate', component: ProductCreate, meta: { requiresAuth: true } }, // 인증 필요
