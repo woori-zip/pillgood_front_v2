@@ -7,6 +7,12 @@ const state = {
 const mutations = {
   setCartItems(state, cartItems) {
     state.cartItems = cartItems;
+  },
+  updateCartItemQuantity(state, { cartNo, productQuantity }) {
+    const item = state.cartItems.find(item => item.cartNo === cartNo);
+    if (item) {
+      item.productQuantity = productQuantity;
+    }
   }
 };
 
@@ -19,10 +25,12 @@ const actions = {
       console.error('장바구니 항목 불러오기 에러: ', error);
     }
   },
-  async updateCartItem({ dispatch }, item) { // commit 제거
+  async updateCartItem({ commit }, item) {
     try {
-      await axios.put(`/carts/update/${item.cartNo}`, item);
-      dispatch('fetchCartItems'); // 장바구니 항목 갱신
+      await axios.put(`/api/carts/update/${item.cartNo}`, {
+        ...item
+      });
+      commit('updateCartItemQuantity', { cartNo: item.cartNo, productQuantity: item.productQuantity });
     } catch (error) {
       console.error('장바구니 항목 업데이트 에러: ', error);
     }
