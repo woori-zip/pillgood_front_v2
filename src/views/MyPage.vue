@@ -149,3 +149,10 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.mypage input[readonly],
+.mypage select[readonly] {
+  text-align: right;
+}
+</style>
