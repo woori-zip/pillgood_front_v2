@@ -14,6 +14,9 @@ const mutations = {
   },
   removeNutrientEfficiency(state, id) {
     state.nutrientEfficiencies = state.nutrientEfficiencies.filter(ne => ne.nutrientEfficiencyId !== id);
+  },
+  addNutrientEfficiency(state, nutrientEfficiency) {
+    state.nutrientEfficiencies.push(nutrientEfficiency);
   }
 };
 
@@ -30,6 +33,19 @@ const actions = {
       console.error('Error fetching nutrient efficiencies:', error);
     }
   },
+  async createNutrientEfficiency({ commit }, nutrientEfficiency) {
+    try {
+      const response = await axios.post('/admin/nutrientefficiencies/create', nutrientEfficiency);
+      if (response.status === 200) {
+        commit('addNutrientEfficiency', response.data);
+      } else {
+        throw new Error('Failed to create nutrient efficiency');
+      }
+    } catch (error) {
+      console.error('Error creating nutrient efficiency:', error);
+      throw error;
+    }
+  },
   async fetchNutrients({ commit }) {
     try {
       const response = await axios.get('/api/nutrients/list');
@@ -41,8 +57,7 @@ const actions = {
     } catch (error) {
       console.error('Error fetching nutrients:', error);
     }
-  },
-  async removeNutrientEfficiency({ commit }, id) { // 변경 사항: { id }를 id로 수정
+  },  async deleteNutrientEfficiency({ commit }, id) {
     try {
       const response = await axios.delete(`/admin/nutrientefficiencies/delete/${id}`);
       if (response.status === 200) {
