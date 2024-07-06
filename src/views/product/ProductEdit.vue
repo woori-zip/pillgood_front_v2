@@ -130,7 +130,7 @@ export default {
       }
     },
     navigateToProductList() {
-      this.$router.push('/productlist');
+      this.$router.push('/admin/productlist');
     },
     async loadProductDetails(productId) {
       try {

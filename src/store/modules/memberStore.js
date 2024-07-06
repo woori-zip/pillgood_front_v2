@@ -1,7 +1,7 @@
 import axios from '../../axios'; // 설정된 axios 인스턴스 불러오기
 
 const state = {
-  isLoggedIn: false,
+  isLoggedIn: localStorage.getItem('loggedIn') === 'true', // 로컬스토리지 
   memberId: null, // 사용자 ID를 저장할 상태
   member: null, // 사용자 정보를 저장할 상태
   isAdmin: false, // 관리자 여부를 저장할 상태
@@ -15,6 +15,7 @@ const mutations = {
     state.memberId = payload.memberId;
     state.member = payload.member;
     state.isAdmin = payload.isAdmin || false;
+    localStorage.setItem('loggedIn', payload.isLoggedIn);
   },
   setMembers(state, members) {
     // 서버에서 받은 members 데이터를 memberId로 변환

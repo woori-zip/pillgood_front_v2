@@ -31,6 +31,7 @@ import Cart from '../views/CartPage.vue'
 
 // order
 import Order from '../views/OrderPage.vue';
+import OrderHistory from '../views/OrderHistory.vue';
 
 import Template from '../views/Template.vue';
 import store from '../store'; // store 가져오기
@@ -64,7 +65,8 @@ const routes = [
 
   // order
   { path: '/order', component: Order, name: 'Order' },
-
+  { path: '/order-history', name: 'OrderHistory', component: OrderHistory },
+  
   { path: '/template', component: Template }
 ];
 

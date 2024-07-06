@@ -118,8 +118,6 @@ export default {
       console.log('확인 버튼 클릭 - 업데이트할 제품:', product);
       try {
         const response = await this.updateProductStatus({ productId: product.productId, active: product.active });
-        console.log('상태 변경할 제품:', product);
-        console.log('서버 응답:', response); // 서버 응답 로그 추가
         if (response && response.status === 200) {
           console.log('제품 상태 업데이트 완료:', product);
           alert('제품 상태가 업데이트되었습니다.');
@@ -139,17 +137,12 @@ export default {
     // 제품 이미지 보이기
     async showImage(productId, event) {
       try {
-        // console.log(`Fetching details for product ID: ${productId}`);
         const productDetails = await this.fetchProductDetails(productId);
-        console.log('Product Details:', productDetails);
-
         if (!productDetails || !productDetails.productImage) {
           throw new Error('No product description found');
         }
 
         const firstImage = this.extractFirstImage(productDetails.productImage);
-        console.log('First Image:', firstImage);
-
         if (!firstImage) {
           throw new Error('No image found in the product image field');
         }
@@ -166,22 +159,15 @@ export default {
     moveImage(event) {
       this.tooltipPosition = { x: event.pageX + 15 , y: event.pageY + 15 };
     },
-    extractFirstImage(htmlString) { //매개변수 : html 형식의
-      console.log('Extracting image from HTML string:', htmlString);
-      // 1. 문자열로 된 html/xml을 DOM 구조로 파싱
-      const parser = new DOMParser(); // DOMParser 객체 생성
-      // html 문자열을 파싱하여 DOM document 객체로 변환
-      // 두 번째 매개변수로 text/html 사용 -> html로 파싱
+    extractFirstImage(htmlString) {
+      const parser = new DOMParser();
       const doc = parser.parseFromString(htmlString, 'text/html'); 
-
-      // 2. 이미지 태그 추출
-      const imgTag = doc.querySelector('img'); // img 태그가 없으면 null 반환
-      console.log('Parsed HTML:', doc);
-      console.log('Image Tag:', imgTag);
+      const imgTag = doc.querySelector('img');
       return imgTag ? imgTag.src : null;
     }
   }
 };
+
 </script>
 
 
