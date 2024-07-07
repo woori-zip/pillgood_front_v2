@@ -26,13 +26,27 @@ const actions = {
       throw error;
     }
   },
+  async fetchInquiry({ commit }, id) {
+    try {
+      const response = await axios.get(`/api/inquiries/${id}`);
+      if (response.status === 200) {
+        commit('setInquiry', response.data);
+        console.log('문의 조회 성공:', response.data);
+      } else {
+        console.error('문의 조회 실패:', response.data);
+        throw new Error('문의 조회 실패');
+      }
+    } catch (error) {
+      console.error('문의 조회 에러:', error);
+      throw error;
+    }
+  },
   async createInquiry({ dispatch }, inquiry) {
     try {
-      console.log('Sending inquiry data:', inquiry); // 디버깅용 로그
       const response = await axios.post('/api/inquiries/create', inquiry);
       if (response.status === 200) {
         console.log('문의 생성 성공:', response.data);
-        dispatch('fetchInquiries'); // 문의 목록을 새로고침
+        dispatch('fetchInquiries');
       } else {
         console.error('문의 생성 실패:', response.data);
         throw new Error('문의 생성 실패');
@@ -44,7 +58,8 @@ const actions = {
   },
   async updateInquiry({ dispatch }, inquiry) {
     try {
-      const response = await axios.put(`/api/inquiries/update/${inquiry.id}`, inquiry);
+      console.log('수정할 문의 데이터:', inquiry); // 추가된 로그
+      const response = await axios.put(`/api/inquiries/update/${inquiry.inquiryNo}`, inquiry);
       if (response.status === 200) {
         dispatch('fetchInquiries');
         console.log('문의 수정 성공:', response.data);
@@ -77,6 +92,9 @@ const actions = {
 const mutations = {
   setInquiries: (state, inquiries) => {
     state.inquiries = inquiries;
+  },
+  setInquiry: (state, inquiry) => {
+    state.inquiry = inquiry;
   },
   addInquiry: (state, inquiry) => {
     state.inquiries.push(inquiry);

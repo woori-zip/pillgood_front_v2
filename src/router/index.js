@@ -33,6 +33,7 @@ import store from '../store'; // store 가져오기
 // inquiry
 import Inquirylist from '../views/InquiryPage.vue'
 import InquiryCreate from '../views/InquiryCreate.vue'
+import InquiryDetail from '../views/InquiryDetail.vue'
 
 const routes = [
   { path: '/', component: Home },
@@ -66,6 +67,8 @@ const routes = [
   // inquiry
   { path: '/inquiries', component: Inquirylist },
   { path: '/inquiries/create', component: InquiryCreate, meta: { requiresAuth: true } }, // 인증 필요
+  { path: '/inquiries/:id', name: 'InquiryDetail', component: InquiryDetail, props: true },
+
 
 
   { path: '/template', component: Template }
