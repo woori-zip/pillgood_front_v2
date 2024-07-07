@@ -1,5 +1,15 @@
 <template>
   <div class="main-container box-shadow">
+    
+    <!-- mypage nav bar -->
+    <div class="btn-container">
+      <router-link to="/mypage" class="btn-link">프로필 수정</router-link>
+      <router-link to="/order-history" class="btn-link">주문 | 배송</router-link>
+      <router-link to="/mycoupon" class="btn-link">보유 쿠폰</router-link>
+      <router-link to="/reviewlist" class="btn-link">후기</router-link>
+      <router-link to="#" class="btn-link">1:1 문의</router-link>
+    </div>
+    
     <div class="box-container">
       <h4 class="text-melon">마이페이지</h4>
       <div>
@@ -68,35 +78,30 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from '../axios';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'MyPage',
   data() {
     return {
-      user: null,
       isEditing: false,
       password: '',
       showPasswordModal: false,
       errors: {}
     };
   },
+  computed: {
+    ...mapState('member', ['member']),
+    user() {
+      return this.member;
+    }
+  },
   created() {
     this.fetchUserProfile();
   },
   methods: {
-    async fetchUserProfile() {
-      try {
-        const response = await axios.get('http://localhost:9095/api/members/mypage', { withCredentials: true });
-        if (response.status === 200) {
-          this.user = response.data;
-        } else {
-          console.error('Failed to fetch user profile');
-        }
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-      }
-    },
+    ...mapActions('member', ['fetchUserProfile']),
     toggleEdit() {
       this.isEditing = !this.isEditing;
     },
@@ -108,7 +113,7 @@ export default {
     },
     async verifyPassword() {
       try {
-        const verifyResponse = await axios.post('http://localhost:9095/api/members/verifyPassword', {
+        const verifyResponse = await axios.post('/api/members/verifyPassword', {
           memberId: this.user.memberUniqueId,
           password: this.password,
         });
@@ -125,7 +130,7 @@ export default {
     },
     async updateMember() {
       try {
-        const response = await axios.put(`http://localhost:9095/api/members/update/${this.user.memberUniqueId}`, this.user);
+        const response = await axios.put(`/api/members/update/${this.user.memberUniqueId}`, this.user);
         if (response.status === 200) {
           this.user = response.data;
           this.isEditing = false;
@@ -149,3 +154,15 @@ export default {
   }
 };
 </script>
+
+<style>
+.btn-link {
+  padding: 5px 10px 5px 10px;
+  border: none;
+  border-radius: 20px;
+  background-color: #C6EDC2;
+  text-decoration-line: none;
+  color: black;
+  font-size: 15px;
+}
+</style>
