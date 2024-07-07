@@ -2,7 +2,7 @@
   <div class="main-container">
       <div class="box-container box-shadow">
           <div class="cart-title text-melon">장바구니</div>
-          <table class="cart-table">
+          <table class="cart-table" v-if="localCartItems.length > 0">
               <thead>
                   <tr>
                       <th></th>
@@ -28,8 +28,11 @@
                   </tr>
               </tbody>
           </table>
-          <div class="total-amount">선택한 상품 총 금액: {{ totalAmount }} 원</div>
-          <div class="btn-container">
+          <div v-else>
+              장바구니에 상품이 없습니다.
+          </div>
+          <div class="total-amount" v-if="localCartItems.length > 0">선택한 상품 총 금액: {{ totalAmount }} 원</div>
+          <div class="btn-container" v-if="localCartItems.length > 0">
               <button @click="placeOrder" class="btn btn-green">주문하기</button>
           </div>
       </div>

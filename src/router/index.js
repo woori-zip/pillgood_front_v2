@@ -50,7 +50,7 @@ const routes = [
   { path: '/survey', name: 'Survey', component: Survey, meta: { requiresAuth: true } }, // 인증 필요
 
   // cart
-  {path: '/cart' , component: Cart},
+  {path: '/cart' , name: 'Cart', component: Cart},
 
   // order
   { path: '/order', component: Order, name: 'Order' },

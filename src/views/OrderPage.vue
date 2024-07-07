@@ -67,176 +67,129 @@
               </label>
           </div>
       </div>
-      <button @click="placeOrder" class="order-button btn btn-green">주문하기</button>
+      <button @click="submitOrder" class="order-button btn btn-green">주문하기</button>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import { mapState, mapActions } from 'vuex';
 
 export default {
-  name: 'OrderPage',
-  data() {
-      return {
-          items: [],
-          totalAmount: 0,
-          recipient: '',
-          postalCode: '',
-          address: '',
-          detailedAddress: '',
-          phoneNumber: '',
-          orderRequest: '',
-          ownedCouponId: '', // 초기 선택값을 빈 문자열로 설정
-          subscriptionStatus: false,
-          user: null,
-          coupons: [], // 쿠폰 목록
-          discountAmount: 0, // 할인 금액 추가
-          shippingFee: 0, // 배송비 추가
-      };
-  },
-  computed: {
-      shippingFeeMessage() {
-          return this.shippingFee === 0 ? '무료' : `+${this.shippingFee} 원`;
-      }
-  },
-  async created() {
-      await this.fetchUserProfile();
-      await this.fetchCoupons();
-      await this.fetchOrderDetails();
-  },
-  methods: {
-      async fetchUserProfile() {
-          try {
-              const response = await axios.get('http://localhost:9095/api/members/mypage', { withCredentials: true });
-              if (response.status === 200) {
-                  this.user = response.data;
-                  this.recipient = this.user.name;
-                  this.phoneNumber = this.user.phoneNumber;
-              } else {
-                  console.error('Failed to fetch user profile');
-              }
-          } catch (error) {
-              console.error('Error fetching user profile:', error);
-          }
-      },
-      async fetchCoupons() {
-          try {
-              const response = await axios.get('http://localhost:9095/api/ownedcoupons/findbyid', { withCredentials: true });
-              if (response.status === 200) {
-                  this.coupons = response.data;
-              } else {
-                  console.error('Failed to fetch coupons');
-              }
-          } catch (error) {
-              console.error('Error fetching coupons:', error);
-          }
-      },
-      async fetchOrderDetails() {
-          try {
-              const response = await axios.get('http://localhost:9095/api/orders/prepare', { withCredentials: true });
-              if (response.status === 200) {
-                  this.items = response.data;
-
-                  // 각 제품의 이미지를 가져오는 작업 수행
-                  for (let item of this.items) {
-                      await this.fetchProductImage(item);
-                  }
-
-                  this.calculateTotalAmount();
-              } else {
-                  console.error('Failed to fetch order details');
-              }
-          } catch (error) {
-              console.error('Error fetching order details:', error);
-          }
-      },
-      async fetchProductImage(item) {
-          try {
-              const response = await axios.get(`http://localhost:9095/api/products/detail/${item.productId}`);
-              item.productImage = this.extractFirstImage(response.data.productImage);
-          } catch (error) {
-              console.error(`Error fetching image for product ID ${item.productId}:`, error);
-              item.productImage = null; // 기본 이미지로 설정
-          }
-      },
-      extractFirstImage(htmlString) {
-          console.log('Extracting image from HTML string:', htmlString);
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(htmlString, 'text/html');
-          const imgTag = doc.querySelector('img');
-          console.log('Parsed HTML:', doc);
-          console.log('Image Tag:', imgTag);
-          return imgTag ? imgTag.src : null;
-      },
-      calculateTotalAmount() {
-          const subtotal = this.items.reduce((total, item) => total + item.price * item.productQuantity, 0);
-          this.shippingFee = subtotal >= 30000 ? 0 : 3000;
-          this.totalAmount = subtotal - this.discountAmount + this.shippingFee;
-      },
-      applyCoupon() {
-          const selectedCoupon = this.coupons.find(coupon => coupon.ownedCouponId === this.ownedCouponId);
-          this.discountAmount = selectedCoupon ? selectedCoupon.discountAmount : 0;
-          this.calculateTotalAmount();
-      },
-      async placeOrder() {
-          try {
-              const orderDetails = {
-                  items: this.items,
-                  totalAmount: this.totalAmount,
-                  recipient: this.recipient,
-                  postalCode: this.postalCode,
-                  address: this.address,
-                  detailedAddress: this.detailedAddress,
-                  phoneNumber: this.phoneNumber,
-                  orderRequest: this.orderRequest,
-                  ownedCouponId: this.ownedCouponId,
-                  subscriptionStatus: this.subscriptionStatus
-              };
-              await axios.post('http://localhost:9095/api/orders/create', orderDetails, { withCredentials: true });
-              alert('주문이 완료되었습니다.');
-              this.$router.push('/');
-          } catch (error) {
-              console.error('주문 에러: ', error);
-              alert('주문 중 오류가 발생했습니다. 다시 시도하세요.');
-          }
-      },
-      openDaumPostcode() {
-          const elementWrap = this.$refs.wrap;
-          const currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
-          new window.daum.Postcode({
-              oncomplete: (data) => {
-                  let addr = '';
-                  if (data.userSelectedType === 'R') {
-                      addr = data.roadAddress;
-                  } else {
-                      addr = data.jibunAddress;
-                  }
-                  this.postalCode = data.zonecode;
-                  this.address = addr;
-                  elementWrap.style.display = 'none';
-                  document.body.scrollTop = currentScroll;
-              },
-              onresize: (size) => {
-                  elementWrap.style.height = size.height + 'px';
-              },
-              width: '100%',
-              height: '100%'
-          }).embed(elementWrap);
-          elementWrap.style.display = 'block';
-      },
-      foldDaumPostcode() {
-          const elementWrap = this.$refs.wrap;
-          elementWrap.style.display = 'none';
-      }
-  },
-  watch: {
-      ownedCouponId(newVal) {
-          if (newVal === '') {
-              this.discountAmount = 0;
-              this.calculateTotalAmount();
-          }
-      }
-  }
+    name: 'OrderPage',
+    data() {
+        return {
+            ownedCouponId: '', // 초기 선택값을 빈 문자열로 설정
+            recipient: '',
+            postalCode: '',
+            address: '',
+            detailedAddress: '',
+            phoneNumber: '',
+            orderRequest: '',
+            subscriptionStatus: false,
+            discountAmount: 0, // 할인 금액 추가
+            shippingFee: 0, // 배송비 추가
+            totalAmount: 0, // 총 금액
+        };
+    },
+    computed: {
+        ...mapState('order', {
+            items: state => state.orderDetails,
+            user: state => state.userProfile,
+            coupons: state => state.coupons,
+        }),
+        shippingFeeMessage() {
+            return this.shippingFee === 0 ? '무료' : `+${this.shippingFee} 원`;
+        }
+    },
+    async created() {
+        await this.fetchUserProfile();
+        await this.fetchCoupons();
+        await this.fetchOrderDetails();
+        this.setRecipientAndPhoneNumber();
+        this.calculateTotalAmount();
+    },
+    methods: {
+        ...mapActions('order', ['fetchUserProfile', 'fetchCoupons', 'fetchOrderDetails', 'placeOrder']),
+        applyCoupon() {
+            const selectedCoupon = this.coupons.find(coupon => coupon.ownedCouponId === this.ownedCouponId);
+            this.discountAmount = selectedCoupon ? selectedCoupon.discountAmount : 0;
+            this.calculateTotalAmount();
+        },
+        calculateTotalAmount() {
+            const subtotal = this.items.reduce((total, item) => total + item.price * item.productQuantity, 0);
+            this.shippingFee = subtotal >= 30000 ? 0 : 3000;
+            this.totalAmount = subtotal - this.discountAmount + this.shippingFee;
+        },
+        setRecipientAndPhoneNumber() {
+            if (this.user) {
+                this.recipient = this.user.name;
+                this.phoneNumber = this.user.phoneNumber;
+            }
+        },
+        async submitOrder() {
+            try {
+                const orderDetails = {
+                    items: this.items,
+                    totalAmount: this.totalAmount,
+                    recipient: this.recipient,
+                    postalCode: this.postalCode,
+                    address: this.address,
+                    detailedAddress: this.detailedAddress,
+                    phoneNumber: this.phoneNumber,
+                    orderRequest: this.orderRequest,
+                    ownedCouponId: this.ownedCouponId || null, // null로 설정
+                    subscriptionStatus: this.subscriptionStatus
+                };
+                const response = await this.placeOrder(orderDetails);
+                if (response.status === 201) {
+                    alert('주문이 완료되었습니다.');
+                    this.$router.push('/'); // 주문 완료 후 홈으로 이동
+                } else {
+                    console.error('주문 실패:', response);
+                    alert('주문 중 오류가 발생했습니다. 다시 시도하세요.');
+                }
+            } catch (error) {
+                console.error('주문 에러: ', error);
+                alert('주문 중 오류가 발생했습니다. 다시 시도하세요.');
+            }
+        },
+        openDaumPostcode() {
+            const elementWrap = this.$refs.wrap;
+            const currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+            new window.daum.Postcode({
+                oncomplete: (data) => {
+                    let addr = '';
+                    if (data.userSelectedType === 'R') {
+                        addr = data.roadAddress;
+                    } else {
+                        addr = data.jibunAddress;
+                    }
+                    this.postalCode = data.zonecode;
+                    this.address = addr;
+                    elementWrap.style.display = 'none';
+                    document.body.scrollTop = currentScroll;
+                },
+                onresize: (size) => {
+                    elementWrap.style.height = size.height + 'px';
+                },
+                width: '100%',
+                height: '100%'
+            }).embed(elementWrap);
+            elementWrap.style.display = 'block';
+        },
+        foldDaumPostcode() {
+            const elementWrap = this.$refs.wrap;
+            elementWrap.style.display = 'none';
+        }
+    },
+    watch: {
+        ownedCouponId(newVal) {
+            if (newVal === '') {
+                this.discountAmount = 0;
+            }
+            this.applyCoupon();
+        }
+    }
 };
 </script>
 
