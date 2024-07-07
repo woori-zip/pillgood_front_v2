@@ -37,7 +37,7 @@ export default defineComponent({
         formData.append('file', file);
 
         try {
-          // 업로드할 API 경로 설정
+          // 업로드할 API 경로 설정8888
           const response = await axios.post('/api/upload/image', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'

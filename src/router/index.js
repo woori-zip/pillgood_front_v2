@@ -33,6 +33,9 @@ import Cart from '../views/CartPage.vue'
 import Order from '../views/OrderPage.vue';
 import OrderHistory from '../views/OrderHistory.vue';
 
+// review
+import ReviewCreate from '../views/ReviewCreate.vue'
+
 import Template from '../views/Template.vue';
 import store from '../store'; // store 가져오기
 
@@ -67,6 +70,9 @@ const routes = [
   { path: '/order', component: Order, name: 'Order' },
   { path: '/order-history', name: 'OrderHistory', component: OrderHistory },
   
+  // review
+  { path: '/reviewcreate', name: 'ReviewCreate', component: ReviewCreate },
+
   { path: '/template', component: Template }
 ];
 

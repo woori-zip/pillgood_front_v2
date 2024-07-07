@@ -35,6 +35,8 @@
               <option value="USER">사용자</option>
             </select>
           </td>
+          <td></td>
+          <td></td>
         </tr>
       </table>
       <div class="btn-container">
