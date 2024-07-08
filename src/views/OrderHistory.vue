@@ -8,7 +8,7 @@
       <div v-for="detail in order.details" :key="detail.orderDetailNo" style="border-radius: 10px; height: 200x; padding: 20px 20px 0 20px" class="box-shadow">
         <p style="text-align: left; font-weight: bold; font-size: 20px;">{{ order.orderStatus }}</p>
         <div style="display: flex">
-          <img :src="getProductImage(detail.productId)" style="height: 100px; width: auto;  border-radius: 15px; margin-right: 20px;">
+          <img :src="getProductImage(detail.productId)" style="height: 100px; width: auto; border-radius: 15px; margin-right: 20px;">
           <div>
             <p style="text-align: left;">
               <span style="color:gray;">{{ formatDate(order.orderDate) }}</span><br>
@@ -20,8 +20,8 @@
         </div>
         <div class="btn-container" v-if="order.orderStatus !== '배송완료'">
           <button class="btn btn-green">구매확정</button>
-          <button class="btn btn-gray">반품요청</button>
-          <button class="btn btn-gray">교환요청</button>
+          <button class="btn btn-gray" @click="goToReturnPage(order, detail, '반품')">반품요청</button>
+          <button class="btn btn-gray" @click="goToReturnPage(order, detail, '교환')">교환요청</button>
         </div>
         <div class="btn-container" v-else>
           <button class="btn btn-green" @click="goToReviewPage(order, detail)">리뷰쓰기</button>
@@ -29,8 +29,6 @@
         </div>
       </div>
     </div>
-
-
   </div>
 </template>
 
@@ -106,16 +104,25 @@ export default {
           orderDetailNo: detail.orderDetailNo // orderDetailNo 추가
         }
       });
-    }
-  },
-  computed: {
-    sortedOrders() {
-      return this.orders.slice().sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+    },
+    goToReturnPage(order, detail, requestType) {
+      this.$router.push({
+        name: 'RefundCreate', // 기존 ReturnCreate를 RefundCreate로 변경
+        query: {
+          orderNo: order.orderNo,
+          orderDate: order.orderDate,
+          productId: detail.productId,
+          productName: this.getProductName(detail.productId),
+          productImage: this.getProductImage(detail.productId),
+          orderDetailNo: detail.orderDetailNo,
+          requestType: requestType
+        }
+      });
     }
   },
   async created() {
     await this.fetchOrders();
-  },
+  }
 };
 </script>
 

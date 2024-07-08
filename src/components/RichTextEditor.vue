@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { ref, watch, defineComponent, onMounted, nextTick } from 'vue';
+import { ref, watch, defineComponent, onMounted } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill';
 import axios from '@/axios';
 
@@ -94,11 +94,6 @@ export default defineComponent({
         }
       }
       content.value = newValue;
-      nextTick(() => {
-        if (quillEditor.value) {
-          quillEditor.value.getQuill().setContents(quillEditor.value.getQuill().clipboard.convert(content.value));
-        }
-      });
     });
 
     onMounted(() => {
