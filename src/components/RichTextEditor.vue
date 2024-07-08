@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { ref, watch, defineComponent, onMounted } from 'vue';
+import { ref, watch, defineComponent, onMounted, nextTick } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill';
 import axios from '@/axios';
 
@@ -45,7 +45,7 @@ export default defineComponent({
           });
           const url = response.data;
           const range = quillEditor.value.getQuill().getSelection();
-          quillEditor.value.getQuill().insertEmbed(range.index, 'image',`http://localhost:9095${url}`); // URL 앞에 서버 주소 추가
+          quillEditor.value.getQuill().insertEmbed(range.index, 'image', `http://localhost:9095${url}`); // URL 앞에 서버 주소 추가
         } catch (error) {
           console.error('Image upload failed:', error);
         }
@@ -76,10 +76,16 @@ export default defineComponent({
     watch(() => props.modelValue, (newValue) => {
       console.log('modelValue 변경됨:', newValue);
       content.value = newValue;
+      nextTick(() => {
+        if (quillEditor.value) {
+          quillEditor.value.getQuill().setContents(quillEditor.value.getQuill().clipboard.convert(content.value));
+        }
+      });
     });
 
     onMounted(() => {
       if (quillEditor.value) {
+        quillEditor.value.getQuill().root.setAttribute("dir", "ltr");
         quillEditor.value.getQuill().on('text-change', () => {
           const editorContent = quillEditor.value.getQuill().root.innerHTML;
           console.log('에디터 내용 변경:', editorContent);

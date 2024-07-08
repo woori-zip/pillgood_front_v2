@@ -8,8 +8,10 @@
           <td><input v-model="noticeTitle" type="text" required /></td>
         </tr>
         <tr>
-          <td>내용:</td>
-          <td><textarea v-model="noticeContent" required></textarea></td>
+          <td>내용 (Quill 에디터):</td>
+          <td>
+            <RichTextEditor v-model="noticeContent" />
+          </td>
         </tr>
       </table>
       <div class="btn-container">
@@ -20,40 +22,30 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
+import RichTextEditor from '@/components/RichTextEditor.vue'; // RichTextEditor 컴포넌트 임포트
 
 export default {
   name: 'NoticeCreate',
+  components: {
+    RichTextEditor // RichTextEditor 컴포넌트 등록
+  },
   data() {
     return {
       noticeTitle: '',
       noticeContent: ''
     };
   },
-  created() {
-    console.log('NoticeCreate 컴포넌트 호출');
-    this.fetchNotices().then(() => {
-      console.log('공지사항 데이터 가져오기 완료');
-    }).catch(error => {
-      console.error('공지사항 데이터 가져오기 실패:', error);
-    });
-  },
   methods: {
-    ...mapActions('notice', ['createNotice', 'fetchNotices']),
-    async submitNotice() { // 여기 메서드 이름을 다르게 설정
+    ...mapActions('notice', ['createNotice']),
+    async submitNotice() {
       try {
+        console.log('등록 데이터:', { noticeTitle: this.noticeTitle, noticeContent: this.noticeContent });
         await this.createNotice({ noticeTitle: this.noticeTitle, noticeContent: this.noticeContent });
-        this.$router.push('/noticelist'); // 목록 페이지로 이동
+        this.$router.push('/noticelist');
       } catch (error) {
         console.error('공지사항 등록 실패:', error);
       }
-    }
-  },
-  computed: {
-    ...mapGetters('notice', ['notices']),
-    noticeList() {
-      console.log('notices 상태:', this.notices); // notices 상태 로그
-      return this.notices;
     }
   }
 };

@@ -16,9 +16,9 @@ import ProductDetail from '../views/ProductDetail.vue'
 import NoticeList from '../views/NoticeList.vue';
 import NoticeCreate from '../views/NoticeCreate.vue';
 import NoticeEdit from '../views/NoticeEdit.vue';
+import NoticeDetail from '../views/NoticeDetail.vue'; // 공지사항 상세 페이지 추가
 
 import Survey from '../views/SurveyPage.vue';
-
 
 // cart
 import Cart from '../views/CartPage.vue'
@@ -47,6 +47,7 @@ const routes = [
   { path: '/noticelist', name: 'NoticeList', component: NoticeList },
   { path: '/noticecreate', name: 'NoticeCreate', component: NoticeCreate, meta: { requiresAuth: true } }, // 인증 필요
   { path: '/noticeedit/:id', name: 'NoticeEdit', component: NoticeEdit, props: true, meta: { requiresAuth: true } }, // 인증 필요
+  { path: '/noticedetail/:id', name: 'NoticeDetail', component: NoticeDetail, props: true }, // 공지사항 상세 페이지 추가
   { path: '/survey', name: 'Survey', component: Survey, meta: { requiresAuth: true } }, // 인증 필요
 
   // cart
