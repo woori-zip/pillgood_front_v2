@@ -1,55 +1,77 @@
 import axios from '../../axios'; // 설정된 axios 인스턴스 불러오기
 
 const state = {
+  nutrientEfficiencies: [],
   nutrients: []
 };
 
 const mutations = {
+  setNutrientEfficiencies(state, nutrientEfficiencies) {
+    state.nutrientEfficiencies = nutrientEfficiencies;
+  },
   setNutrients(state, nutrients) {
     state.nutrients = nutrients;
   },
-  addNutrient(state, nutrient) {
-    state.nutrients.push(nutrient);
+  removeNutrientEfficiency(state, id) {
+    state.nutrientEfficiencies = state.nutrientEfficiencies.filter(ne => ne.nutrientEfficiencyId !== id);
+  },
+  addNutrientEfficiency(state, nutrientEfficiency) {
+    state.nutrientEfficiencies.push(nutrientEfficiency);
   }
 };
 
 const actions = {
-  async fetchNutrients({ commit }) {
+  async fetchNutrientEfficiencies({ commit }) {
     try {
-      const response = await axios.get('/api/nutrients/list'); 
-      // console.log('영양소 API 응답:', response.data); // 응답 데이터 로그
+      const response = await axios.get('/api/nutrientefficiencies/list');
       if (response.status === 200) {
-        commit('setNutrients', response.data);
-        // console.log('영양소 데이터 가져오기 성공:', response.data);
+        commit('setNutrientEfficiencies', response.data);
       } else {
-        // console.error('영양소 데이터 가져오기 실패:', response.data);
-        throw new Error('영양소 데이터 가져오기 실패');
+        throw new Error('Failed to fetch nutrient efficiencies');
       }
     } catch (error) {
-      console.error('영양소 데이터 가져오기 에러:', error);
+      console.error('Error fetching nutrient efficiencies:', error);
+    }
+  },
+  async createNutrientEfficiency({ commit }, nutrientEfficiency) {
+    try {
+      const response = await axios.post('/admin/nutrientefficiencies/create', nutrientEfficiency);
+      if (response.status === 200) {
+        commit('addNutrientEfficiency', response.data);
+      } else {
+        throw new Error('Failed to create nutrient efficiency');
+      }
+    } catch (error) {
+      console.error('Error creating nutrient efficiency:', error);
       throw error;
     }
   },
-  async createNutrient({ commit }, nutrient) {
+  async fetchNutrients({ commit }) {
     try {
-      const response = await axios.post('/admin/nutrients/create', nutrient);
-      console.log('서버 응답:', response); // 서버 응답 로그 추가
+      const response = await axios.get('/api/nutrients/list');
       if (response.status === 200) {
-        console.log('store 영양소 생성 성공 응답:', response.data); // 성공 응답 로그 추가
-        commit('addNutrient', response.data);
-        return response.data
+        commit('setNutrients', response.data);
       } else {
-        console.error('store 영양소 생성 실패 응답:', response.data); // 오류 로그 추가
-        throw new Error('store 영양소 생성 실패');
+        throw new Error('Failed to fetch nutrients');
       }
     } catch (error) {
-      console.error('store 영양소 생성 에러:', error);
+      console.error('Error fetching nutrients:', error);
+    }
+  },  async deleteNutrientEfficiency({ commit }, id) {
+    try {
+      const response = await axios.delete(`/admin/nutrientefficiencies/delete/${id}`);
+      if (response.status === 200) {
+        commit('removeNutrientEfficiency', id);
+      }
+    } catch (error) {
+      console.error('Nutrient efficiency delete error:', error);
       throw error;
     }
   }
 };
 
 const getters = {
+  nutrientEfficiencies: state => state.nutrientEfficiencies,
   nutrients: state => state.nutrients
 };
 
