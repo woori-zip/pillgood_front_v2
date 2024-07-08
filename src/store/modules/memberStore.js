@@ -5,7 +5,7 @@ const state = {
   memberId: null, // 사용자 ID를 저장할 상태
   member: null, // 사용자 정보를 저장할 상태
   isAdmin: false, // 관리자 여부를 저장할 상태
-  token: null
+  // token: null
 };
 
 const mutations = {
@@ -14,7 +14,8 @@ const mutations = {
     state.memberId = payload.memberId;
     state.member = payload.member;
     state.isAdmin = payload.isAdmin || false;
-    state.token = payload.token;
+    // state.token = payload.token;
+    console.log('memberStore.js - 상태 업데이트 - isLoggedIn:', state.isLoggedIn, 'memberId:', state.memberId, 'isAdmin:', state.isAdmin);
   }
 };
 
@@ -27,9 +28,9 @@ const actions = {
       
       if (response.status === 200) {
         const memberId = response.data.memberId;
-        const token = response.data.token;
+        // const token = response.data.token;
         localStorage.setItem('loggedIn', true);
-        commit('setLoginState', { isLoggedIn: true, memberId, token });
+        commit('setLoginState', { isLoggedIn: true, memberId: memberId });
 
         // 로그인 후 사용자 정보 가져오기
         await dispatch('fetchMemberInfo', memberId);
@@ -82,6 +83,7 @@ const actions = {
     }
   }
 };
+
 
 export default {
   namespaced: true,
