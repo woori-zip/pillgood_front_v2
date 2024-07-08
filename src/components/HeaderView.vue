@@ -59,6 +59,7 @@
               <li><a href="/admin/productlist">상품관리</a></li>
               <li><a href="#">베스트</a></li>
               <li><a href="#">필굿리포트</a></li>
+              <li><a href="/noticelist">공지사항관리</a></li>
             </ul>
           </nav>
         </div>
