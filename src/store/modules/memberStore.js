@@ -49,17 +49,30 @@ const mutations = {
 };
 
 const actions = {
-  async login({ commit, dispatch }, { email, password }) {
+  async login({ commit }, { email, password }) {
     try {
       const response = await axios.post('/api/members/login', { email, password });
       if (response.status === 200) {
         const memberId = response.data.memberId;
-
         localStorage.setItem('loggedIn', true);
-        commit('setLoginState', { isLoggedIn: true, memberId: memberId });
-
+        localStorage.setItem('memberId', memberId);
+        
         // 로그인 후 사용자 정보 가져오기
-        await dispatch('fetchMemberInfo', memberId);
+        const memberResponse = await axios.get(`/api/members/findById`, { params: { memberId } });
+        if (memberResponse.status === 200) {
+          const member = memberResponse.data.user;
+          const isAdmin = member.memberLevel === 'ADMIN';
+
+          // Vuex 상태 업데이트
+          commit('setLoginState', { isLoggedIn: true, memberId, member, isAdmin });
+          
+          // 로컬스토리지에 사용자 정보 저장
+          localStorage.setItem('member', JSON.stringify(member));
+          localStorage.setItem('isAdmin', isAdmin.toString());
+          localStorage.setItem('userName', member.name);
+        }
+        // 홈 화면으로 리디렉트
+        this.$router.push('/');
       }
     } catch (error) {
       console.error('axios 로그인 에러: ', error);
