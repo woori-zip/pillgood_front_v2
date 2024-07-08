@@ -1,13 +1,15 @@
 <template>
-  <div class="main-container">
-    <div class="box-container box-shadow">
-      <h2 class="text-melon">Product List</h2>
-      <div class="product-row">
-        <div class="product-card" v-for="product in products" :key="product.productId">
-          <img @click="viewProduct(product.productId)" :src="product.productImage" alt="Product Image" class="product-image" />
-          <div class="product-info">
-            <div @click="viewProduct(product.productId)" class="product-name">{{ product.productName }}</div>
-            <div class="product-price">{{ product.price }}원</div>
+  <div class="album py-5 bg-body-tertiary">
+    <div class="container">
+      <h2 class="text-melon" style="margin-bottom: 70px;">Product List</h2>
+      <div class="row">
+        <div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3" v-for="product in products" :key="product.productId">
+          <div class="card">
+            <img @click="viewProduct(product.productId)" :src="product.productImage" class="card-img-top" alt="Product Image">
+            <div class="card-body">
+              <h6 class="card-title">{{ product.productName }}</h6>
+              <p class="card-text">{{ product.price }}원</p>
+            </div>
           </div>
         </div>
       </div>
@@ -70,72 +72,34 @@ export default {
 </script>
 
 <style scoped>
-/* Main container styles */
-.main-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  background-color: #f9f9f9;
+.album {
+  padding: 2rem 0;
 }
 
-.box-container {
+.card {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card-img-top {
   width: 100%;
-  max-width: 1200px; /* Adjust to control the maximum width */
-  margin: 0 auto;
-}
-
-/* Product list styles */
-.product-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start; /* Align items to the start */
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.product-card {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: calc(25% - 20px); /* Adjust to fit 4 items in a row */
-  text-align: center;
-  padding: 2.5px;
-  transition: transform 0.3s;
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-}
-
-.product-image {
-  width: 200px; /* Fixed width */
-  height: 200px; /* Fixed height */
+  height: 200px;
   object-fit: cover;
-  border-radius: 8px;
 }
 
-.product-info {
-  padding: 10px 0;
-}
-
-.product-name {
+.card-title {
   font-size: 1rem;
   margin-top: 10px;
 }
 
-.product-price {
+.card-text {
   font-size: 1rem;
   font-weight: bold;
   color: #d9534f;
   margin-top: 5px;
-}
-
-/* Page title styles */
-.page-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-  white-space: nowrap;
 }
 </style>

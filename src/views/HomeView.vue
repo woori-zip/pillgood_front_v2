@@ -17,131 +17,83 @@
         </div>
       </div>
     </div>
-    <button id="carousel-control" class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-      <span id="carousel-control-icon" class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <button id="carousel-control-prev" class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+      <span id="carousel-control-prev-icon" class="carousel-control-prev-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Previous</span>
     </button>
-    <button id="carousel-control" class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-      <span id="carousel-control-icon" class="carousel-control-next-icon" aria-hidden="true"></span>
+    <button id="carousel-control-next" class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+      <span id="carousel-control-next-icon" class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Next</span>
     </button>
   </div>
-<main>
 
-<div class="album py-5 bg-body-tertiary">
-<div class="container">
-<h4 style="margin-bottom: 30px;">🔥Best!</h4>
-<div class="row">
-  <div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3">
-  <svg class="bd-placeholder-img" width="140" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <title>Placeholder</title>
-    <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-  </svg>
-  <h6 class="fw-normal mt-3 name-bold">Name</h6>
-  <p class="price-red price-font">가격</p>
-</div>
-<div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3">
-  <svg class="bd-placeholder-img" width="140" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <title>Placeholder</title>
-    <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-  </svg>
-  <h6 class="fw-normal mt-3 name-bold">Name</h6>
-  <p class="price-red price-font">가격</p>
-</div>
-<div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3">
-  <svg class="bd-placeholder-img" width="140" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <title>Placeholder</title>
-    <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-  </svg>
-  <h6 class="fw-normal mt-3 name-bold">Name</h6>
-  <p class="price-red price-font">가격</p>
-</div>
-<div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3">
-  <svg class="bd-placeholder-img" width="140" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <title>Placeholder</title>
-    <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-  </svg>
-  <h6 class="fw-normal mt-3 name-bold">Name</h6>
-  <p class="price-red price-font">가격</p>
-</div>
-<div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3">
-  <svg class="bd-placeholder-img" width="140" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <title>Placeholder</title>
-    <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-  </svg>
-  <h6 class="fw-normal mt-3 name-bold">Name</h6>
-  <p class="price-red price-font">가격</p>
-</div>
-<div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3">
-  <svg class="bd-placeholder-img" width="140" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <title>Placeholder</title>
-    <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-  </svg>
-  <h6 class="fw-normal mt-3 name-bold">Name</h6>
-  <p class="price-red price-font">가격</p>
-</div>
-</div> <!--row end -->
-<hr style="color: #94B58B; margin-bottom: 50px;">
-<h4 style="margin-bottom: 30px;">🔥New!</h4>
-<div class="row">
-  <div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3">
-  <svg class="bd-placeholder-img" width="140" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <title>Placeholder</title>
-    <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-  </svg>
-  <h6 class="fw-normal mt-3 name-bold">Name</h6>
-  <p class="price-red price-font">가격</p>
-</div>
-     <div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3">
-  <svg class="bd-placeholder-img" width="140" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <title>Placeholder</title>
-    <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-  </svg>
-  <h6 class="fw-normal mt-3 name-bold">Name</h6>
-  <p class="price-red price-font">가격</p>
-</div>
-<div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3">
-  <svg class="bd-placeholder-img" width="140" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <title>Placeholder</title>
-    <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-  </svg>
-  <h6 class="fw-normal mt-3 name-bold">Name</h6>
-  <p class="price-red price-font">가격</p>
-</div>
-<div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3">
-  <svg class="bd-placeholder-img" width="140" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <title>Placeholder</title>
-    <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-  </svg>
-  <h6 class="fw-normal mt-3 name-bold">Name</h6>
-  <p class="price-red price-font">가격</p>
-</div>
-<div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3">
-  <svg class="bd-placeholder-img" width="140" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <title>Placeholder</title>
-    <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-  </svg>
-  <h6 class="fw-normal mt-3 name-bold">Name</h6>
-  <p class="price-red price-font">가격</p>
-</div>
-<div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3">
-  <svg class="bd-placeholder-img" width="140" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <title>Placeholder</title>
-    <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-  </svg>
-  <h6 class="fw-normal mt-3 name-bold">Name</h6>
-  <p class="price-red price-font">가격</p>
-</div>
-</div> <!--row end -->
-</div>
-</div>
-</main>
+  <main>
+    <div class="album py-5 bg-body-tertiary">
+      <div class="container">
+        <h4 style="margin-bottom: 30px;">🔥Best!</h4>
+        <div id="topSellingCarousel" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item" :class="{ active: index === 0 }" v-for="(chunk, index) in chunkedTopSellingProducts" :key="index">
+              <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+                <div v-for="product in chunk" :key="product.productId || index" class="col">
+                  <div class="card h-100" :class="{ 'dummy-card': product.isDummy }">
+                    <img v-if="!product.isDummy" @click="viewProduct(product.productId)" :src="product.productImage" class="card-img-top" alt="Product Image">
+                    <div class="card-body">
+                      <h6 class="card-title">{{ product.isDummy ? 'Placeholder' : product.productName }}</h6>
+                      <p class="card-text">{{ product.isDummy ? '' : product.price + '원' }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#topSellingCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#topSellingCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        <hr style="color: #94B58B; margin-bottom: 50px;">
+        <h4 style="margin-bottom: 30px;">🔥New!</h4>
+        <div id="latestCarousel" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item" :class="{ active: index === 0 }" v-for="(chunk, index) in chunkedLatestProducts" :key="index">
+              <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+                <div v-for="product in chunk" :key="product.productId || index" class="col">
+                  <div class="card h-100" :class="{ 'dummy-card': product.isDummy }">
+                    <img v-if="!product.isDummy" @click="viewProduct(product.productId)" :src="product.productImage" class="card-img-top" alt="Product Image">
+                    <div class="card-body">
+                      <h6 class="card-title">{{ product.isDummy ? 'Placeholder' : product.productName }}</h6>
+                      <p class="card-text">{{ product.isDummy ? '' : product.price + '원' }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#latestCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#latestCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
 </template>
 
 <script>
-import '../assets/main.css'
+import '../assets/main.css';
+import { mapGetters, mapActions } from 'vuex';
+
 export default {
-  data () {
+  data() {
     return {
       slides: [
         {
@@ -170,10 +122,79 @@ export default {
         }
       ]
     }
+  },
+  computed: {
+    ...mapGetters('home', ['topSellingProducts', 'latestProducts']),
+    chunkedTopSellingProducts() {
+      return this.chunkArray(this.topSellingProducts, 6);
+    },
+    chunkedLatestProducts() {
+      return this.chunkArray(this.latestProducts, 6);
+    }
+  },
+  methods: {
+    ...mapActions('home', ['fetchTopSellingProducts', 'fetchLatestProducts']),
+    viewProduct(productId) {
+      this.$router.push({ name: 'ProductDetail', params: { id: productId } });
+    },
+    chunkArray(array, size) {
+      const chunkedArr = [];
+      for (let i = 0; i < array.length; i += size) {
+        chunkedArr.push(array.slice(i, i + size));
+      }
+      return chunkedArr.map(chunk => {
+        while (chunk.length < size) {
+          chunk.push({ isDummy: true });
+        }
+        return chunk;
+      });
+    }
+  },
+  created() {
+    this.fetchTopSellingProducts();
+    this.fetchLatestProducts();
   }
 }
 </script>
 
-<style>
+<style scoped>
+.album {
+  padding: 2rem 0;
+}
 
+.card {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card-img-top {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-title {
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+.card-text {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #d9534f;
+  margin-top: 5px;
+}
+
+.carousel-item {
+  min-height: 300px; /* Adjust the height as needed */
+}
+
+.dummy-card {
+  background-color: #f8f9fa; /* Light grey background for dummy cards */
+  border: 1px dashed #ddd; /* Dashed border for visual distinction */
+}
 </style>

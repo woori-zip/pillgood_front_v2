@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import home from './modules/homeStore'
 import member from './modules/memberStore';
 import nutrient from './modules/nutrientStore';
 import product from './modules/productStore';
@@ -23,13 +24,13 @@ export default createStore({
     product,
     survey,
     cart,
-    order
+    order,
     review,
     deficiency,
     notice,
     efficiency,
-    notice,
-    inquiry
+    inquiry,
+    home
 
   }
 });
