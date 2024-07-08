@@ -13,7 +13,7 @@ html, body {
   min-height: 100vh;
 }
 
-.main-content {
+main {
   flex: 1;
 }
 
@@ -46,6 +46,12 @@ html, body {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+}
+
+.user-name {
+  margin-left: 20px;
+  font-size: 16px;
+  color: #333;
 }
 
 /* ------------------------------------------------ logo */
@@ -234,6 +240,7 @@ button.icon-link {
   width: 100%;
   padding: 10px;
   height: 130px; /* footer 높이 설정 */
+  position: relative;
 }
 
 .footer-container {

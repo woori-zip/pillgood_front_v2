@@ -3,12 +3,14 @@
 import axios from '../../axios'; // 설정된 axios 인스턴스 불러오기
 
 const state = {
+
   isLoggedIn: localStorage.getItem('loggedIn') === 'true', // 로컬스토리지 
   memberId: localStorage.getItem('memberId'), // 로컬 스토리지에서 memberId 저장--review에서 쓰임
   member: null, // 사용자 정보를 저장
   isAdmin: localStorage.getItem('isAdmin') === 'true', // 관리자 여부를 저장
   members: [], // 회원 목록을 저장
   editingMember: null // 현재 수정 중인 회원 정보를 저장
+
 };
 
 const mutations = {
@@ -17,6 +19,7 @@ const mutations = {
     state.memberId = payload.memberId;
     state.member = payload.member;
     state.isAdmin = payload.isAdmin || false;
+
     localStorage.setItem('loggedIn', payload.isLoggedIn);
     localStorage.setItem('memberId', payload.memberId); // 로컬 스토리지에 memberId를 저장--review에서 쓰임
     localStorage.setItem('isAdmin', payload.isAdmin.toString());
@@ -42,6 +45,7 @@ const mutations = {
   },
   setUser(state, user) {
     state.member = user;
+
   }
 };
 
@@ -51,8 +55,10 @@ const actions = {
       const response = await axios.post('/api/members/login', { email, password });
       if (response.status === 200) {
         const memberId = response.data.memberId;
+
         localStorage.setItem('loggedIn', true);
-        commit('setLoginState', { isLoggedIn: true, memberId });
+        commit('setLoginState', { isLoggedIn: true, memberId: memberId });
+
         // 로그인 후 사용자 정보 가져오기
         await dispatch('fetchMemberInfo', memberId);
       }

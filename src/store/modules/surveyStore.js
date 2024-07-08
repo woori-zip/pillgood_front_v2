@@ -1,5 +1,5 @@
-import axios from '../../axios';
-import store from '../index'; // store를 가져옴
+import axios from '@/axios';
+import store from '../index';
 
 const state = {
   survey: {
@@ -67,10 +67,6 @@ const actions = {
         axios.get('/api/detailed-questions/list')
       ]);
 
-      console.log('questionsResponse:', questionsResponse.data);
-      console.log('answersResponse:', answersResponse.data);
-      console.log('detailedQuestionsResponse:', detailedQuestionsResponse.data);
-
       const surveyQuestions = questionsResponse.data.map(question => ({
         ...question,
         detailedQuestions: detailedQuestionsResponse.data.filter(dq => dq.deficiencyId === question.id)
@@ -121,43 +117,46 @@ const actions = {
   },
   async finishSurvey({ commit, state, dispatch }) {
     try {
-      const deficiencies = Object.values(state.selectedAnswers).map(answerId => {
-        const answer = state.surveyAnswers.find(a => a.id === answerId);
-        return answer ? answer.deficiencyId : null;
-      }).filter(id => id !== null);
+        const deficiencies = Object.values(state.selectedAnswers).map(answerId => {
+            const answer = state.surveyAnswers.find(a => a.id === answerId);
+            return answer ? answer.deficiencyId : null;
+        }).filter(id => id !== null);
 
-      const survey = {
-        ...state.survey,
-        deficiencyId1: deficiencies[0] || null,
-        deficiencyId2: deficiencies[1] || null,
-        deficiencyId3: deficiencies[2] || null,
-        surveyDate: new Date().toISOString(),
-        memberUniqueId: store.state.member.memberId, // memberUniqueId 설정
-      };
+        const survey = {
+          name: state.survey.name,
+          age: state.survey.age,
+          gender: state.survey.gender,
+          height: state.survey.height,
+          weight: state.survey.weight,
+          memberUniqueId: store.state.member.memberId,
+          deficiencyId1: deficiencies[0] || null,
+          deficiencyId2: deficiencies[1] || null,
+          deficiencyId3: deficiencies[2] || null,
+          surveyDate: new Date().toISOString(),
+          recommendedProducts: state.survey.recommendedProducts || '',
+          keywords: state.survey.keywords || ''
+        };
 
-      // 로컬 저장소에 설문 결과 임시 저장
-      localStorage.setItem('tempSurveyResult', JSON.stringify({
-        ...survey,
-        detailedAnswers: state.detailedAnswers
-      }));
+        console.log('finishSurvey - memberUniqueId:', survey.memberUniqueId);
+        console.log('finishSurvey - survey:', survey);
 
-      // 설문 데이터를 서버에 전송
-      await dispatch('sendSurveyData', survey);
+        if (!survey.memberUniqueId) {
+            throw new Error('memberUniqueId가 설정되지 않았습니다.');
+        }
 
-      // 설문 완료 단계로 설정
-      commit('setCurrentStep', 'finish');
+        // 설문 데이터를 서버에 전송
+        await dispatch('sendSurveyData', survey);
+
+        // 설문 완료 단계로 설정
+        commit('setCurrentStep', 'finish');
     } catch (error) {
-      console.error('Failed to finish survey:', error);
-      alert('설문 완료 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        console.error('Failed to finish survey:', error);
+        alert('설문 완료 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
   },
   async sendSurveyData(_, survey) {
     try {
-      const token = store.state.member.token; // 인증 토큰 가져오기
-      console.log('토큰 확인:', token); // 토큰 확인 로그
-      await axios.post('/api/surveys/create', survey, {
-        headers: { Authorization: `Bearer ${token}` } // 토큰 설정
-      });
+      await axios.post('/api/surveys/create', survey);
       console.log('Survey data sent to the server:', survey);
     } catch (error) {
       console.error('Failed to send survey data to the server:', error);

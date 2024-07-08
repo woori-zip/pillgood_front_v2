@@ -23,8 +23,9 @@ import NoticeList from '../views/NoticeList.vue';
 import NoticeCreate from '../views/NoticeCreate.vue';
 import NoticeEdit from '../views/NoticeEdit.vue';
 
+// survey
 import Survey from '../views/SurveyPage.vue';
-
+import SurveyResult from '../views/SurveyResultView.vue';
 
 // cart
 import Cart from '../views/CartPage.vue'
@@ -39,6 +40,11 @@ import ReviewList from '../views/ReviewList.vue'
 
 import Template from '../views/Template.vue';
 import store from '../store'; // store 가져오기
+
+// inquiry
+import Inquirylist from '../views/InquiryPage.vue'
+import InquiryCreate from '../views/InquiryCreate.vue'
+import InquiryDetail from '../views/InquiryDetail.vue'
 
 const routes = [
   { path: '/', component: Home },
@@ -62,6 +68,9 @@ const routes = [
   { path: '/noticelist', name: 'NoticeList', component: NoticeList },
   { path: '/noticecreate', name: 'NoticeCreate', component: NoticeCreate, meta: { requiresAuth: true } }, // 인증 필요
   { path: '/noticeedit/:id', name: 'NoticeEdit', component: NoticeEdit, props: true, meta: { requiresAuth: true } }, // 인증 필요
+
+  //
+  { path: '/surveyresult', name: SurveyResult, component: SurveyResult },
   { path: '/survey', name: 'Survey', component: Survey, meta: { requiresAuth: true } }, // 인증 필요
 
   // cart
@@ -74,6 +83,13 @@ const routes = [
   // review
   { path: '/reviewcreate', name: 'ReviewCreate', component: ReviewCreate },
   { path: '/reviewlist', name: 'ReviewList', component: ReviewList },
+
+  // inquiry
+  { path: '/inquiries', component: Inquirylist },
+  { path: '/inquiries/create', component: InquiryCreate, meta: { requiresAuth: true } }, // 인증 필요
+  { path: '/inquiries/:id', name: 'InquiryDetail', component: InquiryDetail, props: true },
+
+
 
   { path: '/template', component: Template }
 ];

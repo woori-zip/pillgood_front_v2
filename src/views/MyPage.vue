@@ -155,6 +155,7 @@ export default {
 };
 </script>
 
+
 <style>
 .btn-link {
   padding: 5px 10px 5px 10px;
@@ -164,5 +165,10 @@ export default {
   text-decoration-line: none;
   color: black;
   font-size: 15px;
+}
+
+.mypage input[readonly],
+.mypage select[readonly] {
+  text-align: right;
 }
 </style>
