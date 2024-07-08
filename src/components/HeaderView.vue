@@ -54,7 +54,7 @@
           <!-- 관리자 카테고리 -->
           <nav class="nav-container" v-if="isAdmin">
             <ul>
-              <li><a href="#">회원관리</a></li>
+              <li><a href="/memberlist">회원관리</a></li>
               <!-- 상품목록 페이지로 수정 예정. 목록 페이지 안 만들어서 등록 페이지 붙임. -->
               <li><a href="/admin/productlist">상품관리</a></li>
               <li><a href="#">베스트</a></li>

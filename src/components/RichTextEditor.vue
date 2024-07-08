@@ -37,19 +37,31 @@ export default defineComponent({
         formData.append('file', file);
 
         try {
-          // 업로드할 API 경로 설정
+          // 업로드할 API 경로 설정8888
           const response = await axios.post('/api/upload/image', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
           });
-          const url = response.data;
+          const url = response.data; // 서버에서 반환할 이미지 url을 가져옴
           const range = quillEditor.value.getQuill().getSelection();
-          quillEditor.value.getQuill().insertEmbed(range.index, 'image',`http://localhost:9095${url}`); // URL 앞에 서버 주소 추가
+          if (range) {
+            quillEditor.value.getQuill().insertEmbed(range.index, 'image', `http://localhost:9095${url}`); // URL 삽입
+            quillEditor.value.getQuill().setSelection(range.index + 1); // 이미지 다음 위치로 커서 이동
+            updateContent(); // 내용 업데이트
+          }
         } catch (error) {
           console.error('Image upload failed:', error);
         }
       };
+    };
+
+    const updateContent = () => {
+      if (quillEditor.value) {
+        const quill = quillEditor.value.getQuill();
+        content.value = quill.root.innerHTML;
+        emit('update:modelValue', content.value);
+      }
     };
 
     const editorOptions = {
@@ -75,16 +87,39 @@ export default defineComponent({
 
     watch(() => props.modelValue, (newValue) => {
       console.log('modelValue 변경됨:', newValue);
+      if (quillEditor.value) {
+        const quill = quillEditor.value.getQuill();
+        if (quill.root.innerHTML !== newValue) {
+          quill.root.innerHTML = newValue;
+        }
+      }
       content.value = newValue;
     });
 
     onMounted(() => {
       if (quillEditor.value) {
-        quillEditor.value.getQuill().on('text-change', () => {
-          const editorContent = quillEditor.value.getQuill().root.innerHTML;
+        const quill = quillEditor.value.getQuill();
+        quill.on('text-change', () => {
+          const editorContent = quill.root.innerHTML;
           console.log('에디터 내용 변경:', editorContent);
           content.value = editorContent;
         });
+
+        // MutationObserver 사용
+        const observer = new MutationObserver(() => {
+          const editorContent = quill.root.innerHTML;
+          console.log('MutationObserver 감지됨:', editorContent);
+          content.value = editorContent;
+        });
+
+        observer.observe(quill.root, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+
+        // 초기 내용을 설정
+        quill.root.innerHTML = content.value;
       }
     });
 
