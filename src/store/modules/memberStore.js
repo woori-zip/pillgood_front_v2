@@ -19,7 +19,6 @@ const mutations = {
     state.memberId = payload.memberId;
     state.member = payload.member;
     state.isAdmin = payload.isAdmin || false;
-
     localStorage.setItem('loggedIn', payload.isLoggedIn);
     localStorage.setItem('memberId', payload.memberId); // 로컬 스토리지에 memberId를 저장--review에서 쓰임
     localStorage.setItem('isAdmin', payload.isAdmin.toString());

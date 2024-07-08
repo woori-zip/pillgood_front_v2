@@ -7,6 +7,15 @@ const state = {
 const mutations = {
   setCartItems(state, cartItems) {
     state.cartItems = cartItems;
+  },
+  updateCartItemQuantity(state, { cartNo, productQuantity }) {
+    const item = state.cartItems.find(item => item.cartNo === cartNo);
+    if (item) {
+      item.productQuantity = productQuantity;
+    }
+  },
+  clearCartItems(state) {
+    state.cartItems = [];
   }
 };
 
@@ -16,15 +25,22 @@ const actions = {
       const response = await axios.get('/api/carts/findbyid', { withCredentials: true });
       commit('setCartItems', response.data);
     } catch (error) {
-      console.error('장바구니 항목 불러오기 에러: ', error);
+      if (error.response && error.response.status === 404) {
+        console.log('장바구니가 비어있습니다.');
+        commit('clearCartItems'); // 장바구니 비워짐 상태로 설정
+      } else {
+        console.error('장바구니 항목 불러오기 에러: ', error);
+      }
     }
   },
-  async updateCartItem({ dispatch }, item) { // commit 제거
+  async updateCartItem({ commit }, item) {
     try {
-      await axios.put(`/carts/update/${item.cartNo}`, item);
-      dispatch('fetchCartItems'); // 장바구니 항목 갱신
+      await axios.put(`/api/carts/update/${item.cartNo}`, {
+        ...item
+      });
+      commit('updateCartItemQuantity', { cartNo: item.cartNo, productQuantity: item.productQuantity });
     } catch (error) {
-      console.error('장바구니 항목 업데이트 에러: ', error);
+      console.error('장바구니 항목 업데이트 에러:', error);
     }
   }
 };

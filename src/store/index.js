@@ -4,6 +4,7 @@ import nutrient from './modules/nutrientStore';
 import product from './modules/productStore';
 import survey from './modules/surveyStore';
 import cart from './modules/cartStore';
+import order from './modules/orderStore';
 
 import review from './modules/reviewStore';
 import deficiency from './modules/deficiencyStore';
@@ -22,12 +23,13 @@ export default createStore({
     product,
     survey,
     cart,
-
+    order
     review,
     deficiency,
     notice,
     efficiency,
     notice,
     inquiry
+
   }
 });
