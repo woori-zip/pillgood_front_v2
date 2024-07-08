@@ -16,6 +16,10 @@
               <input type="search" placeholder="검색어를 입력하세요" aria-label="Search"
                 class="form-control form-control-white text-bg-white search-input">
             </div>
+            <!-- 사용자 이름 -->
+            <div v-if="isLoggedIn" class="user-name">
+             {{ userName }} 님
+            </div>
             <!-- 아이콘 -->
             <div class="icon-container">
               <router-link v-if="isLoggedIn" to="/mypage" class="icon-link">
@@ -27,7 +31,7 @@
               <router-link v-else to="/login" class="icon-link">
                 <i class="fa-solid fa-user"></i>
               </router-link>
-              <router-link to="#" class="icon-link">
+              <router-link to="/inquiries" class="icon-link"> <!-- 문의 페이지로 편하게 이동하려고 잠깐 넣어 뒀음 -->
                 <i class="fa-solid fa-location-dot"></i>
               </router-link>
               <router-link to="#" class="icon-link">
@@ -50,7 +54,7 @@
           <!-- 관리자 카테고리 -->
           <nav class="nav-container" v-if="isAdmin">
             <ul>
-              <li><a href="#">회원관리</a></li>
+              <li><a href="/memberlist">회원관리</a></li>
               <!-- 상품목록 페이지로 수정 예정. 목록 페이지 안 만들어서 등록 페이지 붙임. -->
               <li><a href="/admin/productlist">상품관리</a></li>
               <li><a href="#">베스트</a></li>
@@ -73,7 +77,7 @@ export default {
   computed: {
     ...mapState('member', {
       isLoggedIn: state => state.isLoggedIn,
-      isAdmin: state => state.isAdmin
+      userName: state => state.member?.name || 'Guest' // Vuex 상태에서 사용자 이름을 가져옴 || 로그인 안 되었을 시 Guest
     })
   },
   methods: {
@@ -97,10 +101,8 @@ export default {
   created() {
     // 주기적으로 isLoggedIn 상태 확인
     setInterval(() => {
-      // isLoggedIn 상태를 확인하는 디버깅 로그를 추가
-      // console.log('mapState 안 된다고!!!! :', this.isLoggedIn);
       console.log('30초마다 isLoggedIn 상태 확인:', this.isLoggedIn);
-    }, 30000); // 10초마다 실행
+    }, 30000); // 30초마다 실행
   }
 };
 </script>

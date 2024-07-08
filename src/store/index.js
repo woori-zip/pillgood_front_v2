@@ -5,6 +5,14 @@ import product from './modules/productStore';
 import survey from './modules/surveyStore';
 import cart from './modules/cartStore';
 
+import review from './modules/reviewStore';
+import deficiency from './modules/deficiencyStore';
+import efficiency from './modules/efficiencyStore';
+
+
+import inquiry from './modules/inquiryStore';
+
+
 import notice from './modules/notice';
 
 export default createStore({
@@ -14,6 +22,12 @@ export default createStore({
     product,
     survey,
     cart,
-    notice
+
+    review,
+    deficiency,
+    notice,
+    efficiency,
+    notice,
+    inquiry
   }
 });

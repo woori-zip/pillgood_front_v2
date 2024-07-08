@@ -95,7 +95,7 @@ export default {
     const store = useStore();
 
     const isLoading = computed(() => store.state.survey.isLoading);
-    const survey = computed(() => store.state.survey.survey || {}); // survey가 null일 경우 빈 객체로 설정
+    const survey = computed(() => store.state.survey.survey || {});
     const currentStep = computed(() => store.state.survey.currentStep);
     const currentQuestionIndex = computed(() => store.state.survey.currentQuestionIndex);
     const currentDetailedQuestion = computed(() => store.state.survey.currentDetailedQuestion);
@@ -105,7 +105,6 @@ export default {
     const isLastQuestion = computed(() => store.getters['survey/isLastQuestion']);
     const canProceed = computed(() => store.getters['survey/canProceed']);
     const isPersonalInfoComplete = computed(() => store.getters['survey/isPersonalInfoComplete']);
-
     const isLoggedIn = computed(() => store.state.member.isLoggedIn);
 
     onMounted(async () => {
@@ -133,21 +132,10 @@ export default {
     };
 
     const finishSurvey = async () => {
-      await store.dispatch('survey/finishSurvey');
+      console.log('SurveyPage.vue - memberId:', store.state.member.memberId);
 
-      // 추가: 선택한 설문조사 데이터를 백엔드에 전송
-      const surveyData = {
-        survey: survey.value,
-        selectedAnswers: selectedAnswers.value,
-        detailedAnswers: detailedAnswers.value
-      };
-      try {
-        await store.dispatch('survey/sendSurveyData', surveyData);
-        console.log('Survey data sent successfully:', surveyData);
-      } catch (error) {
-        console.error('Failed to send survey data:', error);
-      }
-      goToSurveyResult();
+      await store.dispatch('survey/finishSurvey');
+      goToSurveyResult()
     };
 
     const goToSurveyResult = () => {
@@ -176,7 +164,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 /* 기존 스타일 유지 */
 
