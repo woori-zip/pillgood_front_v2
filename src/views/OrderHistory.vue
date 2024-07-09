@@ -68,7 +68,6 @@ export default {
             }
           }));
         }));
-				
       } catch (error) {
         console.error('Failed to fetch orders:', error);
       } finally {
@@ -115,7 +114,8 @@ export default {
           productName: this.getProductName(detail.productId),
           productImage: this.getProductImage(detail.productId),
           orderDetailNo: detail.orderDetailNo,
-          requestType: requestType
+          requestType: requestType,
+          refundAmount: detail.amount // 환불 금액을 쿼리 파라미터로 전달
         }
       });
     }
@@ -166,5 +166,4 @@ export default {
 .order-container {
   margin-bottom: 20px;
 }
-
 </style>
