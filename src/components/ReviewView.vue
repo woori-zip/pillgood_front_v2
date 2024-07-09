@@ -1,10 +1,16 @@
 <template>
   <div>
-    <h1>후기</h1>
-    <div style="display: flex;">
-      <h2>평균 별점: <star-rating :value="averageRating" :star-size="30" :show-rating="false"></star-rating></h2>
-    </div>
+    <h1>상품 리뷰</h1>
+      <div class="rating-container">
+      평균 별점 :&nbsp;
+      <star-rating v-model="averageRating" 
+                  :star-size="30" 
+                  :show-rating="false" 
+                  :disable-click="true"></star-rating>
+      </div>
+    
     <PieChart :chart-data="pieChartData" :option="pieChartOptions" />
+
     <!-- 정렬 -->
     <div style="display: flex;">
       <label for="sortOrder">정렬:</label>
@@ -15,13 +21,19 @@
         <option value="lowest">별점 낮은순</option>
       </select>
     </div>
-    <!-- 정렬 끝 -->
 
+    <!-- 후기 -->
     <div v-for="review in sortedReviews" :key="review.reviewId" class="box-shadow" style="padding: 20px 50px 20px 50px;">
-        <p style="text-align: left; color: gray">
-          작성자: {{ getMemberName(review.memberUniqueId) }} <br>
-          작성일: {{ review.reviewDate }}
-        </p>
+      <!-- 작성자/작성일자 -->
+      <p style="text-align: left; color: gray">
+        작성자: {{ getMemberName(review.memberUniqueId) }} <br>
+        작성일: {{ review.reviewDate }}
+        <span v-if="isReviewOwner(review.memberUniqueId)">
+          | <a href="#" @click.prevent="editReview(review.reviewId)">수정</a>
+        </span>
+      </p>
+
+      <!-- 내용 -->
       <div style="text-align: left">
         <p>{{ parseReviewContent(review.reviewContent).textContent }}</p>
       </div>
@@ -30,11 +42,11 @@
         <star-rating v-model="review.rating" :star-size="20" :show-rating="false" :disable-click="true"></star-rating>
       </div>
       <!-- 이미지 -->
-        <div v-if="review.images && review.images.length > 0" style="display: flex">
-          <div v-for="(image,index) in review.images" :key="image" class="align-img-container">
-            <img :src="image" alt="Review Image" class="align-img" @click="openModal(index, review.images)">
-          </div>
+      <div v-if="review.images && review.images.length > 0" style="display: flex">
+        <div v-for="(image,index) in review.images" :key="image" class="align-img-container">
+          <img :src="image" alt="Review Image" class="align-img" @click="openModal(index, review.images)">
         </div>
+      </div>
     </div>
 
     <!-- 모달 -->
@@ -46,7 +58,6 @@
         <button class="modal-nav right" @click.stop="nextImage">&#10095;</button>
       </div>
     </div>
-    <!-- 모달 끝 -->
 
   </div>
 </template>
@@ -112,6 +123,8 @@ export default {
     averageRating() {
       if (this.reviews.length === 0) return 0;
       const sum = this.reviews.reduce((acc, review) => acc + review.rating, 0);
+      console.log('별점 합계:', sum); // 별점 합계 디버깅
+      console.log('리뷰 개수:', this.reviews.length); // 리뷰 개수 디버깅
       return sum / this.reviews.length;
     },
     pieChartData() {
@@ -148,7 +161,6 @@ export default {
       };
     }
   },
-  
   methods: {
     ...mapActions('member', ['fetchMembers']), // member 모듈에서 fetchMembers 액션을 맵핑
     async fetchReviews() {
@@ -261,7 +273,7 @@ export default {
               '#36A2EB',
               '#FFCE56',
               '#4BC0C0',
-              '#9966FF'
+              '#F4CE14'
             ],
             hoverBackgroundColor: [
               '#FF6384',
@@ -276,6 +288,13 @@ export default {
           responsive: true
         }
       });
+    },
+    isReviewOwner(memberUniqueId) {
+      console.log('로그인 된 사용자 아이디:', memberUniqueId)
+      return memberUniqueId === this.memberId;
+    },
+    editReview(reviewId) {
+      this.$router.push({ name: 'reviewedit', params: { reviewId } });
     }
   },
   watch: {
@@ -387,5 +406,12 @@ export default {
 
 .right {
   right: 0;
+}
+
+.rating-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
 }
 </style>
