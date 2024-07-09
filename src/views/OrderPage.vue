@@ -190,7 +190,7 @@ export default {
         orderId: orderId, // 생성된 주문 번호를 사용
         orderName: 'Order Name',
         customerName: this.recipient,
-        successUrl: `${window.location.origin}/payment/success?orderId=${orderId}&amount=${this.totalAmount}`,
+        successUrl: `${window.location.origin}/payment/success`,
         failUrl: `${window.location.origin}/payment/fail`
       };
 
