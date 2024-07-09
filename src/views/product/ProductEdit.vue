@@ -42,7 +42,7 @@
           </td>
         </tr>
       </table>
-      <RichTextEditor v-model="product.productImage" contentType="html" :options="editorOptions"/>
+      <RichTextEditor v-model="product.productImage" />
       <div class="box-container">
         <div class="btn-container">
           <button type="submit" class="btn btn-green">Update Product</button>
@@ -145,6 +145,7 @@ export default {
           productImage: product.productImage,
           active: product.active
         };
+        console.log('Loaded product details:', this.product);
       } catch (error) {
         console.error('제품 정보를 불러오는 데 실패했습니다:', error);
       }
