@@ -11,8 +11,6 @@
           <th>평점</th>
           <th>회원 이름</th>
           <th>작성일</th>
-          <th>수정</th>
-          <th>삭제</th>
         </tr>
       </thead>
       <tbody>
@@ -25,12 +23,13 @@
               :src="getProductImage(review.productId)" 
               alt="Product Image" />
           </td>
-          <td>{{ removePTags(review.reviewContent) }}</td>
-          <td>{{ review.rating }}</td>
+          <td @click="goToReviewDetail(review)" style="cursor: pointer;">{{ extractText(review.reviewContent) }}</td>
+          <td>
+            <star-rating :rating="review.rating" :star-size="20" :show-rating="false"></star-rating>
+            {{ review.rating }}
+          </td>
           <td>{{ getMemberName(review.memberUniqueId) }}</td>
           <td>{{ formatDate(review.reviewDate) }}</td>
-          <td><button class="small-btn" @click="editReview(review.reviewId)">수정</button></td>
-          <td><button class="small-btn" @click="deleteReview(review.reviewId)">삭제</button></td>
         </tr>
       </tbody>
     </table>
@@ -40,9 +39,13 @@
 <script>
 import axios from '../axios'; // 설정된 axios 인스턴스를 import
 import { mapState, mapActions, mapGetters } from 'vuex'; // Vuex의 헬퍼 함수 import
+import StarRating from 'vue3-star-ratings'; // StarRating 컴포넌트 import
 
 export default {
   name: 'ReviewList',
+  components: {
+    StarRating, // StarRating 컴포넌트 등록
+  },
   data() {
     return {
       reviews: [], // 리뷰 목록을 저장할 배열
@@ -74,8 +77,9 @@ export default {
       try {
         const response = await axios.get('/api/reviews/list'); // 모든 리뷰 데이터를 가져옴
         this.reviews = await Promise.all(response.data.map(async (review) => {
-          const productId = await this.fetchProductIdByOrderDetailNo(review.orderDetailNo); // orderDetailNo로 productId를 가져옴
-          return { ...review, productId }; // 리뷰 데이터에 productId를 추가
+          const orderDetail = await this.fetchOrderDetailById(review.orderDetailNo); // orderDetailNo로 orderDetail 정보를 가져옴
+          const order = await this.fetchOrderByOrderNo(orderDetail.orderNo); // orderNo로 order 정보를 가져옴
+          return { ...review, productId: orderDetail.productId, orderNo: order.orderNo, orderDate: order.orderDate }; // 리뷰 데이터에 productId, orderNo, orderDate를 추가
         }));
         await Promise.all(this.reviews.map(async (review) => {
           if (!this.products[review.productId]) {
@@ -87,12 +91,21 @@ export default {
         console.error('리뷰를 가져오는 데 실패했습니다:', error);
       }
     },
-    async fetchProductIdByOrderDetailNo(orderDetailNo) {
+    async fetchOrderDetailById(orderDetailNo) {
       try {
         const response = await axios.get(`/api/order-details/${orderDetailNo}`); // orderDetailNo로 orderDetail 정보를 가져옴
-        return response.data.productId; // productId를 반환
+        return response.data; // orderDetail 정보를 반환
       } catch (error) {
-        console.error(`Failed to fetch product ID for order detail ${orderDetailNo}:`, error);
+        console.error(`Failed to fetch order detail for order detail ${orderDetailNo}:`, error);
+        return null;
+      }
+    },
+    async fetchOrderByOrderNo(orderNo) {
+      try {
+        const response = await axios.get(`/api/orders/${orderNo}`); // orderNo로 order 정보를 가져옴
+        return response.data; // order 정보를 반환
+      } catch (error) {
+        console.error(`Failed to fetch order for order number ${orderNo}:`, error);
         return null;
       }
     },
@@ -116,16 +129,28 @@ export default {
       if (!date) return '';
       return new Date(date).toLocaleDateString(); // 날짜를 읽기 쉬운 형식으로 변환
     },
-    removePTags(content) {
-      return content.replace(/<\/?p>/g, ''); // <p> 태그를 제거
+    extractText(content) {
+      // <p> 태그와 다른 HTML 태그를 제거하고 텍스트만 추출
+      return content.replace(/<\/?p>/g, '').replace(/<\/?[^>]+(>|$)/g, "").trim();
     },
-    editReview(reviewId) {
-      // 리뷰 수정 로직
-      console.log(`Editing review with ID: ${reviewId}`);
-    },
-    deleteReview(reviewId) {
-      // 리뷰 삭제 로직
-      console.log(`Deleting review with ID: ${reviewId}`);
+    goToReviewDetail(review) {
+      const queryParams = {
+        reviewId: review.reviewId,
+        orderNo: review.orderNo,
+        orderDate: review.orderDate,
+        productId: review.productId,
+        productName: this.getProductName(review.productId),
+        productImage: this.getProductImage(review.productId),
+        orderDetailNo: review.orderDetailNo,
+        reviewContent: review.reviewContent,
+        rating: review.rating
+      };
+      console.log("후기디테일페이지로 넘기는 정보:", queryParams);
+
+      this.$router.push({
+        name: 'ReviewDetail',
+        query: queryParams
+      });
     }
   }
 };

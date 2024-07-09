@@ -42,7 +42,7 @@
           </td>
         </tr>
       </table>
-      <RichTextEditor v-model="product.productImage" contentType="html"/>
+      <RichTextEditor v-model="product.productImage" contentType="html" :options="editorOptions"/>
       <div class="box-container">
         <div class="btn-container">
           <button type="submit" class="btn btn-green">Update Product</button>

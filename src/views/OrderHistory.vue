@@ -4,10 +4,13 @@
 
     <!-- 주문 리스트 -->
     <div v-for="order in orders" :key="order.orderNo" class="order-container">
+      <p style="text-align: left;"><span style=" font-weight: bold; font-size: 20px;">{{ order.orderStatus }}</span> {{ order.orderNo }}</p>
       <!-- 주문상세 리스트 -->
       <div v-for="detail in order.details" :key="detail.orderDetailNo" style="border-radius: 10px; height: 200x; padding: 20px 20px 0 20px" class="box-shadow">
-        <p style="text-align: left; font-weight: bold; font-size: 20px;">{{ order.orderStatus }}</p>
+        <!-- <p style="text-align: left;"><span style=" font-weight: bold; font-size: 20px;">{{ order.orderStatus }}</span> {{ order.orderNo }}</p> -->
+        
         <div style="display: flex">
+
           <img :src="getProductImage(detail.productId)" style="height: 100px; width: auto;  border-radius: 15px; margin-right: 20px;">
           <div>
             <p style="text-align: left;">
@@ -18,6 +21,7 @@
             </p>
           </div>
         </div>
+        <!-- 버튼 -->
         <div class="btn-container" v-if="order.orderStatus !== '배송완료'">
           <button class="btn btn-green">구매확정</button>
           <button class="btn btn-gray">반품요청</button>
@@ -27,7 +31,9 @@
           <button class="btn btn-green" @click="goToReviewPage(order, detail)">리뷰쓰기</button>
           <button class="btn btn-gray">재구매</button>
         </div>
+
       </div>
+
     </div>
 
 

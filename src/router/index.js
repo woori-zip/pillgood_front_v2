@@ -38,6 +38,7 @@ import OrderHistory from '../views/OrderHistory.vue';
 // review
 import ReviewCreate from '../views/ReviewCreate.vue'
 import ReviewList from '../views/ReviewList.vue'
+import ReviewDetail from '../views/ReviewDetail.vue'
 
 import Template from '../views/Template.vue';
 import store from '../store'; // store 가져오기
@@ -85,6 +86,7 @@ const routes = [
   // review
   { path: '/reviewcreate', name: 'ReviewCreate', component: ReviewCreate },
   { path: '/reviewlist', name: 'ReviewList', component: ReviewList },
+  { path: '/reviewdetail', name: 'ReviewDetail', component: ReviewDetail },
 
   // inquiry
   { path: '/inquiries', component: Inquirylist },

@@ -10,34 +10,55 @@ const mutations = {
   addReview(state, review) {
     state.reviews.push(review);
   },
+  updateReview(state, updatedReview) {
+    const index = state.reviews.findIndex(review => review.id === updatedReview.id);
+    if (index !== -1) {
+      state.reviews.splice(index, 1, updatedReview);
+    }
+  },
 };
 
 const actions = {
   async createReview({ commit }, reviewData) {
     try {
-      // Vuex 스토어에서 memberId를 가져옵니다.
       const memberId = store.state.member.memberId;
-      console.log('memberId:', memberId); // memberId 출력
+      console.log('memberId:', memberId);
 
-      // reviewData에 memberId를 추가합니다.
       const reviewPayload = {
         ...reviewData,
         memberId,
       };
 
-      console.log('Sending review data:', reviewPayload); // 리뷰 데이터를 서버로 보내기 전에 출력
+      console.log('Sending review data:', reviewPayload);
 
       const response = await axios.post('/api/reviews/create', reviewPayload, {
-        withCredentials: true, // 세션 쿠키를 포함하여 요청을 보냅니다.
+        withCredentials: true,
       });
 
       commit('addReview', response.data);
-      console.log('Review created successfully:', response.data);
+      console.log('후기 등록이 성공적으로 완료되었습니다: ', response.data);
     } catch (error) {
-      console.error('Failed to create review:', error);
+      console.error('후기 등록에 실패했습니다: ', error);
       throw error;
     }
   },
+  async updateReview({ commit }, reviewData) {
+    try {
+      const { reviewId, ...payload } = reviewData;
+      console.log('Sending update request for reviewId:', reviewId); // 로그 추가
+      console.log('Payload:', payload); // 로그 추가
+
+      const response = await axios.put(`/api/reviews/update/${reviewId}`, payload, {
+        withCredentials: true,
+      });
+
+      commit('updateReview', response.data);
+      console.log('후기 수정이 성공적으로 완료되었습니다: ', response.data);
+    } catch (error) {
+      console.error('후기 수정에 실패했습니다: ', error);
+      throw error;
+    }
+  }
 };
 
 const getters = {

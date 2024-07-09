@@ -23,13 +23,11 @@ export default createStore({
     product,
     survey,
     cart,
-    order
+    order,
     review,
     deficiency,
-    notice,
     efficiency,
     notice,
     inquiry
-
   }
 });
