@@ -24,7 +24,7 @@
 
     <!-- 별점 -->
     <div style="text-align: center;">
-      <star-rating :rating="rating" :star-size="30" :show-rating="false"></star-rating>
+      <star-rating v-model="rating" :star-size="30" :show-rating="false" :disable-click="!isEditing"></star-rating>
     </div>
 
     <!-- 내용 -->

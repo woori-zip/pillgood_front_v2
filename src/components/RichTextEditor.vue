@@ -1,13 +1,18 @@
 <template>
   <div>
-    <div style="margin-top:20px;">
-      <h3>첨부된 이미지</h3>
-      <div v-for="image in images" :key="image.url" style="display: inline-block; margin: 5px;">
-        <img :src="image.url" alt="Review Image" style="width: 100px;">
-        <button @click="removeImage(image.name)">삭제</button>
+
+      <h5>첨부된 이미지</h5>
+
+      <div style="border: 1px solid gray">
+      <div v-for="image in images" :key="image.url" class="attached-img-container">
+        <div class="attached-img">
+          <img :src="image.url" alt="Review Image" style="width: 100px;">
+          <button style="margin-top:10px;" class="small-btn" @click="removeImage(image.name)">삭제</button>
+        </div>
       </div>
-    </div>
+      </div>
     <QuillEditor ref="quillEditor" v-model="content" :options="mergedEditorOptions" />
+
   </div>
 </template>
 
@@ -160,7 +165,15 @@ export default defineComponent({
     const updateContent = () => {
       if (quillEditor.value) {
         const quill = quillEditor.value.getQuill();
-        content.value = quill.root.innerHTML;
+        let contentHtml = quill.root.innerHTML;
+
+        // <br> 태그를 \n으로 변환
+        contentHtml = contentHtml.replace(/<br>/g, '\n');
+
+        // \n을 <br>로 변환
+        contentHtml = contentHtml.replace(/\n/g, '<br>');
+        
+        content.value = contentHtml;
         emit('update:modelValue', content.value);
         console.log('Content updated:', content.value);
 
@@ -257,5 +270,14 @@ export default defineComponent({
 </script>
 
 <style>
-/* 필요한 스타일링을 추가할 수 있음 */
+.attached-img-container {
+  display: inline-block;
+  margin: 5px;
+  border-radius: 20px;
+  padding: 10px;
+}
+.attached-img {
+  display: flex;
+  flex-direction: column;
+}
 </style>

@@ -17,16 +17,18 @@
         <!-- 필터링된 리뷰 목록을 순회하며 테이블 행을 생성 -->
         <tr v-for="review in filteredReviews" :key="review.reviewId">
           <td>{{ review.reviewId }}</td>
-          <td>{{ getProductName(review.productId) }}</td>
+          <td>{{ truncateText(getProductName(review.productId), 15) }}</td>
           <td>
             <img style="height: 100px; width: auto;" 
               :src="getProductImage(review.productId)" 
               alt="Product Image" />
           </td>
-          <td @click="goToReviewDetail(review)" style="cursor: pointer;">{{ extractText(review.reviewContent) }}</td>
+          <td @click="goToReviewDetail(review)" style="cursor: pointer;">
+            <span v-html="truncateText(extractText(review.reviewContent), 15)"></span> &nbsp;
+            <i v-if="containsImageTag(review.reviewContent)" class="fa-solid fa-paperclip"></i>
+          </td>
           <td>
-            <star-rating :rating="review.rating" :star-size="20" :show-rating="false"></star-rating>
-            {{ review.rating }}
+            <star-rating v-model="review.rating" :star-size="30" :show-rating="false" :disable-click="true"></star-rating>
           </td>
           <td>{{ getMemberName(review.memberUniqueId) }}</td>
           <td>{{ formatDate(review.reviewDate) }}</td>
@@ -79,14 +81,21 @@ export default {
         this.reviews = await Promise.all(response.data.map(async (review) => {
           const orderDetail = await this.fetchOrderDetailById(review.orderDetailNo); // orderDetailNo로 orderDetail 정보를 가져옴
           const order = await this.fetchOrderByOrderNo(orderDetail.orderNo); // orderNo로 order 정보를 가져옴
-          return { ...review, productId: orderDetail.productId, orderNo: order.orderNo, orderDate: order.orderDate }; // 리뷰 데이터에 productId, orderNo, orderDate를 추가
+
+          return { ...review, 
+            productId: orderDetail.productId, 
+            orderNo: order.orderNo, 
+            orderDate: order.orderDate
+          }; // 리뷰 데이터에 productId, orderNo, orderDate를 추가
         }));
+
         await Promise.all(this.reviews.map(async (review) => {
           if (!this.products[review.productId]) {
             const productResponse = await axios.get(`/api/products/detail/${review.productId}`); // 제품 상세 정보를 가져옴
             this.products[review.productId] = productResponse.data; // products 객체에 저장
           }
         }));
+        console.log('리뷰정보:', this.reviews);
       } catch (error) {
         console.error('리뷰를 가져오는 데 실패했습니다:', error);
       }
@@ -132,6 +141,15 @@ export default {
     extractText(content) {
       // <p> 태그와 다른 HTML 태그를 제거하고 텍스트만 추출
       return content.replace(/<\/?p>/g, '').replace(/<\/?[^>]+(>|$)/g, "").trim();
+    },
+    containsImageTag(content) { // 이미지 태그가 존재하는 지 테스트
+      return /<img[^>]*src="[^"]*"[^>]*>/g.test(content);
+    },
+    truncateText(text, maxLength) {
+      if (text.length <= maxLength) {
+        return text;
+      }
+      return text.substring(0, maxLength) + '...';
     },
     goToReviewDetail(review) {
       const queryParams = {
