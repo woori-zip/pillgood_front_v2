@@ -1,13 +1,21 @@
 <template>
   <div>
-    <QuillEditor ref="quillEditor" v-model="content" :options="editorOptions" />
+    <div style="margin-top:20px;">
+      <h3>첨부된 이미지</h3>
+      <div v-for="image in images" :key="image.url" style="display: inline-block; margin: 5px;">
+        <img :src="image.url" alt="Review Image" style="width: 100px;">
+        <button @click="removeImage(image.name)">삭제</button>
+      </div>
+    </div>
+    <QuillEditor ref="quillEditor" v-model="content" :options="mergedEditorOptions" />
   </div>
 </template>
 
 <script>
-import { ref, watch, defineComponent, onMounted } from 'vue';
+import { ref, watch, defineComponent, onMounted, computed } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill';
 import axios from '@/axios';
+// import { v4 as uuidv4 } from 'uuid'; // 이미지 중복 저장 방지를 위한 고유 식별자 uuid 부여
 
 export default defineComponent({
   name: 'RichTextEditor',
@@ -18,42 +26,120 @@ export default defineComponent({
     modelValue: {
       type: String,
       required: true
+    },
+    editorOptions: {
+      type: Object,
+      default: () => ({})
     }
   },
   setup(props, { emit }) {
     const content = ref(props.modelValue);
     const quillEditor = ref(null);
+    const images = ref([]);
 
-    // 이미지 핸들러 정의
-    const imageHandler = () => {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
-      input.click();
+    const defaultEditorOptions = {
+      placeholder: 'Write something...',
+      modules: {
+        toolbar: {
+          container: [
+            [{ 'header': [false] }, 'image']
+          ],
+          handlers: {
+            image: () => {
+              const input = document.createElement('input');
+              input.setAttribute('type', 'file');
+              input.setAttribute('accept', 'image/*');
+              input.click();
 
-      input.onchange = async () => {
-        const file = input.files[0];
-        const formData = new FormData();
-        formData.append('file', file);
+              input.onchange = async () => {
+                const file = input.files[0];
+                console.log('Selected file:', file);
 
-        try {
-          // 업로드할 API 경로 설정8888
-          const response = await axios.post('/api/upload/image', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
+                // 파일 업로드
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                  const response = await axios.post('/api/upload/image', formData, {
+                    headers: {
+                      'Content-Type': 'multipart/form-data'
+                    }
+                  });
+
+                  const url = response.data;
+                  console.log('Server response URL:', url);
+
+                  if (!url) {
+                    throw new Error('Image URL is undefined');
+                  }
+
+                  const imageUrl = url.startsWith('http') ? url : `http://localhost:9095${url}`;
+
+                  images.value.push({ url: imageUrl, name: file.name }); // 배열에 추가
+                  console.log('Current images after upload:', images.value);
+
+                  // Quill 에디터에 이미지 삽입하고 display: none 스타일 적용
+                  if (quillEditor.value) {
+                    const quill = quillEditor.value.getQuill();
+                    const range = quill.getSelection();
+                    quill.insertEmbed(range.index, 'image', imageUrl);
+
+                    // 이미지 태그에 display: none 스타일 적용
+                    const img = quill.root.querySelector(`img[src="${imageUrl}"]`);
+                    if (img) {
+                      img.style.display = 'none';
+                    }
+                  }
+
+                  // 이미지가 추가된 후 HTML 컨텐츠 업데이트
+                  updateContent();
+
+                } catch (error) {
+                  console.error('Image upload failed:', error);
+                }
+              };
             }
-          });
-          const url = response.data; // 서버에서 반환할 이미지 url을 가져옴
-          const range = quillEditor.value.getQuill().getSelection();
-          if (range) {
-            quillEditor.value.getQuill().insertEmbed(range.index, 'image', `http://localhost:9095${url}`); // URL 삽입
-            quillEditor.value.getQuill().setSelection(range.index + 1); // 이미지 다음 위치로 커서 이동
-            updateContent(); // 내용 업데이트
           }
-        } catch (error) {
-          console.error('Image upload failed:', error);
         }
-      };
+      },
+      ...props.editorOptions
+    };
+
+
+    // 병합된 에디터 옵션
+    const mergedEditorOptions = computed(() => ({
+      ...defaultEditorOptions,
+      ...props.editorOptions
+    }));
+
+    // 이미지 제거
+    const removeImage = async (name) => {
+      const imageToRemove = images.value.find(img => img.name === name);
+      if (imageToRemove) {
+        try {
+          await axios.delete(`/api/delete/image`, { data: { url: imageToRemove.url } });
+          images.value = images.value.filter(img => img.name !== name);
+          console.log('After removing image:', images.value);
+          
+          // HTML 내용에서 이미지 태그 제거
+          if (quillEditor.value) {
+            const quill = quillEditor.value.getQuill();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(quill.root.innerHTML, 'text/html');
+            const imgTags = doc.querySelectorAll('img');
+            imgTags.forEach(img => {
+              if (img.src === imageToRemove.url) {
+                img.remove();
+              }
+            });
+            quill.root.innerHTML = doc.body.innerHTML;
+            updateContent();
+          }
+
+        } catch (error) {
+          console.error('Image delete failed:', error);
+        }
+      }
     };
 
     const updateContent = () => {
@@ -61,32 +147,30 @@ export default defineComponent({
         const quill = quillEditor.value.getQuill();
         content.value = quill.root.innerHTML;
         emit('update:modelValue', content.value);
-      }
-    };
+        console.log('Content updated:', content.value);
 
-    const editorOptions = {
-      placeholder: 'Write something...',
-      modules: {
-        toolbar: {
-          container: [
-            [{ 'header': [1, 2, false] }],
-            ['bold', 'italic', 'underline'],
-            ['image', 'code-block']
-          ],
-          handlers: {
-            image: imageHandler
-          }
-        }
+        // HTML 내용에서 이미지를 파싱하여 images 배열에 추가
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(content.value, 'text/html');
+        const imgTags = doc.querySelectorAll('img');
+        images.value = Array.from(imgTags).map(img => ({
+          url: img.src,
+          name: decodeURIComponent(img.src.split('/').pop())
+        }));
+        console.log('Images after content update:', images.value);
+
+        // HTML에서 이미지 태그 제거
+        // imgTags.forEach(img => img.remove());
+        // quill.root.innerHTML = doc.body.innerHTML;
+        // console.log('HTML after removing images:', quill.root.innerHTML);
       }
     };
 
     watch(content, (newValue) => {
-      console.log('content 변경됨:', newValue);
       emit('update:modelValue', newValue);
     });
 
     watch(() => props.modelValue, (newValue) => {
-      console.log('modelValue 변경됨:', newValue);
       if (quillEditor.value) {
         const quill = quillEditor.value.getQuill();
         if (quill.root.innerHTML !== newValue) {
@@ -96,21 +180,17 @@ export default defineComponent({
       content.value = newValue;
     });
 
+    // 컴포넌트 마운트 시 실행
     onMounted(() => {
       if (quillEditor.value) {
-
         const quill = quillEditor.value.getQuill();
+
         quill.on('text-change', () => {
-          const editorContent = quill.root.innerHTML;
-          console.log('에디터 내용 변경:', editorContent);
-          content.value = editorContent;
+          content.value = quill.root.innerHTML;
         });
 
-        // MutationObserver 사용
         const observer = new MutationObserver(() => {
-          const editorContent = quill.root.innerHTML;
-          console.log('MutationObserver 감지됨:', editorContent);
-          content.value = editorContent;
+          content.value = quill.root.innerHTML;
         });
 
         observer.observe(quill.root, {
@@ -119,15 +199,34 @@ export default defineComponent({
           characterData: true
         });
 
-        // 초기 내용을 설정
         quill.root.innerHTML = content.value;
+
+        const doc = new DOMParser().parseFromString(content.value, 'text/html');
+        const imgTags = doc.querySelectorAll('img');
+        images.value = Array.from(imgTags).map(img => ({
+          url: img.src,
+          name: decodeURIComponent(img.src.split('/').pop())
+        }));
+        console.log('Initial images on mount:', images.value);
+
+        quill.root.innerHTML = content.value;
+
+        // const doc = new DOMParser().parseFromString(content.value, 'text/html');
+        // const imgTags = doc.querySelectorAll('img');
+        // imgTags.forEach(img => {
+        //   const imageUrl = img.src;
+        //   const name = imageUrl.split('/').pop();
+        //   images.value.push({ url: imageUrl, name });
+        // });
       }
     });
 
     return {
       content,
-      editorOptions,
-      quillEditor
+      mergedEditorOptions,
+      quillEditor,
+      images,
+      removeImage
     };
   }
 });
