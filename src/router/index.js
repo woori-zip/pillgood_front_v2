@@ -1,11 +1,14 @@
+// src/router/index.js
+
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/HomeView.vue';
 import Register from '../views/RegisterMember.vue';
 import Login from '../views/LoginView.vue';
 import ForgotPassword from '../views/ForgotPasswordView.vue';
 import ChangePassword from '../views/ChangePasswordView.vue';
-import RefundCreate from '../views/RefundCreate.vue'; // 추가된 import
-import RefundDetail from '../views/RefundDetail.vue'; // 추가된 import
+import RefundCreate from '../views/RefundCreate.vue';
+import RefundDetail from '../views/RefundDetail.vue';
+import RefundList from '../views/RefundList.vue'; // 추가된 import
 
 // member
 import MemberList from '../views/MemberList.vue';
@@ -24,7 +27,7 @@ import NutrientEdit from '../views/product/NutrientEdit.vue';
 import NoticeList from '../views/NoticeList.vue';
 import NoticeCreate from '../views/NoticeCreate.vue';
 import NoticeEdit from '../views/NoticeEdit.vue';
-import NoticeDetail from '../views/NoticeDetail.vue'; // 공지사항 상세 페이지 추가
+import NoticeDetail from '../views/NoticeDetail.vue';
 
 // survey
 import Survey from '../views/SurveyPage.vue';
@@ -42,7 +45,7 @@ import ReviewCreate from '../views/ReviewCreate.vue';
 import ReviewList from '../views/ReviewList.vue';
 
 import Template from '../views/Template.vue';
-import store from '../store'; // store 가져오기
+import store from '../store';
 
 // inquiry
 import Inquirylist from '../views/InquiryPage.vue';
@@ -55,12 +58,12 @@ const routes = [
   { path: '/login', component: Login },
   { path: '/forgotpassword', component: ForgotPassword },
   { path: '/changepassword', component: ChangePassword },
-  { path: '/mypage', component: MyPage, meta: { requiresAuth: true } }, // 인증 필요
+  { path: '/mypage', component: MyPage, meta: { requiresAuth: true } },
   { path: '/memberlist', component: MemberList },
   { path: '/memberedit', component: MemberEdit },
 
   // product
-  { path: '/productcreate', component: ProductCreate, meta: { requiresAuth: true } }, // 인증 필요
+  { path: '/productcreate', component: ProductCreate, meta: { requiresAuth: true } },
   { path: '/admin/productlist', component: AdminProductList },
   { path: '/productedit/:id', name: 'ProductEdit', component: ProductEdit, props: true },
   { path: '/productlist', component: ProductList },
@@ -69,13 +72,13 @@ const routes = [
 
   // notice
   { path: '/noticelist', name: 'NoticeList', component: NoticeList },
-  { path: '/noticecreate', name: 'NoticeCreate', component: NoticeCreate, meta: { requiresAuth: true } }, // 인증 필요
-  { path: '/noticeedit/:id', name: 'NoticeEdit', component: NoticeEdit, props: true, meta: { requiresAuth: true } }, // 인증 필요
-  { path: '/noticedetail/:id', name: 'NoticeDetail', component: NoticeDetail, props: true }, // 공지사항 상세 페이지 추가
+  { path: '/noticecreate', name: 'NoticeCreate', component: NoticeCreate, meta: { requiresAuth: true } },
+  { path: '/noticeedit/:id', name: 'NoticeEdit', component: NoticeEdit, props: true, meta: { requiresAuth: true } },
+  { path: '/noticedetail/:id', name: 'NoticeDetail', component: NoticeDetail, props: true },
 
   // survey
   { path: '/surveyresult', name: 'SurveyResult', component: SurveyResult },
-  { path: '/survey', name: 'Survey', component: Survey, meta: { requiresAuth: true } }, // 인증 필요
+  { path: '/survey', name: 'Survey', component: Survey, meta: { requiresAuth: true } },
 
   // cart
   { path: '/cart', name: 'Cart', component: Cart },
@@ -83,10 +86,11 @@ const routes = [
   // order
   { path: '/order', component: Order, name: 'Order' },
   { path: '/order-history', name: 'OrderHistory', component: OrderHistory },
-  
+
   // return
-  { path: '/refundcreate', name: 'RefundCreate', component: RefundCreate }, // RefundCreate 경로 추가
-  { path: '/refunddetail', name: 'RefundDetail', component: RefundDetail }, // RefundDetail 경로 추가
+  { path: '/refundcreate', name: 'RefundCreate', component: RefundCreate },
+  { path: '/refunddetail/:orderNo', name: 'RefundDetail', component: RefundDetail, props: true }, // 수정된 부분
+  { path: '/refundlist', name: 'RefundList', component: RefundList }, // 추가된 부분
 
   // review
   { path: '/reviewcreate', name: 'ReviewCreate', component: ReviewCreate },
@@ -94,7 +98,7 @@ const routes = [
 
   // inquiry
   { path: '/inquiries', component: Inquirylist },
-  { path: '/inquiries/create', component: InquiryCreate, meta: { requiresAuth: true } }, // 인증 필요
+  { path: '/inquiries/create', component: InquiryCreate, meta: { requiresAuth: true } },
   { path: '/inquiries/:id', name: 'InquiryDetail', component: InquiryDetail, props: true },
 
   { path: '/template', component: Template }

@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import axios from '../axios'; // 'axios.js' 설정 파일을 import
+import axios from '../axios';
 
 export default {
   props: {
@@ -67,8 +67,8 @@ export default {
   },
   data() {
     return {
-      orderNo: this.$route.query.orderNo, // 주문번호는 라우트에서 받아옴
-      requestType: this.$route.query.requestType || '반품', // 라우트에서 요청 타입을 받아옴
+      orderNo: this.$route.query.orderNo,
+      requestType: this.$route.query.requestType || '반품',
       detailedReason: '상세 사유는 선택사항입니다.',
       bankName: '',
       accountNumber: '',
@@ -84,22 +84,22 @@ export default {
     async handleSubmit() {
       const refundData = {
         refundRequestDate: new Date(),
-        refundCompleteDate: null, // 환불 완료 날짜는 초기에는 null로 설정
+        refundCompleteDate: null,
         orderDate: this.$route.query.orderDate,
         totalRefundAmount: this.refundAmount,
-        refundMethod: this.requestType, // 반품 또는 교환
+        refundMethod: this.requestType,
         refundBank: this.bankName,
         refundAccount: this.accountNumber,
         accountHolder: this.accountHolder,
-        refundStatus: 'pending', // 초기 상태는 'pending'
+        refundStatus: '환불대기',
         orderNo: this.orderNo,
-        userId: this.$store.state.member.id // 사용자 ID 추가
+        userId: this.$store.state.member.id
       };
 
       try {
         const response = await axios.post('/api/refunds/create', refundData);
         console.log('환불 정보가 성공적으로 저장되었습니다:', response.data);
-        this.$router.push('/refunddetail'); // 환불 상세 페이지로 이동
+        this.$router.push({ name: 'RefundDetail', params: { orderNo: refundData.orderNo } }); // 수정된 부분
       } catch (error) {
         console.error('환불 정보 저장 중 오류가 발생했습니다:', error);
       }
@@ -109,5 +109,7 @@ export default {
 </script>
 
 <style scoped>
-/* 기존 스타일 건드리지 않음 */
+.main-container {
+  padding: 20px;
+}
 </style>

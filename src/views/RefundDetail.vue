@@ -14,6 +14,12 @@
 import axios from '../axios';
 
 export default {
+  props: {
+    orderNo: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
       refunds: []
@@ -21,7 +27,8 @@ export default {
   },
   async created() {
     try {
-      const response = await axios.get('/api/refunds/list');
+      const response = await axios.get(`/api/refunds/order/${this.orderNo}`);
+      console.log('받은 데이터:', response.data);
       this.refunds = response.data;
     } catch (error) {
       console.error('환불 목록을 가져오는 중 오류가 발생했습니다:', error);
@@ -31,7 +38,6 @@ export default {
 </script>
 
 <style scoped>
-/* 스타일 추가 */
 .main-container {
   padding: 20px;
 }
