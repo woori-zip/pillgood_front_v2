@@ -46,7 +46,6 @@ export default defineComponent({
           ],
           handlers: {
             image: () => {
-              // 이미지 핸들러 로직
               const input = document.createElement('input');
               input.setAttribute('type', 'file');
               input.setAttribute('accept', 'image/*');
@@ -54,60 +53,49 @@ export default defineComponent({
 
               input.onchange = async () => {
                 const file = input.files[0];
-                const fileName = decodeURIComponent(file.name); // 디코딩
-
                 console.log('Selected file:', file);
-                console.log('Decoded file name:', fileName);
 
-                // 이미 존재하는 이미지인지 확인
-                if (!images.value.some(img => decodeURIComponent(img.name) === fileName)) {
-                  const formData = new FormData();
-                  formData.append('file', file);
+                // 파일 업로드
+                const formData = new FormData();
+                formData.append('file', file);
 
-                  try {
-                    const response = await axios.post('/api/upload/image', formData, {
-                      headers: {
-                        'Content-Type': 'multipart/form-data'
-                      }
-                    });
-                    
-                    const url = response.data;
-                    const decodedUrl = decodeURIComponent(url);
-
-                    console.log('Server response URL:', url);
-                    console.log('Decoded URL:', decodedUrl);
-
-                    if (!url) {
-                      throw new Error('Image URL is undefined');
+                try {
+                  const response = await axios.post('/api/upload/image', formData, {
+                    headers: {
+                      'Content-Type': 'multipart/form-data'
                     }
+                  });
 
-                    // 절대 경로인 경우와 상대 경로인 경우를 처리
-                    const imageUrl = url.startsWith('http') ? url : `http://localhost:9095${url}`; 
+                  const url = response.data;
+                  console.log('Server response URL:', url);
 
-                    images.value.push({ url: imageUrl, name: file.name }); // 에디터에 삽입하지 않고 배열에만 추가
-                    console.log('Current images after upload:', images.value);
-
-                    // Quill 에디터에 이미지 삽입하고 display: none 스타일 적용
-                    if (quillEditor.value) {
-                      const quill = quillEditor.value.getQuill();
-                      const range = quill.getSelection();
-                      quill.insertEmbed(range.index, 'image', imageUrl);
-
-                       // 이미지 태그에 display: none 스타일 적용
-                      const img = quill.root.querySelector(`img[src="${imageUrl}"]`);
-                      if (img) {
-                        img.style.display = 'none';
-                      }
-                    }
-
-                    // 이미지가 추가된 후 HTML 컨텐츠 업데이트
-                    updateContent();
-
-                  } catch (error) {
-                    console.error('이미지 업로드 실패:', error);
+                  if (!url) {
+                    throw new Error('Image URL is undefined');
                   }
-                } else {
-                  console.log('이미 존재하는 이미지:', fileName);
+
+                  const imageUrl = url.startsWith('http') ? url : `http://localhost:9095${url}`;
+
+                  images.value.push({ url: imageUrl, name: file.name }); // 배열에 추가
+                  console.log('Current images after upload:', images.value);
+
+                  // Quill 에디터에 이미지 삽입하고 display: none 스타일 적용
+                  if (quillEditor.value) {
+                    const quill = quillEditor.value.getQuill();
+                    const range = quill.getSelection();
+                    quill.insertEmbed(range.index, 'image', imageUrl);
+
+                    // 이미지 태그에 display: none 스타일 적용
+                    const img = quill.root.querySelector(`img[src="${imageUrl}"]`);
+                    if (img) {
+                      img.style.display = 'none';
+                    }
+                  }
+
+                  // 이미지가 추가된 후 HTML 컨텐츠 업데이트
+                  updateContent();
+
+                } catch (error) {
+                  console.error('Image upload failed:', error);
                 }
               };
             }
@@ -116,6 +104,7 @@ export default defineComponent({
       },
       ...props.editorOptions
     };
+
 
     // 병합된 에디터 옵션
     const mergedEditorOptions = computed(() => ({
