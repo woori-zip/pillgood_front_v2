@@ -39,6 +39,8 @@ import Cart from '../views/CartPage.vue';
 // order
 import Order from '../views/OrderPage.vue';
 import OrderHistory from '../views/OrderHistory.vue';
+import PaymentSuccess from '../views/PaymentSuccess.vue';
+import PaymentFail from '../views/PaymentFail.vue'
 
 // review
 import ReviewCreate from '../views/ReviewCreate.vue';
@@ -87,6 +89,9 @@ const routes = [
   { path: '/order', component: Order, name: 'Order' },
   { path: '/order-history', name: 'OrderHistory', component: OrderHistory },
 
+  { path: '/payment/success', name: 'PaymentSuccess', component: PaymentSuccess },
+  { path: '/payment/fail', name: 'PaymentFail', component: PaymentFail },
+ 
   // return
   { path: '/refundcreate', name: 'RefundCreate', component: RefundCreate },
   { path: '/refunddetail/:orderNo', name: 'RefundDetail', component: RefundDetail, props: true }, // 수정된 부분
