@@ -77,7 +77,8 @@ export default {
   computed: {
     ...mapState('member', {
       isLoggedIn: state => state.isLoggedIn,
-      userName: state => state.member?.name || 'Guest' // Vuex 상태에서 사용자 이름을 가져옴 || 로그인 안 되었을 시 Guest
+      userName: state => state.member?.name || 'Guest', // Vuex 상태에서 사용자 이름을 가져옴 || 로그인 안 되었을 시 Guest
+       isAdmin: state => state.isAdmin
     })
   },
   methods: {
