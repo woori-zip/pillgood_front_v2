@@ -170,6 +170,7 @@ export default {
         this.isEditingAnswer = false;
         Object.assign(this.answer, this.editableAnswer);
         alert('답변이 수정되었습니다.');
+        this.$router.go(); // 페이지 새로고침
       } catch (error) {
         console.error('답변 수정 실패:', error);
       }
@@ -207,7 +208,9 @@ export default {
       try {
         await this.deleteAnswer(this.answer);
         alert('답변이 삭제되었습니다.');
-        this.fetchAnswer(this.inquiry.inquiryNo);
+        await this.fetchAnswer(this.inquiry.inquiryNo); // 상태 업데이트
+        this.inquiry.inquiryStatus = '미답변'; // 상태를 미답변으로 변경
+        await this.updateInquiry(this.inquiry); // 상태 업데이트 호출
         this.$router.go(); // 페이지 새로고침
       } catch (error) {
         console.error('답변 삭제 실패:', error);
@@ -225,13 +228,16 @@ export default {
       const parser = new DOMParser();
       const doc = parser.parseFromString(content, 'text/html');
       const imgTags = doc.querySelectorAll('img');
+      console.log("Extracted images:", imgTags);
       return Array.from(imgTags).map(img => ({ url: img.src }));
     }
   },
   created() {
     this.fetchInquiry(this.id).then(() => {
+      console.log("Inquiry content:", this.inquiry.inquiryContent);
       this.editableInquiry = { ...this.inquiry };
       this.attachedImages = this.extractImagesFromContent(this.inquiry.inquiryContent);
+      console.log("첨부된 이미지들:", this.attachedImages);
       this.fetchAnswer(this.id).then(() => {
         if (this.answer) {
           this.editableAnswer = { ...this.answer, inquiryNo: this.id };
@@ -247,7 +253,7 @@ export default {
 <style>
 .bttn-container {
   display: flex;
-  justify-content: flex-end; /* 버튼들을 우측 정렬 */
-  gap: 10px; /* 버튼 사이의 간격을 추가 (원하는 간격으로 조절 가능) */
+  justify-content: flex-end;
+  gap: 10px;
 }
 </style>
