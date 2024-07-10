@@ -10,7 +10,7 @@ import order from './modules/orderStore';
 import review from './modules/reviewStore';
 import deficiency from './modules/deficiencyStore';
 import efficiency from './modules/efficiencyStore';
-
+import refund from './modules/refunds';
 
 import inquiry from './modules/inquiryStore';
 
@@ -30,7 +30,7 @@ export default createStore({
     notice,
     efficiency,
     inquiry,
-    home
-
+    home,
+    refund
   }
 });
