@@ -43,8 +43,10 @@ import PaymentSuccess from '../views/PaymentSuccess.vue';
 import PaymentFail from '../views/PaymentFail.vue'
 
 // review
-import ReviewCreate from '../views/ReviewCreate.vue';
-import ReviewList from '../views/ReviewList.vue';
+
+import ReviewCreate from '../views/ReviewCreate.vue'
+import ReviewList from '../views/ReviewList.vue'
+import ReviewDetail from '../views/ReviewDetail.vue'
 
 import Template from '../views/Template.vue';
 import store from '../store';
@@ -100,6 +102,7 @@ const routes = [
   // review
   { path: '/reviewcreate', name: 'ReviewCreate', component: ReviewCreate },
   { path: '/reviewlist', name: 'ReviewList', component: ReviewList },
+  { path: '/reviewdetail', name: 'ReviewDetail', component: ReviewDetail },
 
   // inquiry
   { path: '/inquiries', component: Inquirylist },

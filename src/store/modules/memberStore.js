@@ -21,7 +21,7 @@ const mutations = {
     state.isAdmin = payload.isAdmin || false;
     localStorage.setItem('loggedIn', payload.isLoggedIn);
     localStorage.setItem('memberId', payload.memberId); // 로컬 스토리지에 memberId를 저장--review에서 쓰임
-    localStorage.setItem('isAdmin', payload.isAdmin.toString());
+    localStorage.setItem('isAdmin', payload.isAdmin.toString()); // isAdmin을 문자열로 변환하여 저장
   },
   setMembers(state, members) {
     // 서버에서 받은 members 데이터를 memberId로 변환
@@ -86,7 +86,16 @@ const actions = {
         const member = response.data.user;
         const isAdmin = member.memberLevel === 'ADMIN'; // 관리자 여부 확인
         commit('setLoginState', { isLoggedIn: true, memberId: memberId, member: member, isAdmin: isAdmin });
-      } else {
+        // // 사용자 정보 로컬스토리지에 저장
+        // localStorage.setItem('member', JSON.stringify(member));
+        // localStorage.setItem('isAdmin', isAdmin.toString());
+        // localStorage.setItem('userName', member.name);
+        
+        // // 로컬 스토리지에 저장한 사용자 정보 콘솔 로그 출력
+        // console.log('로컬 스토리지에 저장한 사용자 정보:', localStorage.getItem('member'));
+        // console.log('로컬 스토리지에 저장한 관리자 여부:', localStorage.getItem('isAdmin'));
+        // console.log('로컬 스토리지에 저장한 사용자 이름:', localStorage.getItem('userName'));
+      }  else {
         commit('setLoginState', { isLoggedIn: false, memberId: null, member: null, isAdmin: false });
       }
     } catch (error) {

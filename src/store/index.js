@@ -27,8 +27,8 @@ export default createStore({
     order,
     review,
     deficiency,
-    notice,
     efficiency,
+    notice,
     inquiry,
     home,
     refund

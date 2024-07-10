@@ -145,7 +145,15 @@ export default defineComponent({
     const updateContent = () => {
       if (quillEditor.value) {
         const quill = quillEditor.value.getQuill();
-        content.value = quill.root.innerHTML;
+        let contentHtml = quill.root.innerHTML;
+
+        // <br> 태그를 \n으로 변환
+        contentHtml = contentHtml.replace(/<br>/g, '\n');
+
+        // \n을 <br>로 변환
+        contentHtml = contentHtml.replace(/\n/g, '<br>');
+        
+        content.value = contentHtml;
         emit('update:modelValue', content.value);
         console.log('Content updated:', content.value);
 
@@ -175,6 +183,15 @@ export default defineComponent({
         const quill = quillEditor.value.getQuill();
         if (quill.root.innerHTML !== newValue) {
           quill.root.innerHTML = newValue;
+          // HTML 내용에서 이미지를 파싱하여 images 배열에 추가
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(newValue, 'text/html');
+          const imgTags = doc.querySelectorAll('img');
+          images.value = Array.from(imgTags).map(img => ({
+            url: img.src,
+            name: img.src.split('/').pop()
+          }));
+          console.log('Images after prop modelValue change:', images.value);
         }
       }
       content.value = newValue;
@@ -233,5 +250,14 @@ export default defineComponent({
 </script>
 
 <style>
-/* 필요한 스타일링을 추가할 수 있음 */
+.attached-img-container {
+  display: inline-block;
+  margin: 5px;
+  border-radius: 20px;
+  padding: 10px;
+}
+.attached-img {
+  display: flex;
+  flex-direction: column;
+}
 </style>
