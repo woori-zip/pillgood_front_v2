@@ -58,7 +58,7 @@
             </tr>
           </tbody>
         </table>
-        <div class="chart-container">
+        <div class="chart-container" style="position: relative; height:100px">
           <canvas id="bmiChart"></canvas>
         </div>
       </div>
@@ -140,6 +140,7 @@ export default {
           ]
         },
         options: {
+          maintainAspectRatio: false,
           indexAxis: 'y',
           scales: {
             x: {
@@ -197,7 +198,7 @@ export default {
 <style scoped>
 .chart-container {
   position: relative;
-  height: 50px;
+  height: 5px;
   width: 100%;
 }
 @import '../assets/styles.css';
