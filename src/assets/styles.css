@@ -248,5 +248,66 @@ td {
 .vc-pane {
   background-color: #fff;
 }
-/* -------------------------------------------------------------calender */
 
+/* -------------------------------------------------------------line-table */
+
+.line-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.line-table thead {
+  background-color: #EBF7F0;
+}
+
+.line-table th, td {
+  padding: 2px 2px 2px 2px;
+  align-items: center; /* 세로 중앙 정렬 */
+  text-align: center; /* 가로 중앙 정렬 */
+}
+
+.text-left {
+  text-align: left;
+}
+
+.line-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* -------------------------------------------------------------filter-containere */
+
+.filter-container {
+  width: 100px;
+}
+
+.small-btn {
+  display: inline-block;
+  white-space: nowrap;
+  height: 100%;
+  border: 0;
+  background: #D5D9C4;
+  border-radius: 5px;
+  text-decoration-line: none;
+  color: black;
+  padding: 2px;
+}
+
+.small-btn:hover {
+  color:black;
+  background: #C6EDC2;
+}
+
+.image-tooltip {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  padding: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.image-tooltip img {
+  width: 150px; /* 너비를 150px로 고정 */
+  height: auto; /* 높이는 자동으로 설정하여 비율 유지 */
+}

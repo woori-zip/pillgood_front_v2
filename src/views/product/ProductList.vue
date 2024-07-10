@@ -1,7 +1,7 @@
 <template>
   <div class="main-container box-shadow">
     <h1 class="text-melon">제품 목록</h1>
-    <div style="display: flex; align-items: center">
+    <div class="filter-container">
       <select style="width:150px;" v-model="selectedFilter">
         <option value="">- 선택 -</option>
         <option value="productName">제품명</option>
@@ -9,14 +9,16 @@
         <option value="target">대상</option>
       </select>
       <input v-model="searchQuery" :disabled="!selectedFilter" placeholder="검색어를 입력하세요">
-      <button class="small-btn" @click="resetFilters">초기화</button>
-      <router-link class="small-btn" to="/productcreate">+제품 등록</router-link>
-      <router-link class="small-btn btn-green" to="/nutrientedit">성분 관리</router-link>
+
+        <button class="small-btn" @click="resetFilters">초기화</button>
+        <router-link class="small-btn" to="/productcreate">+제품 등록</router-link>
+        <router-link class="small-btn btn-green" to="/nutrientedit">성분 관리</router-link>
+
     </div>
     <table class="line-table">
       <thead>
         <tr>
-          <th>제품명</th>
+          <th class="text-left">제품명</th>
           <th>성분</th>
           <th>가격</th>
           <th>재고</th>
@@ -33,7 +35,7 @@
           @mouseleave="hideImage"
           @mousemove="moveImage($event)"
         >
-          <td>{{ product.productName }}</td>
+          <td class="text-left">{{ product.productName }}</td>
           <td>{{ getNutrientName(product.nutrientId) }}</td>
           <td>{{ product.price }}</td>
           <td>{{ product.stock }}</td>
@@ -171,56 +173,3 @@ export default {
 </script>
 
 
-<style>
-.line-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: center;
-}
-
-.line-table thead {
-  background-color: #EBF7F0;
-}
-
-.line-table th, td {
-  padding: 2px 2px 2px 2px;
-  border-bottom: 1px solid gray;
-  align-items: center; /* 세로 중앙 정렬 */
-}
-
-.line-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.small-btn {
-  display: inline-block;
-  white-space: nowrap;
-  height: 100%;
-  border: 0;
-  background: #D5D9C4;
-  border-radius: 5px;
-  margin-right: 5px;
-  text-decoration-line: none;
-  color: black;
-  padding: 2px;
-}
-
-.small-btn:hover {
-  color:black;
-  background: #C6EDC2;
-}
-
-.image-tooltip {
-  position: absolute;
-  background-color: white;
-  border: 1px solid #ddd;
-  padding: 10px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-}
-
-.image-tooltip img {
-  width: 150px; /* 너비를 150px로 고정 */
-  height: auto; /* 높이는 자동으로 설정하여 비율 유지 */
-}
-</style>

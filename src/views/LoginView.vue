@@ -2,7 +2,7 @@
   <div class="box-container box-shadow">
     <h4 class="text-melon">로그인</h4>
     <form @submit.prevent="handleLogin">
-      <table class="line-table">
+      <table>
         <tr>
           <!-- lable의 for 속성은 input 요소의 id 와 일치해야 합니다! -->
           <td><label for="email" class="text-melon">이메일</label></td>
@@ -17,7 +17,7 @@
         <input id="chk_all" type="checkbox">
         <label for="chk_all" class="text-gray">이메일 기억하기</label>
       </div>
-      <router-link to="/forgotpassword">아이디/비밀번호 찾기</router-link>
+      <router-link to="/forgotpassword">비밀번호 재설정</router-link>
       <div class="btn-container">
         <button type="submit" class="btn btn-green">로그인</button>
         <button type="button" class="btn btn-gray" @click="navigateToRegister">회원가입</button>
