@@ -11,15 +11,15 @@
           <option value="type">유형</option>
         </select>
         <input type="text" v-model="inputSearchQuery" placeholder="검색어를 입력하세요" />
-        <button @click="searchInquiries" class="btn-green">검색</button>
+        <button class="icon-button" @click="searchInquiries"><i class="fa-solid fa-magnifying-glass"></i></button>
       </div>
 
       <!-- 글쓰기 버튼 -->
-      <div class="btn-container">
-        <button @click="goToInquiryCreate" class="btn-green">글쓰기</button>
+      <div class="bttn-container">
+        <button @click="goToInquiryCreate" class="btn btn-green">글쓰기</button>
       </div>
 
-      <table>
+      <table class="line-table">
         <thead>
           <tr>
             <th>No</th>
@@ -36,6 +36,7 @@
             <td>
               <router-link :to="{ name: 'InquiryDetail', params: { id: inquiry.inquiryNo } }">
                 {{ inquiry.inquiryTitle }}
+                <i v-if="hasImage(inquiry.inquiryContent)" class="fa-solid fa-image"></i>
               </router-link>
             </td>
             <td>{{ inquiry.inquiryStatus }}</td>
@@ -97,6 +98,12 @@ export default {
     },
     goToInquiryCreate() {
       this.$router.push('/inquiries/create');
+    },
+    hasImage(content) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(content, 'text/html');
+      const imgTags = doc.querySelectorAll('img');
+      return imgTags.length > 0;
     }
   },
   created() {
@@ -105,3 +112,22 @@ export default {
 };
 </script>
 
+<style>
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  margin: 5px;
+  font-size: 1em;
+  text-decoration: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #B4D9A9;
+}
+
+.icon-button:hover {
+  color: #98c387; /* 호버 시 색상 변경 */
+}
+</style>

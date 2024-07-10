@@ -4,7 +4,7 @@
     <div v-if="isLoading" class="loading">Loading...</div>
     <div v-else class="box-container box-shadow">
       <div v-if="surveyResult">
-        <table class="result-table">
+        <table class="line-table">
           <thead>
             <tr>
               <th>항목</th>

@@ -2,103 +2,123 @@ import axios from 'axios';
 
 const state = {
   inquiries: [],
-  inquiry: null
+  inquiry: null,
+  answer: null
 };
 
 const getters = {
   allInquiries: state => state.inquiries,
-  singleInquiry: state => state.inquiry
+  singleInquiry: state => state.inquiry,
+  singleAnswer: state => state.answer
 };
 
 const actions = {
   async fetchInquiries({ commit }) {
     try {
       const response = await axios.get('/api/inquiries/list');
-      if (response.status === 200) {
-        commit('setInquiries', response.data);
-        console.log('문의 조회 성공:', response.data);
-      } else {
-        console.error('문의 조회 실패:', response.data);
-        throw new Error('문의 조회 실패');
-      }
+      commit('setInquiries', response.data);
     } catch (error) {
-      console.error('문의 조회 에러:', error);
-      throw error;
+      console.error('문의 조회 실패:', error);
     }
   },
-  async fetchInquiry({ commit }, id) {
-    try {
-      const response = await axios.get(`/api/inquiries/${id}`);
-      if (response.status === 200) {
+  fetchInquiry({ commit }, id) {
+    return axios.get(`/api/inquiries/${id}`)
+      .then(response => {
         commit('setInquiry', response.data);
-        console.log('문의 조회 성공:', response.data);
-      } else {
-        console.error('문의 조회 실패:', response.data);
-        throw new Error('문의 조회 실패');
-      }
+        return response.data;
+      })
+      .catch(error => {
+        console.error('문의 조회 실패:', error);
+        throw error;
+      });
+  },
+  async fetchInquiriesByMember({ commit }, memberUniqueId) {
+    try {
+      const response = await axios.get(`/api/inquiries/member/${memberUniqueId}`);
+      commit('setInquiries', response.data);
+      return response.data;
     } catch (error) {
-      console.error('문의 조회 에러:', error);
-      throw error;
+      console.error('문의 조회 실패:', error);
     }
   },
   async createInquiry({ dispatch }, inquiry) {
     try {
       const response = await axios.post('/api/inquiries/create', inquiry);
-      if (response.status === 200) {
-        console.log('문의 생성 성공:', response.data);
-        dispatch('fetchInquiries');
-      } else {
-        console.error('문의 생성 실패:', response.data);
-        throw new Error('문의 생성 실패');
-      }
+      console.log('문의 작성됨', response.data);
+      dispatch('fetchInquiries');
     } catch (error) {
-      console.error('문의 생성 에러:', error);
-      throw error;
+      console.error('문의 생성 실패:', error);
     }
   },
   async updateInquiry({ dispatch }, inquiry) {
     try {
-      console.log('수정할 문의 데이터:', inquiry); // 추가된 로그
-      const response = await axios.put(`/api/inquiries/update/${inquiry.inquiryNo}`, inquiry);
-      if (response.status === 200) {
-        dispatch('fetchInquiries');
-        console.log('문의 수정 성공:', response.data);
-      } else {
-        console.error('문의 수정 실패:', response.data);
-        throw new Error('문의 수정 실패');
-      }
+      await axios.put(`/api/inquiries/update/${inquiry.inquiryNo}`, inquiry);
+      dispatch('fetchInquiry', inquiry.inquiryNo);
     } catch (error) {
-      console.error('문의 수정 에러:', error);
-      throw error;
+      console.error('문의 수정 실패:', error);
     }
   },
   async deleteInquiry({ dispatch }, inquiryNo) {
     try {
-      const response = await axios.delete(`/api/inquiries/delete/${inquiryNo}`);
-      if (response.status === 204) {
-        dispatch('fetchInquiries');
-        console.log('문의 삭제 성공');
-      } else {
-        console.error('문의 삭제 실패:', response.data);
-        throw new Error('문의 삭제 실패');
-      }
+      await axios.delete(`/api/inquiries/delete/${inquiryNo}`);
+      dispatch('fetchInquiries');
     } catch (error) {
-      console.error('문의 삭제 에러:', error);
+      console.error('문의 삭제 실패:', error);
+    }
+  },
+  fetchAnswer({ commit }, inquiryNo) {
+    return axios.get(`/api/answers/${inquiryNo}`)
+      .then(response => {
+        commit('setAnswer', response.data);
+        console.log("fetched answer: " + response.data);
+        return response.data;
+      })
+      .catch(error => {
+        console.error('답변 조회 실패:', error);
+        commit('setAnswer', null);
+        throw error;
+      });
+  },
+  async createAnswer({ dispatch }, answer) {
+    try {
+      const response = await axios.post('/admin/answers/create', answer);
+      console.log("Response from server:", response.data);
+      await dispatch('fetchAnswer', answer.inquiry.inquiryNo);
+      await dispatch('fetchInquiry', answer.inquiry.inquiryNo); // 문의 상태 업데이트
+      return response.data;
+    } catch (error) {
+      console.error('답변 생성 실패:', error);
+      throw error;
+    }
+  },
+  async updateAnswer({ dispatch }, answer) {
+    try {
+      const response = await axios.put(`/admin/answers/update/${answer.inquiryNo}`, answer);
+      await dispatch('fetchAnswer', answer.inquiryNo);
+      await dispatch('fetchInquiry', answer.inquiryNo); // 문의 상태 업데이트
+      return response.data;
+    } catch (error) {
+      console.error('답변 수정 실패:', error);
+      throw error;
+    }
+  },
+  async deleteAnswer({ dispatch }, answer) {
+    try {
+      const response = await axios.delete(`/admin/answers/delete/${answer.inquiryNo}`);
+      await dispatch('fetchAnswer', answer.inquiry.inquiryNo);
+      await dispatch('fetchInquiry', answer.inquiry.inquiryNo); // 문의 상태 업데이트
+      return response.data;
+    } catch (error) {
+      console.error('답변 삭제 실패:', error);
       throw error;
     }
   }
 };
 
 const mutations = {
-  setInquiries: (state, inquiries) => {
-    state.inquiries = inquiries;
-  },
-  setInquiry: (state, inquiry) => {
-    state.inquiry = inquiry;
-  },
-  addInquiry: (state, inquiry) => {
-    state.inquiries.push(inquiry);
-  }
+  setInquiries: (state, inquiries) => (state.inquiries = inquiries),
+  setInquiry: (state, inquiry) => (state.inquiry = inquiry),
+  setAnswer: (state, answer) => (state.answer = answer)
 };
 
 export default {

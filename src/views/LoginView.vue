@@ -2,7 +2,7 @@
   <div class="box-container box-shadow">
     <h4 class="text-melon">로그인</h4>
     <form @submit.prevent="handleLogin">
-      <table>
+      <table class="line-table">
         <tr>
           <!-- lable의 for 속성은 input 요소의 id 와 일치해야 합니다! -->
           <td><label for="email" class="text-melon">이메일</label></td>

@@ -7,7 +7,7 @@
       <router-link to="/order-history" class="btn-link">주문 | 배송</router-link>
       <router-link to="/mycoupon" class="btn-link">보유 쿠폰</router-link>
       <router-link to="/reviewlist" class="btn-link">후기</router-link>
-      <router-link to="#" class="btn-link">1:1 문의</router-link>
+      <router-link to="/myinquiries" class="btn-link">1:1 문의</router-link>
     </div>
     
     <div class="box-container">

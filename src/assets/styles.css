@@ -250,37 +250,3 @@ td {
 }
 /* -------------------------------------------------------------calender */
 
-/* Return/Exchange Page Styles */
-.return-exchange-info {
-  border: 1px solid red;
-  padding: 10px;
-  margin-bottom: 20px;
-}
-
-.return-exchange-title {
-  font-weight: bold;
-}
-
-textarea {
-  width: 100%;
-  height: 100px;
-}
-
-.right-column {
-  float: right;
-  width: 30%;
-}
-
-button {
-  display: block;
-  margin-top: 20px;
-}
-
-/* 반품/교환 선택 체크박스 스타일 */
-.check-container label {
-  margin-right: 20px;
-}
-
-.check-container input {
-  margin-right: 5px;
-}
