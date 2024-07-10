@@ -5,7 +5,7 @@
     <div v-else class="box-container-wide box-shadow">
       <div v-if="currentStep === 'personal-info'">
         <h2 class="text-melon">📝</h2>
-        <table class="mypage">
+        <table class="line-table">
           <tr>
             <td><label for="name">이름</label></td>
             <td><input v-model="survey.name" type="text" id="name" required></td>
