@@ -94,6 +94,7 @@ export default {
       totalAmount: 0,
       tossPayments: null,
       paymentWidget: null,
+      currentOrderId: null // 현재 주문 ID를 저장합니다.
     };
   },
   computed: {
@@ -132,7 +133,6 @@ export default {
       }
     },
     async preparePayment() {
-      // 주문 생성
       const orderDetails = {
         items: this.items,
         totalAmount: this.totalAmount,
@@ -148,11 +148,10 @@ export default {
 
       try {
         const orderResponse = await this.placeOrder(orderDetails);
-
         if (orderResponse.status === 201) {
-          const orderId = orderResponse.data.orderNo; // 서버에서 반환된 주문 번호를 가져옴
+          this.currentOrderId = orderResponse.data.orderNo; // 주문 ID를 저장합니다.
           await this.initializeTossPayments();
-          this.setupTossPayments(orderId);
+          this.setupTossPayments(this.currentOrderId);
         } else {
           console.error('주문 생성 실패:', orderResponse);
           alert('주문 생성 중 오류가 발생했습니다. 다시 시도하세요.');
@@ -187,23 +186,23 @@ export default {
 
       const paymentRequest = {
         amount: this.totalAmount,
-        orderId: orderId, // 생성된 주문 번호를 사용
+        orderId: orderId,
         orderName: 'Order Name',
         customerName: this.recipient,
         successUrl: `${window.location.origin}/payment/success`,
         failUrl: `${window.location.origin}/payment/fail`
       };
 
-      this.tossPayments.requestPayment('카드', paymentRequest)
-        .then(response => {
-          const paymentKey = response.paymentKey;
-          const successUrl = `${window.location.origin}/payment/success?orderId=${orderId}&amount=${this.totalAmount}&paymentKey=${paymentKey}`;
-          window.location.href = successUrl; // 결제 성공 페이지로 이동
-        })
-        .catch(error => {
-          console.error('결제 요청 오류:', error);
-          alert('결제 요청 중 오류가 발생했습니다. 다시 시도하세요.');
-        });
+      try {
+        const response = await this.tossPayments.requestPayment('카드', paymentRequest);
+        const paymentKey = response.paymentKey;
+        const successUrl = `${window.location.origin}/payment/success?orderId=${orderId}&amount=${this.totalAmount}&paymentKey=${paymentKey}`;
+        window.location.href = successUrl; // 결제 성공 페이지로 이동
+      } catch (error) {
+        console.error('결제 요청 오류:', error);
+        alert('결제 요청 중 오류가 발생했습니다. 다시 시도하세요.');
+        await this.cancelOrder(orderId); // 결제 요청 오류 발생 시 주문을 취소합니다.
+      }
     },
     async fetchClientKey() {
       try {
@@ -211,6 +210,15 @@ export default {
         return response.data.clientKey;
       } catch (error) {
         console.error('Failed to fetch client key:', error);
+      }
+    },
+    async cancelOrder(orderNo) {
+      try {
+        await axios.delete(`/api/orders/cancel/${orderNo}`, { withCredentials: true });
+        alert('주문이 취소되었습니다.');
+      } catch (error) {
+        console.error('주문 취소 중 오류 발생:', error);
+        alert('주문 취소 중 오류가 발생했습니다. 다시 시도하세요.');
       }
     },
     openDaumPostcode() {
