@@ -166,12 +166,12 @@ export default {
     async fetchReviews() {
       try {
         console.log('Fetching reviews for product ID:', this.productId);
-        const response = await axios.get('http://localhost:9095/api/reviews/list');
+        const response = await axios.get('/api/reviews/list');
         console.log('All reviews:', response.data);
 
         // Fetch order details to get the correct productId
         const reviewsWithProductIds = await Promise.all(response.data.map(async (review) => {
-          const orderDetailResponse = await axios.get(`http://localhost:9095/api/order-details/${review.orderDetailNo}`);
+          const orderDetailResponse = await axios.get(`/api/order-details/${review.orderDetailNo}`);
           const productId = orderDetailResponse.data.productId;
           const { textContent, images } = this.parseReviewContent(review.reviewContent);
           return { ...review, productId, textContent, images };

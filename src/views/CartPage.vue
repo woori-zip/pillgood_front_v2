@@ -81,7 +81,7 @@ export default {
   methods: {
     async fetchProductImage(item) {
       try {
-        const response = await axios.get(`http://localhost:9095/api/products/detail/${item.productId}`);
+        const response = await axios.get(`/api/products/detail/${item.productId}`);
         item.productImage = this.extractFirstImage(response.data.productImage);
       } catch (error) {
         console.error(`Error fetching image for product ID ${item.productId}:`, error);
@@ -123,7 +123,7 @@ export default {
         return;
       }
       try {
-        await axios.post('http://localhost:9095/api/orders/prepare', selectedItems, { withCredentials: true });
+        await axios.post('/api/orders/prepare', selectedItems, { withCredentials: true });
         this.$router.push({ name: 'Order' });
       } catch (error) {
         console.error('Error preparing order:', error);

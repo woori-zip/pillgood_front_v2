@@ -81,7 +81,7 @@ export default {
   methods: {
     async fetchInquiries() {
       try {
-        const response = await axios.get(`http://localhost:9095/api/inquiries/list`);
+        const response = await axios.get(`/api/inquiries/list`);
         console.log(response.data); // 서버 응답 데이터 확인
         this.inquiries = response.data;
       } catch (error) {

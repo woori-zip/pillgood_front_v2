@@ -31,7 +31,7 @@ export default {
   methods: {
     async fetchProducts() {
       try {
-        const response = await axios.get('http://localhost:9095/api/products/list');
+        const response = await axios.get('/api/products/list');
         this.products = response.data;
 
         // 각 제품에 대해 이미지를 추가로 가져오는 작업 수행
@@ -45,7 +45,7 @@ export default {
     },
     async fetchProductImage(product) {
       try {
-        const response = await axios.get(`http://localhost:9095/api/products/detail/${product.productId}`);
+        const response = await axios.get(`/api/products/detail/${product.productId}`);
         product.productImage = this.extractFirstImage(response.data.productImage);
       } catch (error) {
         console.error(`Error fetching image for product ID ${product.productId}:`, error);
