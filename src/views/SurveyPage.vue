@@ -42,7 +42,7 @@
         <h2 class="text-melon">🔎</h2>
         <div v-if="currentQuestion">
           <p class="text-bold question-text">{{ currentQuestionIndex + 1 }}. {{ currentQuestion.questionContent }}</p>
-           <div class="check-container-vertical">
+          <div class="check-container-vertical">
             <div v-for="answer in getAnswersForQuestion(currentQuestion.id)" :key="answer.id" class="form-check">
               <input 
                 :id="'answer-' + answer.id" 
@@ -56,21 +56,30 @@
             </div>
           </div>
         </div>
-        <div v-if="currentDetailedQuestion" style="margin-top: 5px; padding: 10px">
-          <p class="text-bold">{{ currentDetailedQuestion.questionContent }}</p>
-          <div class="check-container">
-            <input type="radio" id="yes" value="yes" v-model="detailedAnswers[currentDetailedQuestion.id]" required>
-            <label for="yes">예</label>
-            <input type="radio" id="no" value="no" v-model="detailedAnswers[currentDetailedQuestion.id]" required>
-            <label for="no">아니오</label>
-          </div>
-        </div>
         <div class="btn-container">
-          <button @click="previousStep" class="btn btn-gray" v-if="currentQuestionIndex > 0 || currentDetailedQuestion">이전</button>
+          <button @click="previousStep" class="btn btn-gray" v-if="currentQuestionIndex > 0">이전</button>
           <button @click="nextStep" class="btn btn-green" v-if="canProceed && !isLastQuestion">다음</button>
-          <button @click="finishSurvey" class="btn btn-green" v-if="isLastQuestion && canProceed">설문 완료</button>
+          <button @click="nextStep" class="btn btn-green" v-if="isLastQuestion && canProceed">다음</button>
         </div>
       </div>
+
+      <div v-else-if="currentStep === 'detailed-questions'">
+    <h2 class="text-melon">🔎</h2>
+    <p class="text-bold">해당하는 것을 모두 선택하세요</p>
+    <!-- <div v-if="currentDetailedQuestionsGroup.length > 0"> -->
+      <div v-for="dq in currentDetailedQuestionsGroup" :key="dq.detailedQuestionId">
+        <div class="check-container">
+          <input type="checkbox" :id="'answer-' + dq.detailedQuestionId" :value="dq.detailedQuestionId" v-model="detailedAnswers[dq.detailedQuestionId]">
+          <label :for="'answer-' + dq.detailedQuestionId">{{ dq.questionContent }}</label>
+        </div>
+      </div>
+    <!-- </div> -->
+    <div class="btn-container">
+      <button @click="previousStep" class="btn btn-gray">이전</button>
+      <button @click="nextStep" class="btn btn-green" v-if="!isLastDetailedQuestionsGroup">다음</button>
+      <button @click="finishSurvey" class="btn btn-green" v-if="isLastDetailedQuestionsGroup">완료</button>
+    </div>
+  </div>
 
       <div v-else-if="currentStep === 'finish'">
         <h2 class="text-melon">설문 완료</h2>
@@ -98,11 +107,13 @@ export default {
     const survey = computed(() => store.state.survey.survey || {});
     const currentStep = computed(() => store.state.survey.currentStep);
     const currentQuestionIndex = computed(() => store.state.survey.currentQuestionIndex);
-    const currentDetailedQuestion = computed(() => store.state.survey.currentDetailedQuestion);
+    const currentDetailedQuestionIndex = computed(() => store.state.survey.currentDetailedQuestionIndex);
+    const currentDetailedQuestionsGroup = computed(() => store.getters['survey/currentDetailedQuestionsGroup']);
     const selectedAnswers = computed(() => store.state.survey.selectedAnswers);
     const detailedAnswers = computed(() => store.state.survey.detailedAnswers);
     const currentQuestion = computed(() => store.getters['survey/currentQuestion']);
     const isLastQuestion = computed(() => store.getters['survey/isLastQuestion']);
+    const isLastDetailedQuestionsGroup = computed(() => store.getters['survey/isLastDetailedQuestionsGroup']);
     const canProceed = computed(() => store.getters['survey/canProceed']);
     const isPersonalInfoComplete = computed(() => store.getters['survey/isPersonalInfoComplete']);
     const isLoggedIn = computed(() => store.state.member.isLoggedIn);
@@ -120,22 +131,26 @@ export default {
     };
 
     const nextStep = () => {
+      console.log('Next Step clicked');  // 디버그 로그 추가
       store.dispatch('survey/nextStep');
     };
 
     const previousStep = () => {
+      console.log('Previous Step clicked');  // 디버그 로그 추가
       store.dispatch('survey/previousStep');
     };
 
     const handleAnswerSelection = () => {
+      console.log('Answer selected');  // 디버그 로그 추가
       store.dispatch('survey/handleAnswerSelection');
     };
 
     const finishSurvey = async () => {
       console.log('SurveyPage.vue - memberId:', store.state.member.memberId);
+      console.log('Finish Survey clicked');  // 디버그 로그 추가
 
       await store.dispatch('survey/finishSurvey');
-      goToSurveyResult()
+      goToSurveyResult();
     };
 
     const goToSurveyResult = () => {
@@ -148,10 +163,12 @@ export default {
       currentStep,
       currentQuestion,
       currentQuestionIndex,
-      currentDetailedQuestion,
+      currentDetailedQuestionIndex,
+      currentDetailedQuestionsGroup,
       selectedAnswers,
       detailedAnswers,
       isLastQuestion,
+      isLastDetailedQuestionsGroup,
       canProceed,
       isPersonalInfoComplete,
       getAnswersForQuestion,
@@ -164,6 +181,7 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 /* 기존 스타일 유지 */
 
