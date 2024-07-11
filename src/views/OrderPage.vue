@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import axios from '../axios';
 
 export default {
@@ -98,6 +98,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('member', ['memberId']),
     ...mapState('order', {
       items: state => state.orderDetails,
       user: state => state.userProfile,
@@ -151,7 +152,11 @@ export default {
         if (orderResponse.status === 201) {
           this.currentOrderId = orderResponse.data.orderNo; // 주문 ID를 저장합니다.
           await this.initializeTossPayments();
-          this.setupTossPayments(this.currentOrderId);
+          if (!this.subscriptionStatus) {
+            this.setupTossPayments(this.currentOrderId); // 일반 결제
+          } else {
+            this.setupBillingAuth(this.currentOrderId); // 카드 등록
+          }
         } else {
           console.error('주문 생성 실패:', orderResponse);
           alert('주문 생성 중 오류가 발생했습니다. 다시 시도하세요.');
@@ -202,6 +207,37 @@ export default {
         console.error('결제 요청 오류:', error);
         alert('결제 요청 중 오류가 발생했습니다. 다시 시도하세요.');
         await this.cancelOrder(orderId); // 결제 요청 오류 발생 시 주문을 취소합니다.
+      }
+    },
+    async setupBillingAuth(orderId) {
+      const clientKey = await this.fetchClientKey();
+      if (!clientKey) {
+        console.error('Client key is not defined');
+        return;
+      }
+
+      if (!window.TossPayments) {
+        console.error('TossPayments is not loaded');
+        return;
+      }
+
+      this.tossPayments = window.TossPayments(clientKey);
+
+      try {
+        await this.tossPayments.requestBillingAuth('카드', {
+          customerKey: this.memberId, // 구매자 ID
+          successUrl: `${window.location.origin}/payment/success`,
+          failUrl: `${window.location.origin}/payment/fail`
+        });
+      } catch (error) {
+        if (error.code === 'USER_CANCEL') {
+          console.log('결제 고객이 결제창을 닫았습니다.');
+          await this.cancelOrder(orderId); // 결제 취소 시 주문을 취소합니다.
+        } else {
+          console.error('결제 요청 오류:', error);
+          alert('결제 요청 중 오류가 발생했습니다. 다시 시도하세요.');
+          await this.cancelOrder(orderId); // 결제 요청 오류 발생 시 주문을 취소합니다.
+        }
       }
     },
     async fetchClientKey() {
