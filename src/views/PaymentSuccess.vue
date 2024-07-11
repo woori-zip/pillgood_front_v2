@@ -17,9 +17,7 @@ export default {
       orderId: Array.isArray(this.$route.query.orderId) ? this.$route.query.orderId[0] : this.$route.query.orderId,
       amount: Array.isArray(this.$route.query.amount) ? this.$route.query.amount[0] : this.$route.query.amount,
       paymentKey: Array.isArray(this.$route.query.paymentKey) ? this.$route.query.paymentKey.find(key => key) : this.$route.query.paymentKey,
-      customerName: this.$route.query.customerName,
-      email: this.$route.query.email,
-      phoneNumber: this.$route.query.phoneNumber
+      customerName: this.$route.query.customerName
     };
   },
   async created() {
