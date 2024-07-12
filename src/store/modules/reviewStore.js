@@ -1,4 +1,3 @@
-// reviewStore.js
 import axios from '../../axios';
 import store from '../index'; 
 
@@ -7,6 +6,9 @@ const state = {
 };
 
 const mutations = {
+  setReviews(state, reviews) {
+    state.reviews = reviews;
+  },
   addReview(state, review) {
     state.reviews.push(review);
   },
@@ -19,6 +21,32 @@ const mutations = {
 };
 
 const actions = {
+  async fetchReviews({ commit }) {
+    try {
+        const response = await axios.get('/api/reviews/list');
+        const reviews = await Promise.all(response.data.map(async review => {
+        const orderDetailResponse = await axios.get(`/api/order-details/${review.orderDetailNo}`);
+        const productId = orderDetailResponse.data.productId;
+        const productResponse = await axios.get(`/api/products/detail/${productId}`);
+        const productImage = extractFirstImage(productResponse.data.productImage);
+        const memberUniqueId = review.memberUniqueId; // memberUniqueId를 가져옴
+        const memberResponse = await axios.get(`/api/members/findById`, { params: { memberUniqueId } });
+        return {
+          ...review,
+          product: {
+            ...productResponse.data,
+            productImage
+          },
+          memberName: memberResponse.data.user.name
+        };
+      }));
+      commit('setReviews', reviews);
+      console.log('리뷰 데이터를 성공적으로 가져왔습니다:', reviews);
+    } catch (error) {
+      console.error('리뷰 데이터를 가져오는 데 실패했습니다:', error);
+      throw error;
+    }
+  },
   async createReview({ commit }, reviewData) {
     try {
       const memberId = store.state.member.memberId;
@@ -64,6 +92,16 @@ const actions = {
 const getters = {
   reviews: state => state.reviews,
 };
+
+function extractFirstImage(htmlString) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, 'text/html');
+  const imgTag = doc.querySelector('img');
+  if (imgTag) {
+    return imgTag.src;
+  }
+  return null;
+}
 
 export default {
   namespaced: true,
