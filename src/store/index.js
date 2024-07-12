@@ -13,6 +13,7 @@ import efficiency from './modules/efficiencyStore';
 import refund from './modules/refunds';
 
 import inquiry from './modules/inquiryStore';
+import coupon from './modules/couponStore';
 
 
 import notice from './modules/notice';
@@ -30,6 +31,7 @@ export default createStore({
     efficiency,
     notice,
     inquiry,
+    coupon,
     home,
     refund
   }

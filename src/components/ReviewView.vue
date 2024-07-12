@@ -35,7 +35,7 @@
 
       <!-- 내용 -->
       <div style="text-align: left">
-        <p>{{ parseReviewContent(review.reviewContent).textContent }}</p>
+        <div v-html="review.reviewContent"></div>
       </div>
       <!-- 별점 -->
       <div style="margin-bottom: 20px;">

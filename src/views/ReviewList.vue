@@ -11,6 +11,7 @@
           <th>평점</th>
           <th>회원 이름</th>
           <th>작성일</th>
+          <th>쿠폰 발급</th>
         </tr>
       </thead>
       <tbody>
@@ -32,6 +33,13 @@
           </td>
           <td>{{ getMemberName(review.memberUniqueId) }}</td>
           <td>{{ formatDate(review.reviewDate) }}</td>
+          <td>
+            <select  v-model="selectedCoupons[review.reviewId]">
+              <option value="" disabled>-쿠폰 선택-</option>
+              <option v-for="coupon in activeCoupons" :key="coupon.couponId" :value="coupon.couponId">{{ coupon.couponName }}</option>
+            </select>
+            <button @click="issueCoupon(review.memberUniqueId, selectedCoupons[review.reviewId])">발급</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -40,7 +48,7 @@
 
 <script>
 import axios from '../axios'; // 설정된 axios 인스턴스를 import
-import { mapState, mapActions, mapGetters } from 'vuex'; // Vuex의 헬퍼 함수 import
+import { mapState, mapActions} from 'vuex'; // Vuex의 헬퍼 함수 import
 import StarRating from 'vue3-star-ratings'; // StarRating 컴포넌트 import
 
 export default {
@@ -51,12 +59,14 @@ export default {
   data() {
     return {
       reviews: [], // 리뷰 목록을 저장할 배열
-      products: {} // 제품 정보를 저장할 객체
+      products: {}, // 제품 정보를 저장할 객체
+      selectedCoupons: {}, // 각 리뷰 ID에 대한 선택된 쿠폰을 저장할 객체
     };
   },
   computed: {
     ...mapState('member', ['members', 'isAdmin']), // Vuex 상태에서 members와 isAdmin을 가져옴
-    ...mapGetters('member', ['memberId']), // Vuex 상태에서 memberId를 가져옴
+    // ...mapGetters('member', ['memberId']), // Vuex 상태에서 memberId를 가져옴
+    ...mapState('coupon', ['activeCoupons']), // Vuex 상태에서 coupons을 가져옴
     filteredReviews() {
       let reviews;
       // ADMIN 계정일 경우 모든 리뷰를 표시하고, 일반 사용자일 경우 자신의 리뷰만 표시
@@ -70,11 +80,14 @@ export default {
     }
   },
   created() {
+    console.log('컴포넌트 생성됨'); // 컴포넌트 생성 로그
     this.fetchReviews(); // 컴포넌트 생성 시 리뷰 데이터를 불러옴
     this.fetchMembers(); // memberStore의 members를 가져옴
+    this.fetchActiveCoupons(); // couponStore의 coupons을 가져옴
   },
   methods: {
     ...mapActions('member', ['fetchMembers']), // member 모듈에서 fetchMembers 액션을 맵핑
+    ...mapActions('coupon', ['fetchActiveCoupons', 'createOwnedCoupon']), // coupon 모듈에서 fetchCoupons 액션을 맵핑
     async fetchReviews() {
       try {
         const response = await axios.get('/api/reviews/list'); // 모든 리뷰 데이터를 가져옴
@@ -169,6 +182,36 @@ export default {
         name: 'ReviewDetail',
         query: queryParams
       });
+    },
+    // -------------------------------------------------------------쿠폰 관련 메서드 시작
+    async fetchCouponsDirectly() {
+      console.log('쿠폰 데이터 요청 시작');
+      try {
+        const response = await axios.get('/api/coupons/list');
+        console.log('쿠폰 데이터 요청 응답:', response.data);
+        this.coupons = response.data;
+      } catch (error) {
+        console.error('쿠폰 데이터 요청 실패:', error);
+      }
+    },
+    async issueCoupon(memberUniqueId, couponId) {
+      if (!couponId) {
+        alert('쿠폰을 선택해주세요.');
+        return;
+      }
+
+      const ownedCoupon = {
+        memberUniqueId,
+        couponId,
+      };
+
+      try {
+        await this.createOwnedCoupon(ownedCoupon);
+        alert('쿠폰이 발급되었습니다.');
+      } catch (error) {
+        console.error('쿠폰 발급 실패:', error);
+        alert('쿠폰 발급에 실패했습니다.');
+      }
     }
   }
 };
