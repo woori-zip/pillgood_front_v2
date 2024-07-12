@@ -131,17 +131,33 @@ const actions = {
   },
   async logout({ commit }) { // 로그아웃
     try {
+      // 기억된 이메일을 임시 변수에 저장
+      const rememberedEmail = localStorage.getItem('rememberedEmail');
+  
+      // 로그아웃 요청
       await axios.post('/api/members/logout', {}, { withCredentials: true });
       console.log("로그아웃 요청 완료");
+  
+      // 상태 초기화
       commit('setLoginState', { isLoggedIn: false, memberId: null, member: null, isAdmin: false });
-      localStorage.clear(); // 전체 로컬 스토리지 초기화
+  
+      // 전체 로컬 스토리지 초기화
+      localStorage.clear();
+  
+      // 기억된 이메일이 있으면 로컬 스토리지에 다시 저장
+      if (rememberedEmail) {
+        localStorage.setItem('rememberedEmail', rememberedEmail);
+      }
+  
       console.log("로그아웃 후 로컬 스토리지 상태: ", localStorage.getItem('loggedIn'));
       console.log("로그아웃 후 쿠키 상태: ", document.cookie);
-      router.push('/login'); // 로그아웃 후 즉시 로그인 페이지로 이동
+  
+      // 로그인 페이지로 이동
+      router.push('/login');
     } catch (error) {
       console.error('로그아웃 에러: ', error);
     }
-  },
+  },  
   async fetchMembers({ commit }) { // 회원 리스트 조회
     try {
       const response = await axios.get('/admin/members/list');
@@ -195,11 +211,10 @@ const actions = {
     commit('clearState');
     // 이메일 기억 기능을 제외하고 로컬 스토리지를 초기화
     const rememberedEmail = localStorage.getItem('rememberedEmail'); // 기억된 이메일 저장
-    localStorage.clear();
-    if (rememberedEmail) {
+    localStorage.clear(); // 로컬 스토리지 초기화
+    if (rememberedEmail) { // 기억된 이메일이 있으면 로컬 스토리지에 다시 저장
       localStorage.setItem('rememberedEmail', rememberedEmail); // 기억된 이메일 복원
     }
-
     // 모든 쿠키를 삭제
     document.cookie.split(";").forEach((c) => {
       document.cookie = c.trim().split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";

@@ -49,10 +49,11 @@ export default {
   },
   data() {
     return {
-      email: '',
+      // email: '',
       password: '',
       loginError: '', // 로그인 에러 메시지 상태 추가
-      rememberEmail: false // 이메일 기억하기 상태
+      rememberEmail: !!localStorage.getItem('rememberedEmail'),
+      email: localStorage.getItem('rememberedEmail') || ''
     }
   },
   methods: {
