@@ -6,6 +6,7 @@ import product from './modules/productStore';
 import survey from './modules/surveyStore';
 import cart from './modules/cartStore';
 import order from './modules/orderStore';
+import billing from './modules/billingStore';
 
 import review from './modules/reviewStore';
 import deficiency from './modules/deficiencyStore';
@@ -31,6 +32,7 @@ export default createStore({
     notice,
     inquiry,
     home,
-    refund
+    refund,
+    billing
   }
 });

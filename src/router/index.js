@@ -41,6 +41,8 @@ import Order from '../views/OrderPage.vue';
 import OrderHistory from '../views/OrderHistory.vue';
 import PaymentSuccess from '../views/PaymentSuccess.vue';
 import PaymentFail from '../views/PaymentFail.vue'
+import CardRegistration from '../views/CardRegistration.vue'
+import ApprovePayment from '../views/ApprovePayment.vue'
 
 // review
 
@@ -94,6 +96,8 @@ const routes = [
 
   { path: '/payment/success', name: 'PaymentSuccess', component: PaymentSuccess },
   { path: '/payment/fail', name: 'PaymentFail', component: PaymentFail },
+  { path: '/payment/card', name: 'CardRegistration', component: CardRegistration},
+  { path: '/payment/approve', name: 'ApprovePayment', component: ApprovePayment},
  
   // return
   { path: '/refundcreate', name: 'RefundCreate', component: RefundCreate },
