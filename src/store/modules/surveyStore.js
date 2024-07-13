@@ -13,10 +13,13 @@ const state = {
     deficiencyId2: null,
     deficiencyId3: null,
   },
+  selectedDeficiencies: [],
+  recommendedProducts: [],
   surveyQuestions: [],
   surveyAnswers: [],
   selectedAnswers: {},
   detailedAnswers: {},
+  deficiencies: [],
   isLoading: false,
   currentStep: 'personal-info',
   currentQuestionIndex: 0,
@@ -59,6 +62,15 @@ const mutations = {
   setSurveyResult(state, surveyData) {
     state.surveyResult = surveyData;
   },
+  setSelectedDeficiencies(state, deficiencies) {
+    state.selectedDeficiencies = deficiencies;
+  },
+  setRecommendedProducts(state, products) {
+    state.recommendedProducts = products;
+  },
+  setDeficiencies(state, deficiencies) {
+    state.deficiencies = deficiencies;
+  },
 };
 
 const actions = {
@@ -70,18 +82,32 @@ const actions = {
         axios.get('/api/surveyanswers/list'),
         axios.get('/api/detailed-questions/list')
       ]);
-
-      console.log('Detailed Questions Response:', detailedQuestionsResponse.data);  // 디버그 로그 추가
-
-      const surveyQuestions = questionsResponse.data.map(question => ({
-        ...question,
-        detailedQuestions: detailedQuestionsResponse.data.filter(dq => dq.deficiencyId === question.id)
-      }));
-
+  
+      const surveyQuestions = questionsResponse.data.map(question => {
+        const questionAnswers = answersResponse.data.filter(answer => answer.question_id === question.question_id);
+        const matchedDetailedQuestions = new Set();
+  
+        questionAnswers.forEach(answer => {
+          detailedQuestionsResponse.data.forEach(dq => {
+            if (dq.deficiency_id === answer.deficiency_id) {
+              matchedDetailedQuestions.add(JSON.stringify(dq));
+            }
+          });
+        });
+  
+        return {
+          ...question,
+          detailedQuestions: Array.from(matchedDetailedQuestions).map(dq => JSON.parse(dq))
+        };
+      });
+  
+      const allDetailedQuestions = surveyQuestions.flatMap(q => q.detailedQuestions);
+      const uniqueDetailedQuestions = Array.from(new Set(allDetailedQuestions.map(dq => JSON.stringify(dq)))).map(str => JSON.parse(str));
+  
+      // console.log('All Detailed Questions after mapping:', uniqueDetailedQuestions);
+      console.log('Number of Detailed Questions after mapping:', uniqueDetailedQuestions.length);  
       commit('setSurveyQuestions', surveyQuestions);
       commit('setSurveyAnswers', answersResponse.data);
-      console.log('Survey Questions:', surveyQuestions);  // 디버그 로그 추가
-      console.log('Survey Answers:', answersResponse.data);  // 디버그 로그 추가
     } catch (error) {
       console.error('Failed to initialize survey:', error);
     } finally {
@@ -89,11 +115,6 @@ const actions = {
     }
   },
   nextStep({ commit, state, dispatch }) {
-    console.log('Current Step:', state.currentStep);  // 디버그 로그 추가
-    console.log('Current Question Index:', state.currentQuestionIndex);  // 디버그 로그 추가
-    console.log('Current Detailed Question Index:', state.currentDetailedQuestionIndex);  // 디버그 로그 추가
-    console.log('Total Detailed Questions Groups:', Object.keys(state.currentDetailedQuestions).length);  // 디버그 로그 추가
-  
     if (state.currentStep === 'personal-info') {
       commit('setCurrentStep', 'questions');
     } else if (state.currentStep === 'questions' && state.currentQuestionIndex < state.surveyQuestions.length - 1) {
@@ -104,39 +125,36 @@ const actions = {
         return answer ? answer.deficiencyId : null;
       }).filter(id => id !== null);
   
-      console.log('Selected Deficiencies:', selectedDeficiencies);  // 디버그 로그 추가
+      const allDetailedQuestionsSet = new Set();
+      state.surveyQuestions.forEach(q => {
+        q.detailedQuestions.forEach(dq => {
+          if (selectedDeficiencies.includes(dq.deficiencyId)) {
+            allDetailedQuestionsSet.add(JSON.stringify(dq));
+          }
+        });
+      });
   
-      const allDetailedQuestions = state.surveyQuestions.flatMap(q => q.detailedQuestions);
-      console.log('All Detailed Questions:', allDetailedQuestions);  // 디버그 로그 추가
-  
+      const allDetailedQuestions = Array.from(allDetailedQuestionsSet).map(dq => JSON.parse(dq));
       const filteredDetailedQuestions = allDetailedQuestions.filter(dq => selectedDeficiencies.includes(dq.deficiencyId));
-      console.log('Filtered Detailed Questions:', filteredDetailedQuestions);  // 디버그 로그 추가
   
       const groupedDetailedQuestions = filteredDetailedQuestions.reduce((acc, dq) => {
         (acc[dq.deficiencyId] = acc[dq.deficiencyId] || []).push(dq);
         return acc;
       }, {});
   
-      console.log('Grouped Detailed Questions:', groupedDetailedQuestions);  // 디버그 로그 추가
-  
       commit('setCurrentDetailedQuestions', groupedDetailedQuestions);
       commit('setCurrentStep', 'detailed-questions');
       commit('setCurrentDetailedQuestionIndex', 0);
-  
-      console.log('--------Total Detailed Questions Groups:', Object.keys(groupedDetailedQuestions).length);  // 여기서 로그 추가
     } else if (state.currentStep === 'detailed-questions') {
       const totalDetailedQuestionsGroups = Object.keys(state.currentDetailedQuestions).length;
       if (state.currentDetailedQuestionIndex < totalDetailedQuestionsGroups - 1) {
         commit('setCurrentDetailedQuestionIndex', state.currentDetailedQuestionIndex + 1);
       } else if (state.currentDetailedQuestionIndex === totalDetailedQuestionsGroups - 1) {
-        console.log('Last detailed question reached, calling finishSurvey');  // 디버그 로그 추가
         dispatch('finishSurvey');
       }
     }
-    console.log('Next Step - Current Step:', state.currentStep);  // 디버그 로그 추가
   },
   previousStep({ commit, state }) {
-    console.log('Previous Step - Current Step:', state.currentStep);  // 디버그 로그 추가
     if (state.currentStep === 'detailed-questions' && state.currentDetailedQuestionIndex > 0) {
       commit('setCurrentDetailedQuestionIndex', state.currentDetailedQuestionIndex - 1);
     } else if (state.currentStep === 'detailed-questions' && state.currentDetailedQuestionIndex === 0) {
@@ -146,7 +164,6 @@ const actions = {
     } else {
       commit('setCurrentStep', 'personal-info');
     }
-    console.log('Previous Step - New Current Step:', state.currentStep);  // 디버그 로그 추가
   },
   handleAnswerSelection({ commit, state, dispatch }) {
     const currentQuestion = state.surveyQuestions[state.currentQuestionIndex];
@@ -158,7 +175,6 @@ const actions = {
         .filter(dq => dq.deficiencyId === selectedAnswer.deficiencyId);
       if (matchingDetailedQuestions.length > 0) {
         commit('setCurrentDetailedQuestions', matchingDetailedQuestions);
-        console.log('Matching Detailed Questions:', matchingDetailedQuestions);  // 디버그 로그 추가
       } else {
         dispatch('nextStep');
       }
@@ -166,8 +182,24 @@ const actions = {
       dispatch('nextStep');
     }
   },
+  async fetchDeficiencies({ commit }) {
+    try {
+      const response = await axios.get('/api/deficiencies/list');
+      commit('setDeficiencies', response.data);
+    } catch (error) {
+      console.error('Failed to fetch deficiencies:', error);
+    }
+  },
+  async fetchProductsByDeficiency({ commit, state }) {
+    try {
+        const deficiencyIds = state.selectedDeficiencies.join(',');
+        const response = await axios.get(`/api/products/by-deficiency?deficiencyIds=${deficiencyIds}`);
+        commit('setRecommendedProducts', response.data);
+    } catch (error) {
+        console.error('Failed to fetch products by deficiency:', error);
+    }
+  },
   async finishSurvey({ commit, state, dispatch }) {
-    console.log('finishSurvey called');  // 디버그 로그 추가
     try {
       const deficiencies = Object.values(state.selectedAnswers).map(answerId => {
         const answer = state.surveyAnswers.find(a => a.id === answerId);
@@ -189,19 +221,18 @@ const actions = {
         keywords: state.survey.keywords || ''
       };
 
-      console.log('finishSurvey - memberUniqueId:', survey.memberUniqueId);  // 디버그 로그 추가
-      console.log('finishSurvey - survey:', survey);  // 디버그 로그 추가
-
       if (!survey.memberUniqueId) {
         throw new Error('memberUniqueId가 설정되지 않았습니다.');
       }
 
-      // 설문 데이터를 서버에 전송
-      await dispatch('sendSurveyData', survey);
+      const existingSurveys = await dispatch('loadSurveyResult', survey.memberUniqueId);
+      if (existingSurveys && existingSurveys.length > 0) {
+        await dispatch('updateSurvey', { id: existingSurveys[0].surveyNo, survey });
+      } else {
+        await dispatch('sendSurveyData', survey);
+      }
 
-      // 설문 완료 단계로 설정
       commit('setCurrentStep', 'finish');
-      console.log('Survey finished');  // 디버그 로그 추가
     } catch (error) {
       console.error('Failed to finish survey:', error);
       alert('설문 완료 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -209,24 +240,28 @@ const actions = {
   },
   async sendSurveyData(_, survey) {
     try {
-      console.log('Sending survey data to server:', survey);  // 디버그 로그 추가
       await axios.post('/api/surveys/create', survey);
-      console.log('Survey data sent to the server:', survey);
     } catch (error) {
       console.error('Failed to send survey data to the server:', error);
       throw error;
     }
   },
+  async updateSurvey(_, { id, survey }) {
+    try {
+      await axios.put(`/api/surveys/update/${id}`, survey);
+    } catch (error) {
+      console.error('Failed to update survey data:', error);
+      throw error;
+    }
+  },
   async loadSurveyResult({ commit }, memberId) {
-    commit('setLoading', true);
     try {
       const response = await axios.get(`/api/surveys/member/${memberId}`);
-      const surveyData = response.data[0];
-      commit('setSurveyResult', surveyData);
+      commit('setSurveyResult', response.data.length ? response.data[0] : null);
+      return response.data;
     } catch (error) {
       console.error('Failed to load survey result:', error);
-    } finally {
-      commit('setLoading', false);
+      return null;
     }
   },
 };
@@ -238,7 +273,7 @@ const getters = {
     return state.currentDetailedQuestions[deficiencyIds[state.currentDetailedQuestionIndex]] || [];
   },
   isLastQuestion: (state) => state.currentQuestionIndex === state.surveyQuestions.length - 1,
-  isLastDetailedQuestionsGroup: (state) => state.currentDetailedQuestionIndex === Object.keys(state.currentDetailedQuestions).length - 2,
+  isLastDetailedQuestionsGroup: (state) => state.currentDetailedQuestionIndex === Object.keys(state.currentDetailedQuestions).length - 1,
   canProceed: (state, getters) => {
     if (state.currentStep === 'detailed-questions') {
       return getters.currentDetailedQuestionsGroup.every(dq => state.detailedAnswers[dq.detailedQuestionId] !== undefined);

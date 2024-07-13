@@ -19,8 +19,8 @@
             <td>
               <select v-model="survey.gender" id="gender" required>
                 <option value="">선택하세요</option>
-                <option value="male">남성</option>
-                <option value="female">여성</option>
+                <option value="M">남성</option>
+                <option value="F">여성</option>
               </select>
             </td>
           </tr>
