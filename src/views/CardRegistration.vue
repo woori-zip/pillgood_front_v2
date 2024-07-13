@@ -31,8 +31,7 @@ export default {
   computed: {
     ...mapState('order', {
       user: state => state.userProfile,
-    }),
-    ...mapState('billing', ['billingKey']), // billingStore에서 billingKey 가져오기
+    })
   },
   async created() {
     await this.fetchUserProfile(); // 사용자 정보를 가져옵니다.

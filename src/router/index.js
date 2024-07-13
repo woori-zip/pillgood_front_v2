@@ -40,6 +40,7 @@ import Cart from '../views/CartPage.vue';
 import Order from '../views/OrderPage.vue';
 import OrderHistory from '../views/OrderHistory.vue';
 import PaymentSuccess from '../views/PaymentSuccess.vue';
+import BillingSuccess from '../views/BillingSuccess.vue';
 import PaymentFail from '../views/PaymentFail.vue'
 import CardRegistration from '../views/CardRegistration.vue'
 import ApprovePayment from '../views/ApprovePayment.vue'
@@ -95,6 +96,7 @@ const routes = [
   { path: '/order-history', name: 'OrderHistory', component: OrderHistory },
 
   { path: '/payment/success', name: 'PaymentSuccess', component: PaymentSuccess },
+  { path: '/payment/billingsuccess', name: 'BillingSuccess', component: BillingSuccess },
   { path: '/payment/fail', name: 'PaymentFail', component: PaymentFail },
   { path: '/payment/card', name: 'CardRegistration', component: CardRegistration},
   { path: '/payment/approve', name: 'ApprovePayment', component: ApprovePayment},

@@ -105,6 +105,7 @@ export default {
       user: state => state.userProfile,
       coupons: state => state.coupons,
     }),
+    ...mapState('billing', ['billingKey']), // billingStore에서 billingKey 가져오기
     shippingFeeMessage() {
       return this.shippingFee === 0 ? '무료' : `+${this.shippingFee} 원`;
     }
@@ -113,7 +114,7 @@ export default {
     await this.fetchUserProfile();
     await this.fetchCoupons();
     await this.fetchOrderDetails();
-    await this.fetchBillingKey(); // billingKey 가져오기
+    await this.fetchBillingKey();
     this.setRecipientAndPhoneNumber();
     this.calculateTotalAmount();
   },
@@ -152,13 +153,20 @@ export default {
 
       try {
         const orderResponse = await this.placeOrder(orderDetails);
+
         if (orderResponse.status === 201) {
-          this.$store.commit('order/setCurrentOrder', { ...orderResponse.data, totalAmount: this.totalAmount }); // 현재 주문 정보와 최종 금액을 저장합니다.
+          this.currentOrderId = orderResponse.data.orderNo;
           console.log('Current Order:', this.$store.state.order.currentOrder); // 로깅 추가
+          // localStorage에 currentOrder 저장
+          localStorage.setItem('currentOrder', JSON.stringify(this.$store.state.order.currentOrder));
           
           if (this.subscriptionStatus) {
-              await this.initializeTossPayments();
-              this.setupBillingAuth(this.currentOrderId);
+              if(this.billingKey) {
+                this.$router.push({ name: 'ApprovePayment' }); // 결제 성공 페이지로 이동
+              } else {
+                await this.initializeTossPayments();
+                this.setupBillingAuth(this.currentOrderId); // 정기 결제
+              }
           } else {
             await this.initializeTossPayments();
             this.setupTossPayments(this.currentOrderId); // 일반 결제
