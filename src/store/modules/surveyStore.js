@@ -38,8 +38,18 @@ const mutations = {
   setSurveyAnswers(state, answers) {
     state.surveyAnswers = answers;
   },
-  setSelectedAnswers(state, answers) {
-    state.selectedAnswers = answers;
+  setSelectedAnswers(state, { questionId, answerId }) {
+    if (!Array.isArray(state.selectedAnswers[questionId])) {
+      state.selectedAnswers[questionId] = [];
+    }
+    const selectedAnswers = state.selectedAnswers[questionId];
+    const index = selectedAnswers.indexOf(answerId);
+    if (index > -1) {
+      selectedAnswers.splice(index, 1);
+    } else {
+      selectedAnswers.push(answerId);
+    }
+    console.log('Updated selectedAnswers:', state.selectedAnswers);  // 디버그 로그 추가
   },
   setDetailedAnswers(state, answers) {
     state.detailedAnswers = answers;
@@ -82,11 +92,11 @@ const actions = {
         axios.get('/api/surveyanswers/list'),
         axios.get('/api/detailed-questions/list')
       ]);
-  
+
       const surveyQuestions = questionsResponse.data.map(question => {
         const questionAnswers = answersResponse.data.filter(answer => answer.question_id === question.question_id);
         const matchedDetailedQuestions = new Set();
-  
+
         questionAnswers.forEach(answer => {
           detailedQuestionsResponse.data.forEach(dq => {
             if (dq.deficiency_id === answer.deficiency_id) {
@@ -94,18 +104,17 @@ const actions = {
             }
           });
         });
-  
+
         return {
           ...question,
           detailedQuestions: Array.from(matchedDetailedQuestions).map(dq => JSON.parse(dq))
         };
       });
-  
+
       const allDetailedQuestions = surveyQuestions.flatMap(q => q.detailedQuestions);
       const uniqueDetailedQuestions = Array.from(new Set(allDetailedQuestions.map(dq => JSON.stringify(dq)))).map(str => JSON.parse(str));
-  
-      // console.log('All Detailed Questions after mapping:', uniqueDetailedQuestions);
-      console.log('Number of Detailed Questions after mapping:', uniqueDetailedQuestions.length);  
+
+      console.log('Number of Detailed Questions after mapping:', uniqueDetailedQuestions.length);
       commit('setSurveyQuestions', surveyQuestions);
       commit('setSurveyAnswers', answersResponse.data);
     } catch (error) {
@@ -120,11 +129,13 @@ const actions = {
     } else if (state.currentStep === 'questions' && state.currentQuestionIndex < state.surveyQuestions.length - 1) {
       commit('setCurrentQuestionIndex', state.currentQuestionIndex + 1);
     } else if (state.currentStep === 'questions' && state.currentQuestionIndex === state.surveyQuestions.length - 1) {
-      const selectedDeficiencies = Object.values(state.selectedAnswers).map(answerId => {
-        const answer = state.surveyAnswers.find(a => a.id === answerId);
-        return answer ? answer.deficiencyId : null;
-      }).filter(id => id !== null);
-  
+      const selectedDeficiencies = Object.values(state.selectedAnswers).flatMap(answerIds => {
+        return answerIds.map(answerId => {
+          const answer = state.surveyAnswers.find(a => a.id === answerId);
+          return answer ? answer.deficiencyId : null;
+        }).filter(id => id !== null);
+      });
+
       const allDetailedQuestionsSet = new Set();
       state.surveyQuestions.forEach(q => {
         q.detailedQuestions.forEach(dq => {
@@ -133,15 +144,15 @@ const actions = {
           }
         });
       });
-  
+
       const allDetailedQuestions = Array.from(allDetailedQuestionsSet).map(dq => JSON.parse(dq));
       const filteredDetailedQuestions = allDetailedQuestions.filter(dq => selectedDeficiencies.includes(dq.deficiencyId));
-  
+
       const groupedDetailedQuestions = filteredDetailedQuestions.reduce((acc, dq) => {
         (acc[dq.deficiencyId] = acc[dq.deficiencyId] || []).push(dq);
         return acc;
       }, {});
-  
+
       commit('setCurrentDetailedQuestions', groupedDetailedQuestions);
       commit('setCurrentStep', 'detailed-questions');
       commit('setCurrentDetailedQuestionIndex', 0);
@@ -165,22 +176,9 @@ const actions = {
       commit('setCurrentStep', 'personal-info');
     }
   },
-  handleAnswerSelection({ commit, state, dispatch }) {
-    const currentQuestion = state.surveyQuestions[state.currentQuestionIndex];
-    const selectedAnswerId = state.selectedAnswers[currentQuestion.id];
-    const selectedAnswer = state.surveyAnswers.find(a => a.id === selectedAnswerId);
-
-    if (selectedAnswer) {
-      const matchingDetailedQuestions = state.surveyQuestions.flatMap(q => q.detailedQuestions)
-        .filter(dq => dq.deficiencyId === selectedAnswer.deficiencyId);
-      if (matchingDetailedQuestions.length > 0) {
-        commit('setCurrentDetailedQuestions', matchingDetailedQuestions);
-      } else {
-        dispatch('nextStep');
-      }
-    } else {
-      dispatch('nextStep');
-    }
+  handleAnswerSelection({ commit }, { questionId, answerId }) {
+    console.log('Handling answer selection:', questionId, answerId);  // 디버그 로그 추가
+    commit('setSelectedAnswers', { questionId, answerId });
   },
   async fetchDeficiencies({ commit }) {
     try {
@@ -201,10 +199,12 @@ const actions = {
   },
   async finishSurvey({ commit, state, dispatch }) {
     try {
-      const deficiencies = Object.values(state.selectedAnswers).map(answerId => {
-        const answer = state.surveyAnswers.find(a => a.id === answerId);
-        return answer ? answer.deficiencyId : null;
-      }).filter(id => id !== null);
+      const deficiencies = Object.values(state.selectedAnswers).flatMap(answerIds => {
+        return answerIds.map(answerId => {
+          const answer = state.surveyAnswers.find(a => a.id === answerId);
+          return answer ? answer.deficiencyId : null;
+        }).filter(id => id !== null);
+      });
 
       const survey = {
         name: state.survey.name,
@@ -278,7 +278,7 @@ const getters = {
     if (state.currentStep === 'detailed-questions') {
       return getters.currentDetailedQuestionsGroup.every(dq => state.detailedAnswers[dq.detailedQuestionId] !== undefined);
     }
-    return state.selectedAnswers[state.surveyQuestions[state.currentQuestionIndex]?.id] !== undefined;
+    return state.selectedAnswers[state.surveyQuestions[state.currentQuestionIndex]?.id]?.length > 0;
   },
   isPersonalInfoComplete: (state) => {
     return state.survey.name && 

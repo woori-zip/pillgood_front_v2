@@ -46,12 +46,9 @@
             <div v-for="answer in getAnswersForQuestion(currentQuestion.id)" :key="answer.id" class="form-check">
               <input 
                 :id="'answer-' + answer.id" 
-                v-model="selectedAnswers[currentQuestion.id]" 
                 :value="answer.id" 
-                type="radio" 
-                @change="handleAnswerSelection"
-                required
-              >
+                type="checkbox" 
+                @change="handleAnswerSelection({ questionId: currentQuestion.id, answerId: answer.id })">
               <label :for="'answer-' + answer.id">{{ answer.answerContent }}</label>
             </div>
           </div>
@@ -64,22 +61,20 @@
       </div>
 
       <div v-else-if="currentStep === 'detailed-questions'">
-    <h2 class="text-melon">🔎</h2>
-    <p class="text-bold">해당하는 것을 모두 선택하세요</p>
-    <!-- <div v-if="currentDetailedQuestionsGroup.length > 0"> -->
-      <div v-for="dq in currentDetailedQuestionsGroup" :key="dq.detailedQuestionId">
-        <div class="check-container">
-          <input type="checkbox" :id="'answer-' + dq.detailedQuestionId" :value="dq.detailedQuestionId" v-model="detailedAnswers[dq.detailedQuestionId]">
-          <label :for="'answer-' + dq.detailedQuestionId">{{ dq.questionContent }}</label>
+        <h2 class="text-melon">🔎</h2>
+        <p class="text-bold">해당하는 것을 모두 선택하세요</p>
+        <div v-for="dq in currentDetailedQuestionsGroup" :key="dq.detailedQuestionId">
+          <div class="check-container">
+            <input type="checkbox" :id="'answer-' + dq.detailedQuestionId" :value="dq.detailedQuestionId" v-model="detailedAnswers[dq.detailedQuestionId]">
+            <label :for="'answer-' + dq.detailedQuestionId">{{ dq.questionContent }}</label>
+          </div>
+        </div>
+        <div class="btn-container">
+          <button @click="previousStep" class="btn btn-gray">이전</button>
+          <button @click="nextStep" class="btn btn-green" v-if="!isLastDetailedQuestionsGroup">다음</button>
+          <button @click="finishSurvey" class="btn btn-green" v-if="isLastDetailedQuestionsGroup">완료</button>
         </div>
       </div>
-    <!-- </div> -->
-    <div class="btn-container">
-      <button @click="previousStep" class="btn btn-gray">이전</button>
-      <button @click="nextStep" class="btn btn-green" v-if="!isLastDetailedQuestionsGroup">다음</button>
-      <button @click="finishSurvey" class="btn btn-green" v-if="isLastDetailedQuestionsGroup">완료</button>
-    </div>
-  </div>
 
       <div v-else-if="currentStep === 'finish'">
         <h2 class="text-melon">설문 완료</h2>
@@ -140,9 +135,9 @@ export default {
       store.dispatch('survey/previousStep');
     };
 
-    const handleAnswerSelection = () => {
-      console.log('Answer selected');  // 디버그 로그 추가
-      store.dispatch('survey/handleAnswerSelection');
+    const handleAnswerSelection = (payload) => {
+      console.log('Answer selected:', payload.questionId, payload.answerId);  // 디버그 로그 추가
+      store.dispatch('survey/handleAnswerSelection', payload);
     };
 
     const finishSurvey = async () => {
