@@ -10,6 +10,7 @@
                       <th>상품 이름</th>
                       <th>수량</th>
                       <th>가격</th>
+                      <th>삭제</th>
                   </tr>
               </thead>
               <tbody>
@@ -25,6 +26,7 @@
                           </div>
                       </td>
                       <td>{{ item.price * item.productQuantity }} 원</td>
+                      <td><button @click="deleteCartItem(item)" class="btn-delete">삭제</button></td>
                   </tr>
               </tbody>
           </table>
@@ -38,6 +40,7 @@
       </div>
   </div>
 </template>
+
 
 <script>
 import { mapState } from 'vuex';
@@ -114,6 +117,14 @@ export default {
         }
       } catch (error) {
         console.error('장바구니 항목 업데이트 에러:', error);
+      }
+    },
+    async deleteCartItem(item) {
+      try {
+        await this.$store.dispatch('cart/deleteCartItem', item.cartNo);
+        this.localCartItems = this.localCartItems.filter(localItem => localItem.cartNo !== item.cartNo);
+      } catch (error) {
+        console.error('장바구니 항목 삭제 에러:', error);
       }
     },
     async placeOrder() {

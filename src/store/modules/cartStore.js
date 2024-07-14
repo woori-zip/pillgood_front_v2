@@ -42,6 +42,14 @@ const actions = {
     } catch (error) {
       console.error('장바구니 항목 업데이트 에러:', error);
     }
+  },
+  async deleteCartItem({ commit }, cartNo) {
+    try {
+      await axios.delete(`/api/carts/delete/${cartNo}`);
+      commit('removeCartItem', cartNo);
+    } catch (error) {
+      console.error('장바구니 항목 삭제 에러:', error);
+    }
   }
 };
 
