@@ -1,16 +1,12 @@
-// store/modules/memberStore.js
-
 import axios from '../../axios'; // 설정된 axios 인스턴스 불러오기
 
 const state = {
-
   isLoggedIn: localStorage.getItem('loggedIn') === 'true', // 로컬스토리지 
   memberId: localStorage.getItem('memberId'), // 로컬 스토리지에서 memberId 저장--review에서 쓰임
   member: null, // 사용자 정보를 저장
   isAdmin: localStorage.getItem('isAdmin') === 'true', // 관리자 여부를 저장
   members: [], // 회원 목록을 저장
   editingMember: null // 현재 수정 중인 회원 정보를 저장
-
 };
 
 const mutations = {
@@ -44,7 +40,6 @@ const mutations = {
   },
   setUser(state, user) {
     state.member = user;
-
   }
 };
 
@@ -56,7 +51,7 @@ const actions = {
         const memberId = response.data.memberId;
         localStorage.setItem('loggedIn', true);
         localStorage.setItem('memberId', memberId);
-        
+
         // 로그인 후 사용자 정보 가져오기
         const memberResponse = await axios.get(`/api/members/findById`, { params: { memberId } });
         if (memberResponse.status === 200) {
@@ -65,17 +60,42 @@ const actions = {
 
           // Vuex 상태 업데이트
           commit('setLoginState', { isLoggedIn: true, memberId, member, isAdmin });
-          
+
           // 로컬스토리지에 사용자 정보 저장
           localStorage.setItem('member', JSON.stringify(member));
           localStorage.setItem('isAdmin', isAdmin.toString());
           localStorage.setItem('userName', member.name);
         }
-        // 홈 화면으로 리디렉트
-        this.$router.push('/');
       }
     } catch (error) {
       console.error('axios 로그인 에러: ', error);
+    }
+  },
+  async kakaoLogin({ commit }, { code }) {
+    try {
+      const response = await axios.post('/api/members/kakaoLogin', { code });
+      if (response.data.success) {
+        const memberId = response.data.memberId;
+        localStorage.setItem('loggedIn', true);
+        localStorage.setItem('memberId', memberId);
+
+        // 로그인 후 사용자 정보 가져오기
+        const memberResponse = await axios.get(`/api/members/findById`, { params: { memberId } });
+        if (memberResponse.status === 200) {
+          const member = memberResponse.data.user;
+          const isAdmin = member.memberLevel === 'ADMIN';
+
+          // Vuex 상태 업데이트
+          commit('setLoginState', { isLoggedIn: true, memberId, member, isAdmin });
+
+          // 로컬스토리지에 사용자 정보 저장
+          localStorage.setItem('member', JSON.stringify(member));
+          localStorage.setItem('isAdmin', isAdmin.toString());
+          localStorage.setItem('userName', member.name);
+        }
+      }
+    } catch (error) {
+      console.error('axios 카카오 로그인 에러: ', error);
     }
   },
   async fetchMemberInfo({ state, commit }, memberId) {
@@ -86,15 +106,6 @@ const actions = {
         const member = response.data.user;
         const isAdmin = member.memberLevel === 'ADMIN'; // 관리자 여부 확인
         commit('setLoginState', { isLoggedIn: true, memberId: memberId, member: member, isAdmin: isAdmin });
-        // // 사용자 정보 로컬스토리지에 저장
-        // localStorage.setItem('member', JSON.stringify(member));
-        // localStorage.setItem('isAdmin', isAdmin.toString());
-        // localStorage.setItem('userName', member.name);
-        
-        // // 로컬 스토리지에 저장한 사용자 정보 콘솔 로그 출력
-        // console.log('로컬 스토리지에 저장한 사용자 정보:', localStorage.getItem('member'));
-        // console.log('로컬 스토리지에 저장한 관리자 여부:', localStorage.getItem('isAdmin'));
-        // console.log('로컬 스토리지에 저장한 사용자 이름:', localStorage.getItem('userName'));
       }  else {
         commit('setLoginState', { isLoggedIn: false, memberId: null, member: null, isAdmin: false });
       }

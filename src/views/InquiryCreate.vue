@@ -71,6 +71,7 @@ export default {
       try {
         this.inquiry.memberUniqueId = this.memberUniqueId;
         console.log('문의 데이터:', this.inquiry);
+
         await this.createInquiry(this.inquiry);
         alert('문의가 작성되었습니다.');
         this.$router.push('/inquiries');

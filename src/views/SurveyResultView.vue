@@ -34,9 +34,10 @@
               </td>
             </tr>
         </table>
+        <BmiChart :bmi="calculateBMI(surveyResult.weight, surveyResult.height)" />
       </div>
       <div v-else>
-        <p>설문 결과를 불러오는 중입니다...</p>
+        <p>설문 결과를 불러오는 중입니다....</p>
       </div>
     </div>
   </div>

@@ -1,10 +1,10 @@
 <template>
   <div class="box-container box-shadow">
     <h4 class="text-melon">로그인</h4>
+    <!-- 기존 로그인 폼 -->
     <form @submit.prevent="handleLogin">
       <table class="line-table">
         <tr>
-          <!-- lable의 for 속성은 input 요소의 id 와 일치해야 합니다! -->
           <td><label for="email" class="text-melon">이메일</label></td>
           <td><input type="email" id="email" v-model="email" required /></td>
         </tr>
@@ -23,49 +23,64 @@
         <button type="button" class="btn btn-gray" @click="navigateToRegister">회원가입</button>
       </div>
     </form>
+    <!-- 카카오 로그인 컴포넌트 추가 -->
+    <KakaoLogin @loginSuccess="handleKakaoLoginSuccess" />
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import axios from 'axios';
+import { mapActions } from 'vuex';
+import KakaoLogin from '@/components/KakaoLogin.vue'; // KakaoLogin 컴포넌트 임포트
 
 export default {
   name: 'LoginView',
+  components: {
+    KakaoLogin // 컴포넌트 등록
+  },
   data() {
     return {
       email: '',
       password: '',
-      loginError: '' // 로그인 에러 메시지 상태 추가
-    }
+      loginError: ''
+    };
   },
   methods: {
-    ...mapActions('member', ['login']), // 'member' 모듈에서 액션 가져오기
+    ...mapActions('member', ['login']),
     async handleLogin() {
-      console.log('로그인 시도: ', this.email, this.password); // 디버깅 로그 추가
+      console.log('로그인 시도: ', this.email, this.password);
       try {
         await this.login({ email: this.email, password: this.password });
-        if (this.$store.state.member.isLoggedIn) { // 모듈 네임스페이스를 사용하여 상태 확인
+        if (this.$store.state.member.isLoggedIn) {
           console.log('로그인 성공');
           alert('로그인 성공');
-          this.$router.push('/'); // 로그인 성공 시 홈으로 이동
+          this.$router.push('/');
         } else {
-          // console.log('로그인 실패');
           this.loginError = '로그인에 실패했습니다. 다시 시도해주세요.';
           alert('로그인 실패. 다시 시도하세요.');
         }
       } catch (error) {
-        // console.log('로그인 중 오류 발생:', error);
         this.loginError = '로그인 중 오류가 발생했습니다.';
       }
     },
     navigateToRegister() {
       this.$router.push('/register');
-    }
-  },
-  watch: {
-    'member.isLoggedIn'(newVal) { // 'member' 모듈의 isLoggedIn 상태 변경 감지
-      console.log('L 로그인 상태 변경:', newVal);
+    },
+    async handleKakaoLoginSuccess(code) {
+      try {
+        const response = await axios.post('/api/members/kakaoLogin', { code });
+        console.log('카카오 로그인 성공:', response.data);
+      } catch (error) {
+        console.error('카카오 로그인 실패:', error);
+      }
     }
   }
-}
+};
 </script>
+
+<style>
+.social-login-container {
+  margin-top: 20px;
+  text-align: center;
+}
+</style>

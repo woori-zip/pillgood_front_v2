@@ -1,16 +1,16 @@
 <template>
   <div>
 
-      <h5>첨부된 이미지</h5>
+    <h5>첨부된 이미지</h5>
 
-      <div style="border: 1px solid gray">
+    <div style="border: 1px solid gray">
       <div v-for="image in images" :key="image.url" class="attached-img-container">
         <div class="attached-img">
           <img :src="image.url" alt="Review Image" style="width: 100px;">
           <button style="margin-top:10px;" class="small-btn" @click="removeImage(image.name)">삭제</button>
         </div>
       </div>
-      </div>
+    </div>
     <QuillEditor ref="quillEditor" v-model="content" :options="mergedEditorOptions" />
 
   </div>
@@ -64,7 +64,7 @@ export default defineComponent({
                 console.log('Selected file:', file);
                 console.log('Decoded file name:', fileName);
 
-                 // 파일 업로드
+                // 파일 업로드
                 const formData = new FormData();
                 formData.append('file', file);
 
@@ -99,10 +99,10 @@ export default defineComponent({
                     // Quill 에디터에 이미지 삽입하고 display: none 스타일 적용
                     if (quillEditor.value) {
                       const quill = quillEditor.value.getQuill();
-                      const length = quill.getLength();
+                      const length = quill.getLength(); // 수정된 부분
                       quill.insertEmbed(length - 1, 'image', imageUrl); // 마지막 위치에 이미지 삽입
 
-                       // 이미지 태그에 display: none 스타일 적용
+                      // 이미지 태그에 display: none 스타일 적용
                       const img = quill.root.querySelector(`img[src="${imageUrl}"]`);
                       if (img) {
                         img.style.display = 'none';
@@ -246,15 +246,6 @@ export default defineComponent({
           name: img.src.split('/').pop()
         }));
         console.log('Initial images on mount:', images.value);
-
-
-        // const doc = new DOMParser().parseFromString(content.value, 'text/html');
-        // const imgTags = doc.querySelectorAll('img');
-        // imgTags.forEach(img => {
-        //   const imageUrl = img.src;
-        //   const name = imageUrl.split('/').pop();
-        //   images.value.push({ url: imageUrl, name });
-        // });
       }
     });
 
