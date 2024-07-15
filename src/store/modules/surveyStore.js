@@ -190,52 +190,80 @@ const actions = {
   },
   async fetchProductsByDeficiency({ commit, state }) {
     try {
-        const deficiencyIds = state.selectedDeficiencies.join(',');
-        const response = await axios.get(`/api/products/by-deficiency?deficiencyIds=${deficiencyIds}`);
-        commit('setRecommendedProducts', response.data);
+      const deficiencyIds = state.selectedDeficiencies.join(',');
+      const response = await axios.get(`/api/products/by-deficiency?deficiencyIds=${deficiencyIds}`);
+      commit('setRecommendedProducts', response.data);
     } catch (error) {
-        console.error('Failed to fetch products by deficiency:', error);
+      console.error('Failed to fetch products by deficiency:', error);
     }
   },
-  async finishSurvey({ commit, state, dispatch }) {
+  async finishSurvey({ commit, state, dispatch, rootGetters, rootState }) {
     try {
-      const deficiencies = Object.values(state.selectedAnswers).flatMap(answerIds => {
-        return answerIds.map(answerId => {
-          const answer = state.surveyAnswers.find(a => a.id === answerId);
-          return answer ? answer.deficiencyId : null;
+        const deficiencies = Object.values(state.selectedAnswers).flatMap(answerIds => {
+            return answerIds.map(answerId => {
+                const answer = state.surveyAnswers.find(a => a.id === answerId);
+                return answer ? answer.deficiencyId : null;
+            }).filter(id => id !== null);
+        });
+
+        // 상세 질문에서 선택된 결핍 ID들을 keywords로 저장
+        const detailedDeficiencies = Object.keys(state.detailedAnswers).flatMap(questionId => {
+            // 상세 질문의 결핍 ID를 가져옵니다.
+            const detailedQuestion = rootState.deficiency.deficiencies
+                .find(d => d.deficiencyId.toString() === questionId);
+
+            return detailedQuestion ? detailedQuestion.deficiencyId : null;
         }).filter(id => id !== null);
-      });
 
-      const survey = {
-        name: state.survey.name,
-        age: state.survey.age,
-        gender: state.survey.gender,
-        height: state.survey.height,
-        weight: state.survey.weight,
-        memberUniqueId: store.state.member.memberId,
-        deficiencyId1: deficiencies[0] || null,
-        deficiencyId2: deficiencies[1] || null,
-        deficiencyId3: deficiencies[2] || null,
-        surveyDate: new Date().toISOString(),
-        recommendedProducts: state.survey.recommendedProducts || '',
-        keywords: state.survey.keywords || ''
-      };
+        // 저장되는 답변 확인용
+        console.log('Selected detailedAnswers:', state.detailedAnswers);
+        console.log('Extracted detailedDeficiencies:', detailedDeficiencies);
 
-      if (!survey.memberUniqueId) {
-        throw new Error('memberUniqueId가 설정되지 않았습니다.');
-      }
+        // 결핍 ID로부터 추천 제품 찾기
+        const products = rootGetters['product/products'];
+        const recommendedProducts = deficiencies.flatMap(deficiencyId => {
+            return products.filter(product => {
+                const deficiencyNutrient = rootState.deficiency.deficiencies.find(dn => dn.deficiencyId === deficiencyId);
+                return deficiencyNutrient ? product.nutrientId === deficiencyNutrient.nutrientId : false;
+            }).map(product => product.productId);
+        });
 
-      const existingSurveys = await dispatch('loadSurveyResult', survey.memberUniqueId);
-      if (existingSurveys && existingSurveys.length > 0) {
-        await dispatch('updateSurvey', { id: existingSurveys[0].surveyNo, survey });
-      } else {
-        await dispatch('sendSurveyData', survey);
-      }
+        // 중복 제거 및 문자열로 변환
+        const uniqueKeywords = Array.from(new Set(detailedDeficiencies)).join(',');
 
-      commit('setCurrentStep', 'finish');
+        console.log('Keywords:', uniqueKeywords);
+        console.log('Recommended Products:', recommendedProducts);
+
+        const survey = {
+            name: state.survey.name,
+            age: state.survey.age,
+            gender: state.survey.gender,
+            height: state.survey.height,
+            weight: state.survey.weight,
+            memberUniqueId: store.state.member.memberId,
+            deficiencyId1: deficiencies[0] || null,
+            deficiencyId2: deficiencies[1] || null,
+            deficiencyId3: deficiencies[2] || null,
+            surveyDate: new Date().toISOString(),
+            recommendedProducts: recommendedProducts.join(',') || '',
+            keywords: uniqueKeywords || ''  // 상세 질문의 결핍 ID들을 콤마로 연결한 문자열로 저장
+        };
+
+        if (!survey.memberUniqueId) {
+            throw new Error('memberUniqueId가 설정되지 않았습니다.');
+        }
+
+        const existingSurveys = await dispatch('loadSurveyResult', survey.memberUniqueId);
+        if (existingSurveys && existingSurveys.length > 0) {
+            await dispatch('updateSurvey', { id: existingSurveys[0].surveyNo, survey });
+        } else {
+            await dispatch('sendSurveyData', survey);
+        }
+
+        commit('setCurrentStep', 'finish');
     } catch (error) {
-      console.error('Failed to finish survey:', error);
-      alert('설문 완료 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        console.error('Failed to finish survey:', error);
+        alert('설문 완료 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
   },
   async sendSurveyData(_, survey) {
@@ -288,6 +316,13 @@ const getters = {
            state.survey.weight;
   },
   surveyResult: (state) => state.surveyResult,
+  recommendedProducts: (state, getters, rootState) => {
+    const productIds = (state.surveyResult?.recommendedProducts || "").split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+    // console.log('Filtering products with IDs:', productIds);
+    // console.log('rootState.product.products:', rootState.product.products); // 디버깅 로그
+    return rootState.product.products.filter(product => productIds.includes(product.productId));
+  }
+  
 };
 
 export default {

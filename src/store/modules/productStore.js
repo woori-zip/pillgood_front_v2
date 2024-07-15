@@ -45,7 +45,7 @@ const actions = {
   async fetchProducts({ commit }) {
     try {
       const response = await axios.get('/api/products/list');
-      console.log('제품리스트조회response', response)
+      // console.log('제품리스트조회response', response)
       if (response.status === 200) {
         const products = Array.isArray(response.data) && Array.isArray(response.data[0]) ? response.data[0] : response.data;
         commit('setProducts', products);

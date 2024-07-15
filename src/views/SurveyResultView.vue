@@ -65,7 +65,7 @@ export default {
     const router = useRouter();
     const isLoading = computed(() => store.state.survey.isLoading);
     const surveyResult = computed(() => store.getters['survey/surveyResult']);
-    const recommendedProducts = computed(() => store.getters['product/products']);
+    const recommendedProducts = computed(() => store.getters['survey/recommendedProducts']);
     const deficiencies = computed(() => store.getters['deficiency/deficiencies']);
     const isAddedToCart = reactive({});
 
@@ -99,9 +99,11 @@ export default {
 
       // Deficiencies and Products Fetch
       await store.dispatch('deficiency/fetchDeficiencies');
-      const deficiencyIds = uniqueDeficiencies.value;
-      await store.dispatch('product/fetchProductsByDeficiency', deficiencyIds);
-      console.log('recommendedProducts:', recommendedProducts.value);
+      await store.dispatch('survey/fetchProductsByDeficiency', uniqueDeficiencies.value);
+      await store.dispatch('product/fetchProducts');
+      // 여기 recommendedProducts를 로그로 출력하여 값이 제대로 설정되었는지 확인
+      const recommendedProducts = store.getters['survey/recommendedProducts'];
+      console.log('recommendedProducts after fetch:', recommendedProducts);
     });
 
     const addToCart = async (productId) => {
