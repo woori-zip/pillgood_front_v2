@@ -76,7 +76,7 @@ export default {
     return {
       activeTab: 'description',
       product: {
-        id: 0,
+        productId: 0,
         productName: '',
         price: 0,
         productImage: '',
@@ -91,12 +91,9 @@ export default {
   methods: {
     async fetchProductDetails() {
       try {
-        // console.log('Fetching product details for ID:', this.id); // fetchProductDetails 호출 확인
         const response = await axios.get(`/api/products/detail/${this.id}`);
-        // console.log('API Response:', response.data); // 서버 응답 확인
         this.product = response.data;
         this.product.productImage = this.extractFirstImage(response.data.productImage);
-        console.log('Fetched product details:', this.product); // 콘솔에 product 데이터 출력
       } catch (error) {
         console.error('Error fetching product details:', error);
       }
@@ -118,12 +115,11 @@ export default {
     async addToCart() {
       try {
         const cartItem = {
-          productId: this.id,
+          productId: this.product.productId, // 여기에서 this.product.productId를 사용합니다.
           productQuantity: this.quantity // 선택한 수량을 보냄
         };
         const response = await axios.post('/api/carts/create', cartItem, { withCredentials: true });
         if (response.status === 201) {
-          console.log('장바구니에 추가되었습니다.');
           this.$router.push({ name: 'Cart' });
         } else {
           console.error('장바구니 추가 실패:', response);
@@ -133,14 +129,15 @@ export default {
       }
     },
     async buyNow() {
-      const orderDetails = [{
-        productId: this.product.id,
+      const orderItem = {
+        productId: this.product.productId, // 여기에서 this.product.productId를 사용합니다.
         productName: this.product.productName,
         productQuantity: this.quantity,
         price: this.product.price
-      }];
+      };
+
       try {
-        await axios.post('/api/orders/prepare', orderDetails, { withCredentials: true });
+        await axios.post('/api/orders/prepare', [orderItem], { withCredentials: true });
         this.$router.push({ name: 'Order' });
       } catch (error) {
         console.error('Error preparing order:', error);

@@ -208,7 +208,7 @@ export default {
         this.member.age = this.calculateAge(this.member.birthdate);
         console.log('Sending request to server...');
         axios
-          .post('http://localhost:9095/api/members/register', this.member)
+          .post('/api/members/register', this.member)
           .then(response => {
             console.log('Server response:', response.data);
             alert('회원 가입이 완료되었습니다.');

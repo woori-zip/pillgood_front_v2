@@ -51,7 +51,7 @@ methods: {
     }
 
     axios
-      .post('http://localhost:9095/change-password', {
+      .post('/change-password', {
         token: this.token,
         newPassword: this.newPassword
       })

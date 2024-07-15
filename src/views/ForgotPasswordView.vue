@@ -43,7 +43,7 @@ export default {
   methods: {
     submitRequest() {
       axios
-        .post('http://localhost:9095/forgot-password', {
+        .post('/forgot-password', {
           email: this.email,
           phoneNumber: this.phoneNumber
         })

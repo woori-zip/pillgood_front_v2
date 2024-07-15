@@ -53,7 +53,7 @@ export default {
       } catch (error) {
         console.error('세션 상태 확인 중 에러:', error);
       }
-    }, 60000); // 60초마다 실행
+    }, 5000); // 60초마다 실행
   },
   mounted() {
     // 카카오 SDK 로드 및 초기화
