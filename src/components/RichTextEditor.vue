@@ -99,8 +99,8 @@ export default defineComponent({
                     // Quill 에디터에 이미지 삽입하고 display: none 스타일 적용
                     if (quillEditor.value) {
                       const quill = quillEditor.value.getQuill();
-                      const range = quill.getSelection();
-                      quill.insertEmbed(range.index, 'image', imageUrl);
+                      const length = quill.getLength();
+                      quill.insertEmbed(length - 1, 'image', imageUrl); // 마지막 위치에 이미지 삽입
 
                        // 이미지 태그에 display: none 스타일 적용
                       const img = quill.root.querySelector(`img[src="${imageUrl}"]`);
