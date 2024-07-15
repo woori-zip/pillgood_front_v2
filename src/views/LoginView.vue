@@ -1,6 +1,7 @@
 <template>
   <div class="box-container box-shadow">
     <h4 class="text-melon">로그인</h4>
+    <!-- 기존 로그인 폼 -->
     <form @submit.prevent="handleLogin">
       <table>
         <tr>
@@ -22,6 +23,8 @@
         <button type="button" class="btn btn-gray" @click="navigateToRegister">회원가입</button>
       </div>
     </form>
+    <!-- 카카오 로그인 컴포넌트 추가 -->
+    <KakaoLogin @loginSuccess="handleKakaoLoginSuccess" />
   </div>
 </template>
 
@@ -59,10 +62,10 @@ export default {
   methods: {
     ...mapActions('member', ['login', 'clearUserState']), // 'member' 모듈에서 액션 가져오기
     async handleLogin() {
-      console.log('로그인 시도: ', this.email, this.password); // 디버깅 로그 추가
+      console.log('로그인 시도: ', this.email, this.password);
       try {
         await this.login({ email: this.email, password: this.password });
-        if (this.$store.state.member.isLoggedIn) { // 모듈 네임스페이스를 사용하여 상태 확인
+        if (this.$store.state.member.isLoggedIn) {
           console.log('로그인 성공');
           alert('로그인 성공');
           if (this.rememberEmail) {
@@ -103,5 +106,12 @@ export default {
       console.log('로그인 상태 변경:', newVal);
     }
   }
-}
+};
 </script>
+
+<style>
+.social-login-container {
+  margin-top: 20px;
+  text-align: center;
+}
+</style>

@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import axios from '../axios';
 
 export default {
@@ -94,14 +94,18 @@ export default {
       totalAmount: 0,
       tossPayments: null,
       paymentWidget: null,
+      currentOrderId: null, // 현재 주문 ID를 저장합니다.
     };
   },
   computed: {
+    ...mapGetters('member', ['memberId']),
     ...mapState('order', {
+      isLoggedIn: state => state.isLoggedIn,
       items: state => state.orderDetails,
       user: state => state.userProfile,
       coupons: state => state.coupons,
     }),
+    ...mapState('billing', ['billingKey']), // billingStore에서 billingKey 가져오기
     shippingFeeMessage() {
       return this.shippingFee === 0 ? '무료' : `+${this.shippingFee} 원`;
     }
@@ -110,11 +114,13 @@ export default {
     await this.fetchUserProfile();
     await this.fetchCoupons();
     await this.fetchOrderDetails();
+    await this.fetchBillingKey();
     this.setRecipientAndPhoneNumber();
     this.calculateTotalAmount();
   },
   methods: {
     ...mapActions('order', ['fetchUserProfile', 'fetchCoupons', 'fetchOrderDetails', 'placeOrder']),
+    ...mapActions('billing', ['fetchBillingKey']),
     applyCoupon() {
       const selectedCoupon = this.coupons.find(coupon => coupon.ownedCouponId === this.ownedCouponId);
       this.discountAmount = selectedCoupon ? selectedCoupon.discountAmount : 0;
@@ -132,7 +138,6 @@ export default {
       }
     },
     async preparePayment() {
-      // 주문 생성
       const orderDetails = {
         items: this.items,
         totalAmount: this.totalAmount,
@@ -150,9 +155,22 @@ export default {
         const orderResponse = await this.placeOrder(orderDetails);
 
         if (orderResponse.status === 201) {
-          const orderId = orderResponse.data.orderNo; // 서버에서 반환된 주문 번호를 가져옴
-          await this.initializeTossPayments();
-          this.setupTossPayments(orderId);
+          this.currentOrderId = orderResponse.data.orderNo;
+          console.log('Current Order:', this.$store.state.order.currentOrder); // 로깅 추가
+          // localStorage에 currentOrder 저장
+          localStorage.setItem('currentOrder', JSON.stringify(this.$store.state.order.currentOrder));
+          
+          if (this.subscriptionStatus) {
+              if(this.billingKey) {
+                this.$router.push({ name: 'ApprovePayment' }); // 결제 성공 페이지로 이동
+              } else {
+                await this.initializeTossPayments();
+                this.setupBillingAuth(this.currentOrderId); // 정기 결제
+              }
+          } else {
+            await this.initializeTossPayments();
+            this.setupTossPayments(this.currentOrderId); // 일반 결제
+          }
         } else {
           console.error('주문 생성 실패:', orderResponse);
           alert('주문 생성 중 오류가 발생했습니다. 다시 시도하세요.');
@@ -165,7 +183,7 @@ export default {
     initializeTossPayments() {
       return new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = 'https://js.tosspayments.com/v1/payment-widget';
+        script.src = 'https://js.tosspayments.com/v1/payment';
         script.onload = resolve;
         script.onerror = reject;
         document.head.appendChild(script);
@@ -187,23 +205,56 @@ export default {
 
       const paymentRequest = {
         amount: this.totalAmount,
-        orderId: orderId, // 생성된 주문 번호를 사용
+        orderId: orderId,
         orderName: 'Order Name',
         customerName: this.recipient,
         successUrl: `${window.location.origin}/payment/success`,
         failUrl: `${window.location.origin}/payment/fail`
       };
 
-      this.tossPayments.requestPayment('카드', paymentRequest)
-        .then(response => {
-          const paymentKey = response.paymentKey;
-          const successUrl = `${window.location.origin}/payment/success?orderId=${orderId}&amount=${this.totalAmount}&paymentKey=${paymentKey}`;
-          window.location.href = successUrl; // 결제 성공 페이지로 이동
-        })
-        .catch(error => {
+      try {
+        const response = await this.tossPayments.requestPayment('카드', paymentRequest);
+        const paymentKey = response.paymentKey;
+        const successUrl = `${window.location.origin}/payment/success?orderId=${orderId}&amount=${this.totalAmount}&paymentKey=${paymentKey}`;
+        window.location.href = successUrl; // 결제 성공 페이지로 이동
+      } catch (error) {
+        console.error('결제 요청 오류:', error);
+        alert('결제 요청 중 오류가 발생했습니다. 다시 시도하세요.');
+        await this.cancelOrder(orderId); // 결제 요청 오류 발생 시 주문을 취소합니다.
+      }
+    },
+    async setupBillingAuth(orderId) {
+      const clientKey = await this.fetchClientKey();
+      if (!clientKey) {
+        console.error('Client key is not defined');
+        return;
+      }
+
+      if (!window.TossPayments) {
+        console.error('TossPayments is not loaded');
+        return;
+      }
+
+      this.tossPayments = window.TossPayments(clientKey);
+
+      try {
+        await this.tossPayments.requestBillingAuth('카드', {
+          customerKey: this.memberId, // 구매자 ID
+          successUrl: `${window.location.origin}/payment/card`,
+          failUrl: `${window.location.origin}/payment/fail`
+        });
+
+        // authKey는 successUrl로 이동하면서 전달됨
+      } catch (error) {
+        if (error.code === 'USER_CANCEL') {
+          console.log('결제 고객이 결제창을 닫았습니다.');
+          await this.cancelOrder(orderId); // 결제 취소 시 주문을 취소합니다.
+        } else {
           console.error('결제 요청 오류:', error);
           alert('결제 요청 중 오류가 발생했습니다. 다시 시도하세요.');
-        });
+          await this.cancelOrder(orderId); // 결제 요청 오류 발생 시 주문을 취소합니다.
+        }
+      }
     },
     async fetchClientKey() {
       try {
@@ -211,6 +262,15 @@ export default {
         return response.data.clientKey;
       } catch (error) {
         console.error('Failed to fetch client key:', error);
+      }
+    },
+    async cancelOrder(orderNo) {
+      try {
+        await axios.delete(`/api/orders/cancel/${orderNo}`, { withCredentials: true });
+        alert('주문이 취소되었습니다.');
+      } catch (error) {
+        console.error('주문 취소 중 오류 발생:', error);
+        alert('주문 취소 중 오류가 발생했습니다. 다시 시도하세요.');
       }
     },
     openDaumPostcode() {
@@ -240,7 +300,7 @@ export default {
     foldDaumPostcode() {
       const elementWrap = this.$refs.wrap;
       elementWrap.style.display = 'none';
-    }
+    },
   },
   watch: {
     ownedCouponId(newVal) {
@@ -409,5 +469,24 @@ export default {
 .product-image {
   width: 200px;
   height: 200px;
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
 }
 </style>

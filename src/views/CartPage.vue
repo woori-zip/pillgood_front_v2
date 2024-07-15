@@ -10,6 +10,7 @@
                       <th>상품 이름</th>
                       <th>수량</th>
                       <th>가격</th>
+                      <th>삭제</th>
                   </tr>
               </thead>
               <tbody>
@@ -25,6 +26,7 @@
                           </div>
                       </td>
                       <td>{{ item.price * item.productQuantity }} 원</td>
+                      <td><button @click="deleteCartItem(item)" class="btn-delete">삭제</button></td>
                   </tr>
               </tbody>
           </table>
@@ -38,6 +40,7 @@
       </div>
   </div>
 </template>
+
 
 <script>
 import { mapState } from 'vuex';
@@ -81,7 +84,7 @@ export default {
   methods: {
     async fetchProductImage(item) {
       try {
-        const response = await axios.get(`http://localhost:9095/api/products/detail/${item.productId}`);
+        const response = await axios.get(`/api/products/detail/${item.productId}`);
         item.productImage = this.extractFirstImage(response.data.productImage);
       } catch (error) {
         console.error(`Error fetching image for product ID ${item.productId}:`, error);
@@ -116,6 +119,14 @@ export default {
         console.error('장바구니 항목 업데이트 에러:', error);
       }
     },
+    async deleteCartItem(item) {
+      try {
+        await this.$store.dispatch('cart/deleteCartItem', item.cartNo);
+        this.localCartItems = this.localCartItems.filter(localItem => localItem.cartNo !== item.cartNo);
+      } catch (error) {
+        console.error('장바구니 항목 삭제 에러:', error);
+      }
+    },
     async placeOrder() {
       const selectedItems = this.localCartItems.filter(item => item.selected);
       if (selectedItems.length === 0) {
@@ -123,7 +134,7 @@ export default {
         return;
       }
       try {
-        await axios.post('http://localhost:9095/api/orders/prepare', selectedItems, { withCredentials: true });
+        await axios.post('/api/orders/prepare', selectedItems, { withCredentials: true });
         this.$router.push({ name: 'Order' });
       } catch (error) {
         console.error('Error preparing order:', error);

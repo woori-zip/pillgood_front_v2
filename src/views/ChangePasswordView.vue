@@ -38,7 +38,6 @@ export default {
         alert('비밀번호가 일치하지 않습니다.');
         return;
       }
-
       try {
         await axios.post('/api/members/resetpassword', { token: this.token, newPassword: this.newPassword });
         alert('비밀번호가 재설정되었습니다.');

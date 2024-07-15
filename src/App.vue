@@ -2,12 +2,11 @@
   <div id="app">
     <HeaderView />
     <main>
-    <router-view />
+      <router-view />
     </main>
     <FooterView />
   </div>
 </template>
-
 
 <script>
 import HeaderView from './components/HeaderView.vue';
@@ -32,14 +31,9 @@ export default {
   },
   async created() {
     try {
-      // console.log('App created lifecycle hook');
       await this.checkLoginStatus();
-      // console.log('checkLoginStatus 처리 완료');
-      // console.log("state의 memberId: " + this.memberId); // 상태 업데이트 확인
       if (this.isLoggedIn && this.memberId) {
-        // console.log('로그인됨, 사용자 정보 가져오는 중');
         await this.fetchMemberInfo(this.memberId);
-        // console.log('fetchMemberInfo 처리 완료'); // fetchMemberInfo 완료 확인
       } else {
         console.log('로그인되지 않았거나 memberId가 없음');
       }
@@ -50,24 +44,27 @@ export default {
     // 주기적으로 세션 상태 확인
     setInterval(async () => {
       try {
-        console.log('세션 상태 확인 중...');
         await this.checkLoginStatus();
         if (this.isLoggedIn) {
-          // console.log('60초마다 세션 테스트 중');
           await this.fetchMemberInfo(this.memberId);
-          // const member = this.member;
-          // if (member) {
-          //   console.log(`현재 로그인된 사용자 ID: ${this.memberId}`);
-          // } else {
-          //   console.log(`로그인한 사용자가 없습니다.`);
-          // }
         } else {
           console.log('로그인된 사용자가 없음');
         }
       } catch (error) {
         console.error('세션 상태 확인 중 에러:', error);
       }
-    }, 60000); // 60초마다 실행
+    }, 5000); // 60초마다 실행
+  },
+  mounted() {
+    // 카카오 SDK 로드 및 초기화
+    /* global Kakao */ // Kakao를 전역 변수로 선언
+    const kakaoScript = document.createElement('script');
+    kakaoScript.src = 'https://developers.kakao.com/sdk/js/kakao.js';
+    kakaoScript.onload = () => {
+      Kakao.init('03f074279f45f35b6bed2cfbcc42ec4d'); // 카카오 개발자 콘솔에서 발급받은 JavaScript 키
+      console.log('Kakao SDK initialized');
+    };
+    document.head.appendChild(kakaoScript);
   },
   watch: {
     isLoggedIn(newVal) {

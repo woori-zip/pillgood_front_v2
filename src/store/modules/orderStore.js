@@ -2,6 +2,7 @@ import axios from '../../axios'; // 설정된 axios 인스턴스 불러오기
 
 const state = {
   orderDetails: [],
+  currentOrder: null, // 현재 주문 정보 추가
   userProfile: null,
   coupons: []
 };
@@ -9,6 +10,9 @@ const state = {
 const mutations = {
   setOrderDetails(state, orderDetails) {
     state.orderDetails = orderDetails;
+  },
+  setCurrentOrder(state, order) { // 현재 주문 정보 설정
+    state.currentOrder = order;
   },
   setUserProfile(state, userProfile) {
     state.userProfile = userProfile;
@@ -75,9 +79,10 @@ const actions = {
       console.error(`Error fetching image for product ID ${item.productId}:`, error);
     }
   },
-  async placeOrder(_, orderDetails) {
+  async placeOrder({ commit }, orderDetails) {
     try {
       const response = await axios.post('/api/orders/create', orderDetails, { withCredentials: true });
+      commit('setCurrentOrder', response.data); // 현재 주문 정보 설정
       return response;
     } catch (error) {
       console.error('주문 에러: ', error);

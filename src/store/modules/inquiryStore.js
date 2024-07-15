@@ -84,7 +84,6 @@ const actions = {
       const response = await axios.post('/admin/answers/create', answer);
       console.log("Response from server:", response.data);
       await dispatch('fetchAnswer', answer.inquiry.inquiryNo);
-      await dispatch('fetchInquiry', answer.inquiry.inquiryNo); // 문의 상태 업데이트
       return response.data;
     } catch (error) {
       console.error('답변 생성 실패:', error);
@@ -95,7 +94,6 @@ const actions = {
     try {
       const response = await axios.put(`/admin/answers/update/${answer.inquiryNo}`, answer);
       await dispatch('fetchAnswer', answer.inquiryNo);
-      await dispatch('fetchInquiry', answer.inquiryNo); // 문의 상태 업데이트
       return response.data;
     } catch (error) {
       console.error('답변 수정 실패:', error);
@@ -105,8 +103,7 @@ const actions = {
   async deleteAnswer({ dispatch }, answer) {
     try {
       const response = await axios.delete(`/admin/answers/delete/${answer.inquiryNo}`);
-      await dispatch('fetchAnswer', answer.inquiry.inquiryNo);
-      await dispatch('fetchInquiry', answer.inquiry.inquiryNo); // 문의 상태 업데이트
+      await dispatch('fetchAnswer', answer.inquiryNo);
       return response.data;
     } catch (error) {
       console.error('답변 삭제 실패:', error);
