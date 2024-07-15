@@ -25,7 +25,7 @@ const state = {
   currentQuestionIndex: 0,
   currentDetailedQuestionIndex: 0,
   currentDetailedQuestions: {},
-  surveyResult: null,
+  surveyResult: null, 
 };
 
 const mutations = {

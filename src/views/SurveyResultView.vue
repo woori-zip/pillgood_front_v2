@@ -1,15 +1,29 @@
 <template>
   <div class="main-container">
-    <h4 class="text-melon">{{ surveyResult?.name }} 님의 건강 분석 결과</h4>
+    <h4 class="text-melon">{{ surveyResult?.name }} 님의 설문 조사 결과</h4>
     <div v-if="isLoading" class="loading">Loading...</div>
     <div v-else class="box-container box-shadow">
       <div v-if="surveyResult">
         <table class="result-table table-borderless">
           <tr>
-            <td>{{ surveyResult.age }} 세 / </td>
-            <td>{{ surveyResult.gender }} / </td>
-            <td>{{ surveyResult.height }} cm / {{ surveyResult.weight }} kg </td>
-            <td>({{ calculateBMI(surveyResult.weight, surveyResult.height) }})</td>
+            <td>나이</td>
+            <td>{{ surveyResult.age }}</td>
+          </tr>
+          <tr>
+            <td>성별</td>
+            <td>{{ surveyResult.gender }}</td>
+          </tr>
+          <tr>
+            <td>키 (cm)</td>
+            <td>{{ surveyResult.height }}</td>
+          </tr>
+          <tr>
+            <td>몸무게 (kg)</td>
+            <td>{{ surveyResult.weight }}</td>
+          </tr>
+          <tr>
+            <td>신체질량지수 (BMI)</td>
+            <td>{{ calculateBMI(surveyResult.weight, surveyResult.height) }}</td>
           </tr>
         </table>
         <div class="def-container box-shadow">
@@ -17,34 +31,30 @@
             <h2>#{{ getDeficiencyName(deficiency) }}</h2>
           </div>
         </div>
-        <table class="products-table">
-            <tr v-for="(product, index) in recommendedProducts" :key="index">
-              <td>
-                <router-link :to="{ name: 'ProductDetail', params: { id: product.productId } }">
-                  <img :src="product.productImageUrl" alt="productImg" class="product-image" />
-                </router-link>
-              </td>
-              <td>
-                <router-link :to="{ name: 'ProductDetail', params: { id: product.productId } }">
-                  {{ product.productName }}
-                </router-link>
-              </td>
-              <td>
-                <button @click="addToCart(product)" class="btn btn-green">장바구니에 담기</button>
-              </td>
-            </tr>
-        </table>
-        <BmiChart :bmi="calculateBMI(surveyResult.weight, surveyResult.height)" />
+        <div class="product-container">
+          <div v-for="(product, index) in recommendedProducts" :key="index" class="product-item">
+            <router-link :to="{ name: 'ProductDetail', params: { id: product.productId } }">
+              <img :src="product.productImage" alt="제품 사진" class="product-image">
+              <h5>{{ product.productName }}</h5>
+            </router-link>
+            <button 
+              :disabled="isAddedToCart[product.productId]"
+              @click="addToCart(product.productId)"
+              class="btn btn-green">
+              {{ isAddedToCart[product.productId] ? "담겼습니다 ✅" : "장바구니에 담기" }}
+            </button>
+          </div>
+        </div>
       </div>
       <div v-else>
-        <p>설문 결과를 불러오는 중입니다....</p>
+        <p>설문 결과를 불러오는 중입니다...</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
@@ -57,6 +67,7 @@ export default {
     const surveyResult = computed(() => store.getters['survey/surveyResult']);
     const recommendedProducts = computed(() => store.getters['product/products']);
     const deficiencies = computed(() => store.getters['deficiency/deficiencies']);
+    const isAddedToCart = reactive({});
 
     const calculateBMI = (weight, height) => {
       if (!weight || !height) return 'N/A';
@@ -73,23 +84,6 @@ export default {
       const ids = [surveyResult.value?.deficiencyId1, surveyResult.value?.deficiencyId2, surveyResult.value?.deficiencyId3];
       return [...new Set(ids)]; // 중복 제거
     });
-
-    const addToCart = async (product) => {
-      try {
-        const cartItem = {
-          productId: product.productId,
-          productQuantity: 1 // 기본 수량 1로 설정
-        };
-        const response = await store.dispatch('cart/addToCart', cartItem);
-        if (response.status === 201) {
-          alert('장바구니에 추가되었습니다.');
-        } else {
-          console.error('장바구니 추가 실패:', response);
-        }
-      } catch (error) {
-        console.error('Error adding to cart:', error);
-      }
-    };
 
     onMounted(async () => {
       const memberId = store.state.member.memberId;
@@ -110,6 +104,21 @@ export default {
       console.log('recommendedProducts:', recommendedProducts.value);
     });
 
+    const addToCart = async (productId) => {
+      try {
+        const cartItem = {
+          productId,
+          productQuantity: 1
+        };
+        const response = await store.dispatch('cart/addToCart', cartItem);
+        if (response.status === 201) {
+          isAddedToCart[productId] = true;
+        }
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+      }
+    };
+
     return {
       isLoading,
       surveyResult,
@@ -117,6 +126,7 @@ export default {
       calculateBMI,
       getDeficiencyName,
       uniqueDeficiencies,
+      isAddedToCart,
       addToCart
     };
   }
@@ -129,6 +139,7 @@ export default {
 .result-table {
   border: 0;
 }
+
 .def-container {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -146,20 +157,25 @@ export default {
   color: white;
 }
 
-.products-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
+.product-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.products-table th, .products-table td {
-  padding: 10px;
+.product-item {
+  width: 30%;
   text-align: center;
-  border: 1px solid #ddd;
 }
 
 .product-image {
-  width: 100px;
+  width: 100%;
   height: auto;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.btn {
+  margin-top: 10px;
 }
 </style>

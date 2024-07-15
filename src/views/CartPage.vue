@@ -2,6 +2,10 @@
   <div class="main-container">
       <div class="box-container box-shadow">
           <div class="cart-title text-melon">장바구니</div>
+          <div class="btn-container">
+              <button @click="selectAllItems" class="btn btn-green">전체 선택</button>
+              <button @click="deselectAllItems" class="btn btn-gray">전체 선택 해제</button>
+          </div>
           <table class="cart-table" v-if="localCartItems.length > 0">
               <thead>
                   <tr>
@@ -41,7 +45,6 @@
   </div>
 </template>
 
-
 <script>
 import { mapState } from 'vuex';
 import axios from 'axios';
@@ -71,7 +74,7 @@ export default {
         // Vuex 상태가 변경될 때 로컬 상태를 업데이트
         this.localCartItems = newItems.map(item => ({
           ...item,
-          selected: item.selected || false // 선택 상태를 초기화
+          selected: true // 모든 아이템을 기본적으로 선택 상태로 설정
         }));
 
         // 각 제품의 이미지를 가져오는 작업 수행
@@ -126,6 +129,16 @@ export default {
       } catch (error) {
         console.error('장바구니 항목 삭제 에러:', error);
       }
+    },
+    selectAllItems() {
+      this.localCartItems.forEach(item => {
+        item.selected = true;
+      });
+    },
+    deselectAllItems() {
+      this.localCartItems.forEach(item => {
+        item.selected = false;
+      });
     },
     async placeOrder() {
       const selectedItems = this.localCartItems.filter(item => item.selected);
@@ -228,14 +241,13 @@ export default {
 
 .btn-container {
   display: flex;
-  justify-content: center;
-  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 
 .btn-container button {
-  width: 100%;
+  width: 48%;
   padding: 10px;
-  margin-bottom: 10px;
   border-radius: 5px;
   text-align: center;
   text-decoration: none;
@@ -251,6 +263,16 @@ export default {
 
 .btn-green:hover {
   background-color: #4cae4c;
+  color: white;
+}
+
+.btn-gray {
+  background-color: #ddd;
+  border: none;
+}
+
+.btn-gray:hover {
+  background-color: #bbb;
   color: white;
 }
 </style>

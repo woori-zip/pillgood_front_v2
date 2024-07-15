@@ -16,7 +16,7 @@
           </tr>
           <tr>
             <td><label for="gender">성별</label></td>
-            <td>
+            <td> 
               <select v-model="survey.gender" id="gender" required>
                 <option value="">선택하세요</option>
                 <option value="M">남성</option>
@@ -149,7 +149,7 @@ export default {
     };
 
     const goToSurveyResult = () => {
-      router.push('/surveyresult');
+      router.push('/surveyresult/:memberId');
     };
 
     return {

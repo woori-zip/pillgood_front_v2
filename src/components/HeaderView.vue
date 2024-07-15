@@ -34,9 +34,6 @@
               <router-link to="/inquiries" class="icon-link"> <!-- 문의 페이지로 편하게 이동하려고 잠깐 넣어 뒀음 -->
                 <i class="fa-solid fa-location-dot"></i>
               </router-link>
-              <router-link to="#" class="icon-link">
-                <i class="fa-solid fa-heart"></i>
-              </router-link>
               <router-link to="/cart" class="icon-link" @click="navigateToCart">
                 <i class="fa-solid fa-cart-shopping"></i>
               </router-link>
