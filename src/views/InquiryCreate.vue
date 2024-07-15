@@ -24,7 +24,7 @@
           </div>
           <br>
           <button type="submit" class="btn-green">문의 등록</button>&nbsp;
-          <button @click="goBack" class="btn-green">목록으로</button>
+          <button @click="goHome" class="btn-green">나가기</button>
         </form>
       </div>
     </div>
@@ -95,8 +95,8 @@ export default {
       this.contentError = false;
       return true;
     },
-    goBack() {
-      this.$router.push('/inquiries');
+    goHome() {
+      this.$router.push('/');
     },
   }
 };

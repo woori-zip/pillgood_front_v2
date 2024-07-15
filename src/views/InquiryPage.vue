@@ -3,21 +3,38 @@
     <div class="box-container box-shadow">
       <h2 class="text-melon">문의</h2>
 
-      <!-- 검색 필드와 드롭다운 메뉴 -->
+      <!-- 검색 필드 -->
       <div class="search-container">
         <select v-model="searchOption">
           <option value="title" selected>제목</option>
           <option value="status">상태</option>
           <option value="type">유형</option>
         </select>
-        <input type="text" v-model="inputSearchQuery" placeholder="검색어를 입력하세요" />
+        <div class="select-conatiner">
+        <div v-if="searchOption === 'title'">
+          <input type="text" v-model="inputSearchQuery" placeholder="검색어를 입력하세요" />
+        </div>
+        <div v-else-if="searchOption === 'status'">
+          <select v-model="inputSearchQuery">
+            <option value="open">답변 완료</option>
+            <option value="closed">미답변</option>
+          </select>
+        </div>
+        <div v-else-if="searchOption === 'type'">
+          <select v-model="inputSearchQuery">
+            <option value="general">일반</option>
+            <option value="product">제품</option>
+            <option value="order">주문</option>
+          </select>
+        </div>
+        </div>
         <button class="icon-button" @click="searchInquiries"><i class="fa-solid fa-magnifying-glass"></i></button>
       </div>
 
-      <!-- 글쓰기 버튼 -->
+      <!-- 글쓰기 버튼
       <div class="bttn-container">
         <button @click="goToInquiryCreate" class="btn btn-green">글쓰기</button>
-      </div>
+      </div> -->
 
       <table class="line-table">
         <thead>
@@ -112,7 +129,7 @@ export default {
 };
 </script>
 
-<style>
+<style scope>
 .icon-button {
   display: inline-flex;
   align-items: center;
@@ -130,4 +147,31 @@ export default {
 .icon-button:hover {
   color: #98c387; /* 호버 시 색상 변경 */
 }
+
+.search-container {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.search-container select {
+	width: 100px;
+}
+
+.search-container input {
+	width: 300px;
+}
+
+.select-conatiner {
+	display: flex;
+	justify-content: center;
+}
+
+.select-conatiner select {
+  width: 300px;
+}
+
+.icon-button {
+	margin-left: 10px;
+}
+
 </style>
