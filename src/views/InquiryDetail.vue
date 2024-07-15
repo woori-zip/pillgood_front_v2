@@ -13,7 +13,7 @@
           <tr>
             <td><strong>제목</strong></td>
             <td colspan="2">
-              <input v-if="isEditing" v-model="editableInquiry.inquiryTitle" />
+              <input v-if="isEditing" v-model="editableInquiry.inquiryTitle" required/>
               <span v-else>{{ inquiry.inquiryTitle }}</span>
             </td>
             <td><strong>유형</strong></td>
@@ -30,8 +30,9 @@
           <tr>
             <td><strong>내용</strong></td>
             <td colspan="3">
-              <RichTextEditor v-if="isEditing" v-model="editableInquiry.inquiryContent" />
+              <RichTextEditor v-if="isEditing" v-model="editableInquiry.inquiryContent" @input="validateContent" />
               <span v-else v-html="inquiry.inquiryContent"></span>
+              <div v-if="contentError" style="color: red;">내용을 입력하세요.</div>
             </td>
             <td v-if="attachedImages.length" style="margin-top: 10px">
               <div v-for="image in attachedImages" :key="image.url" style="display: inline-block; margin: 5px;">
@@ -42,7 +43,7 @@
           <tr>
             <td><strong>상태</strong></td>
             <td>
-              <input v-if="isEditing" v-model="editableInquiry.inquiryStatus" />
+              <input v-if="isEditing" v-model="editableInquiry.inquiryStatus" readonly />
               <span v-else>{{ inquiry.inquiryStatus }}</span>
             </td>
             <td><strong>날짜</strong></td>
@@ -61,8 +62,9 @@
             <tr>
               <td><strong>내용</strong></td>
               <td>
-                <RichTextEditor v-if="isEditingAnswer" v-model="editableAnswer.answerContent" />
+                <RichTextEditor v-if="isEditingAnswer" v-model="editableAnswer.answerContent" @input="validateAnswerContent" />
                 <span v-else v-html="answer.answerContent"></span>
+                <div v-if="answerContentError" style="color: red;">내용을 입력하세요.</div>
               </td>
             </tr>
             <tr>
@@ -83,7 +85,8 @@
         <button v-if="answer && answer.answerContent" @click="deleteAnswerHandler" class="btn btn-red">답변 삭제</button>
       </div>
       <div v-if="isEditingAnswer && (!answer || !answer.answerContent)">
-        <RichTextEditor v-model="editableAnswer.answerContent" />
+        <RichTextEditor v-model="editableAnswer.answerContent" @input="validateAnswerContent" />
+        <div v-if="answerContentError" style="color: red;">내용을 입력하세요.</div>
         <button @click="createAnswerHandler" class="btn btn-green">답변 작성</button>
       </div>
     </div>
@@ -104,7 +107,9 @@ export default {
       isEditingAnswer: false,
       editableInquiry: null,
       editableAnswer: { inquiryNo: this.id, answerContent: '' },
-      attachedImages: []
+      attachedImages: [],
+      contentError: false,
+      answerContentError: false
     };
   },
   computed: {
@@ -138,6 +143,10 @@ export default {
       this.editableInquiry = { ...this.inquiry };
     },
     async saveInquiry() {
+      if (!this.validateContent()) {
+        this.contentError = true;
+        return;
+      }
       try {
         await this.updateInquiry(this.editableInquiry);
         this.isEditing = false;
@@ -146,6 +155,32 @@ export default {
       } catch (error) {
         console.error('문의 수정 실패:', error);
       }
+    },
+    validateContent() {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = this.editableInquiry.inquiryContent;
+      const textContent = tempDiv.textContent || tempDiv.innerText || "";
+
+      if (!textContent.trim().length) {
+        this.contentError = true;
+        return false;
+      }
+
+      this.contentError = false;
+      return true;
+    },
+    validateAnswerContent() {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = this.editableAnswer.answerContent;
+      const textContent = tempDiv.textContent || tempDiv.innerText || "";
+
+      if (!textContent.trim().length) {
+        this.answerContentError = true;
+        return false;
+      }
+
+      this.answerContentError = false;
+      return true;
     },
     cancelEdit() {
       this.isEditing = false;
@@ -165,6 +200,10 @@ export default {
       this.editableAnswer = { ...this.answer, inquiryNo: this.id };
     },
     async saveAnswer() {
+      if (!this.validateAnswerContent()) {
+        this.answerContentError = true;
+        return;
+      }
       try {
         await this.updateAnswer(this.editableAnswer);
         this.isEditingAnswer = false;
@@ -180,6 +219,10 @@ export default {
       this.editableAnswer = { ...this.answer, inquiryNo: this.id };
     },
     async createAnswerHandler() {
+      if (!this.validateAnswerContent()) {
+        this.answerContentError = true;
+        return;
+      }
       try {
         const newAnswer = {
           answerContent: this.editableAnswer ? this.editableAnswer.answerContent : '',
@@ -200,6 +243,7 @@ export default {
         alert('답변이 작성되었습니다.');
         this.isEditingAnswer = false;
         await this.fetchAnswer(this.inquiry.inquiryNo);
+        this.$router.go(); // 페이지 새로고침
       } catch (error) {
         console.error('답변 작성 실패:', error);
       }
@@ -208,10 +252,9 @@ export default {
       try {
         await this.deleteAnswer(this.answer);
         alert('답변이 삭제되었습니다.');
-        await this.fetchAnswer(this.inquiry.inquiryNo); // 상태 업데이트
+        await this.fetchAnswer(this.inquiry.inquiryNo);
         this.inquiry.inquiryStatus = '미답변'; // 상태를 미답변으로 변경
         await this.updateInquiry(this.inquiry); // 상태 업데이트 호출
-        this.$router.go(); // 페이지 새로고침
       } catch (error) {
         console.error('답변 삭제 실패:', error);
       }

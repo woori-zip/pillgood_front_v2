@@ -32,7 +32,7 @@
   <!-- 회원가입 -->
   <div class="box-container box-shadow" v-if="formVisible">
     <form @submit.prevent="createMember" id="createMemberfrm">
-      <table>
+      <table class="line-table">
         <tr>
           <td><label for="email">이메일:</label></td>
           <td>

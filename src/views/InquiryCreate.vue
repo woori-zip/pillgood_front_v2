@@ -19,7 +19,8 @@
           </div>
           <div>
             <label for="content">내용:</label>
-            <RichTextEditor v-model="inquiry.inquiryContent" />
+            <RichTextEditor v-model="inquiry.inquiryContent" @input="validateContent" />
+            <div v-if="contentError" style="color: red;">내용을 입력하세요.</div>
           </div>
           <br>
           <button type="submit" class="btn-green">문의 등록</button>&nbsp;
@@ -43,14 +44,15 @@ export default {
         inquiryTitle: '',
         inquiryType: '',
         inquiryContent: '',
-        inquiryDate: new Date().toISOString(),  // 현재 날짜와 시간 설정
-        inquiryStatus: '미답변'  // 기본 상태 설정
-      }
+        inquiryDate: new Date().toISOString(),
+        inquiryStatus: '미답변'
+      },
+      contentError: false
     };
   },
   computed: {
     ...mapState({
-      memberUniqueId: state => state.member.memberId  // Vuex state에서 memberId를 가져와 memberUniqueId로 설정
+      memberUniqueId: state => state.member.memberId
     }),
     ...mapGetters('inquiry', ['allInquiries']),
     inquiryList() {
@@ -61,16 +63,37 @@ export default {
   methods: {
     ...mapActions('inquiry', ['createInquiry', 'fetchInquiries']),
     async submitInquiry() {
+      // 제출하기 전에 유효성 검사
+      if (!this.validateContent()) {
+        this.contentError = true;
+        return;
+      }
       try {
-        this.inquiry.memberUniqueId = this.memberUniqueId;  // memberUniqueId를 inquiry 객체에 추가
+        this.inquiry.memberUniqueId = this.memberUniqueId;
         console.log('문의 데이터:', this.inquiry);
 
         await this.createInquiry(this.inquiry);
         alert('문의가 작성되었습니다.');
-        this.$router.push('/inquiries');  // 목록 페이지로 이동
+        this.$router.push('/inquiries');
       } catch (error) {
         console.error('문의 등록 실패:', error);
       }
+    },
+    validateContent() {
+      // HTML 태그를 제거하고 텍스트만 추출
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = this.inquiry.inquiryContent;
+      const textContent = tempDiv.textContent || tempDiv.innerText || "";
+
+      // 텍스트가 비어 있거나 공백만 있는 경우 유효성 검사 실패
+      if (!textContent.trim().length) {
+        this.contentError = true;
+        return false;
+      }
+
+      // 유효성 검사 통과
+      this.contentError = false;
+      return true;
     },
     goBack() {
       this.$router.push('/inquiries');
