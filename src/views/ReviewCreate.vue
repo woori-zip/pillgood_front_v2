@@ -1,22 +1,28 @@
 <template>
-  <div class="box-container">
+  <div class="main-container">
     <h1>리뷰 작성</h1>
-    <div>
+    <div style="text-align: left; display: flex">
       <img :src="productImage" alt="Product Image" style="width: 150px;">
-      <p>주문 번호: {{ orderNo }}</p>
-      <p>주문 날짜: {{ formattedOrderDate }}</p>
-      <p>제품 이름: {{ productName }}</p>
+      <p>
+        주문 번호: {{ orderNo }}<br>
+        주문 날짜: {{ formattedOrderDate }}<br>
+        제품 이름: {{ productName }}
+      </p>
     </div>
     <form @submit.prevent="submitReview">
+      <star-rating 
+        v-model="rating" 
+        :star-size="30" 
+        :show-rating="false"
+        style="margin: 0 auto 10px auto;"
+      ></star-rating>
       <div>
-        <label>별점:</label>
-        <star-rating v-model="rating" :star-size="30" :show-rating="false"></star-rating>
+        <span v-if="error" class="error">{{ error }}</span> <!-- 에러 메시지 표시 -->
+        <rich-text-editor v-model="reviewContent" ref="richTextEditor" @text-change="handleTextChange"></rich-text-editor>
       </div>
       <div>
-        <label>리뷰:</label>
-        <rich-text-editor v-model="reviewContent"></rich-text-editor>
+        <button type="submit">리뷰 작성</button>
       </div>
-      <button type="submit">리뷰 작성</button>
     </form>
   </div>
 </template>
@@ -35,6 +41,7 @@ export default {
     return {
       reviewContent: '',
       rating: 0,
+      error: null, // 에러 메시지
     };
   },
   computed: {
@@ -62,7 +69,6 @@ export default {
       return `${formattedDate}. 주문`;
     },
   },
-  // order-history 로부터 받은 데이터 확인
   mounted() {
     console.log('Received query params:');
     console.log('orderNo:', this.orderNo);
@@ -74,7 +80,26 @@ export default {
   },
   methods: {
     ...mapActions('review', ['createReview']),
+    handleTextChange(textContent) {
+      console.log('Text content:', textContent);
+      if (textContent.length >= 10){
+        this.error = null;
+      } else {
+        this.error = '리뷰는 최소 10자 이상 작성해야 합니다.'
+      }
+    },
     async submitReview() {
+
+      const textContent = this.$refs.richTextEditor.getTextContent();
+      console.log('textContent.length:', textContent.length); // textContent.length 출력
+
+      if (textContent.length < 10) {
+        this.error = '리뷰는 최소 10자 이상 작성해야 합니다.';
+        return;
+      }
+
+      this.error = null; // 에러 메시지 제거
+
       try {
         const reviewData = {
           orderNo: this.orderNo,
@@ -84,13 +109,13 @@ export default {
           reviewContent: this.reviewContent,
           rating: this.rating,
           memberUniqueId: this.memberId,
-          reviewDate: new Date().toISOString(), // 클라이언트 측에서 현재 날짜와 시간을 설정하여 전송
+          reviewDate: new Date().toISOString(),
           orderDetailNo: this.orderDetailNo
         };
         console.log('리뷰 제출:', reviewData);
         await this.createReview(reviewData);
         alert('리뷰가 성공적으로 제출되었습니다.');
-        this.$router.push('/order-history'); // 리뷰 제출 후 주문 내역 페이지로 이동
+        this.$router.push('/order-history');
       } catch (error) {
         console.error('리뷰 제출 실패:', error);
         alert('리뷰 제출에 실패했습니다.');
@@ -101,5 +126,8 @@ export default {
 </script>
 
 <style scoped>
-/* 스타일 설정 */
+.error {
+  color: red;
+  margin-top: 5px;
+}
 </style>

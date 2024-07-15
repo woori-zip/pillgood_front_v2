@@ -36,6 +36,7 @@ const actions = {
   async createNutrientEfficiency({ commit }, nutrientEfficiency) {
     try {
       const response = await axios.post('/admin/nutrientefficiencies/create', nutrientEfficiency);
+      console.lot('영양제 생성 서버 응답:', response)
       if (response.status === 200) {
         commit('addNutrientEfficiency', response.data);
       } else {
@@ -43,6 +44,20 @@ const actions = {
       }
     } catch (error) {
       console.error('Error creating nutrient efficiency:', error);
+      throw error;
+    }
+  },
+  async createNutrient({ commit }, nutrient) {
+    try {
+      const response = await axios.post('/admin/nutrients/create', nutrient);
+      if (response.status === 200) {
+        commit('addNutrient', response.data);
+        return response.data; // Return the newly created nutrient data
+      } else {
+        throw new Error('Failed to create nutrient');
+      }
+    } catch (error) {
+      console.error('Error creating nutrient:', error);
       throw error;
     }
   },

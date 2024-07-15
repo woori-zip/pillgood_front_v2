@@ -1,4 +1,5 @@
 import axios from '../../axios'; // 설정된 axios 인스턴스 불러오기
+import router from '../../router'; // Vue Router를 가져옵니다.
 
 const state = {
   isLoggedIn: localStorage.getItem('loggedIn') === 'true', // 로컬스토리지 
@@ -6,7 +7,8 @@ const state = {
   member: null, // 사용자 정보를 저장
   isAdmin: localStorage.getItem('isAdmin') === 'true', // 관리자 여부를 저장
   members: [], // 회원 목록을 저장
-  editingMember: null // 현재 수정 중인 회원 정보를 저장
+  editingMember: null, // 현재 수정 중인 회원 정보를 저장
+  rememberedEmail: localStorage.getItem('rememberedEmail') || '' // 이메일 기억하기
 };
 
 const mutations = {
@@ -18,6 +20,17 @@ const mutations = {
     localStorage.setItem('loggedIn', payload.isLoggedIn);
     localStorage.setItem('memberId', payload.memberId); // 로컬 스토리지에 memberId를 저장--review에서 쓰임
     localStorage.setItem('isAdmin', payload.isAdmin.toString()); // isAdmin을 문자열로 변환하여 저장
+  },
+  setRememberedEmail(state, email) {
+    state.rememberedEmail = email;
+    localStorage.setItem('rememberedEmail', email);
+  },
+  clearState(state) {
+    state.isLoggedIn = false;
+    state.memberId = null;
+    state.member = null;
+    state.isAdmin = false;
+    state.userName = '';
   },
   setMembers(state, members) {
     // 서버에서 받은 members 데이터를 memberId로 변환
@@ -46,7 +59,7 @@ const mutations = {
 const actions = {
   async login({ commit }, { email, password }) {
     try {
-      const response = await axios.post('/api/members/login', { email, password });
+      const response = await axios.post('/api/members/login', { email, password }, { withCredentials: true });
       if (response.status === 200) {
         const memberId = response.data.memberId;
         localStorage.setItem('loggedIn', true);
@@ -129,13 +142,33 @@ const actions = {
   },
   async logout({ commit }) { // 로그아웃
     try {
+      // 기억된 이메일을 임시 변수에 저장
+      const rememberedEmail = localStorage.getItem('rememberedEmail');
+  
+      // 로그아웃 요청
       await axios.post('/api/members/logout', {}, { withCredentials: true });
+      console.log("로그아웃 요청 완료");
+  
+      // 상태 초기화
       commit('setLoginState', { isLoggedIn: false, memberId: null, member: null, isAdmin: false });
-      localStorage.removeItem('loggedIn');
+  
+      // 전체 로컬 스토리지 초기화
+      localStorage.clear();
+  
+      // 기억된 이메일이 있으면 로컬 스토리지에 다시 저장
+      if (rememberedEmail) {
+        localStorage.setItem('rememberedEmail', rememberedEmail);
+      }
+  
+      console.log("로그아웃 후 로컬 스토리지 상태: ", localStorage.getItem('loggedIn'));
+      console.log("로그아웃 후 쿠키 상태: ", document.cookie);
+  
+      // 로그인 페이지로 이동
+      router.push('/login');
     } catch (error) {
       console.error('로그아웃 에러: ', error);
     }
-  },
+  },  
   async fetchMembers({ commit }) { // 회원 리스트 조회
     try {
       const response = await axios.get('/admin/members/list');
@@ -184,6 +217,19 @@ const actions = {
     } catch (error) {
       console.error('Error fetching user profile:', error);
     }
+  },
+  clearUserState({ commit }) {
+    commit('clearState');
+    // 이메일 기억 기능을 제외하고 로컬 스토리지를 초기화
+    const rememberedEmail = localStorage.getItem('rememberedEmail'); // 기억된 이메일 저장
+    localStorage.clear(); // 로컬 스토리지 초기화
+    if (rememberedEmail) { // 기억된 이메일이 있으면 로컬 스토리지에 다시 저장
+      localStorage.setItem('rememberedEmail', rememberedEmail); // 기억된 이메일 복원
+    }
+    // 모든 쿠키를 삭제
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c.trim().split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+    });
   }
 };
 

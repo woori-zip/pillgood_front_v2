@@ -1,15 +1,16 @@
 <template>
   <div>
-    <h1>상품 리뷰</h1>
-      <div class="rating-container">
-      평균 별점 :&nbsp;
-      <star-rating v-model="averageRating" 
-                  :star-size="30" 
-                  :show-rating="false" 
-                  :disable-click="true"></star-rating>
+    <div style="display: flex; gap: 100px;">
+      <div style="margin: auto; position: relative;">
+        <div class="rating-container" >
+          <star-rating v-model="averageRating" :star-size="30" :show-rating="false" :disable-click="true"></star-rating>
+        </div>
+        
+        <div class="chart-container" style="display: inline-block;">
+          <canvas id="ratingChart" style="max-width: 600px; margin: 0 auto;"></canvas>
+        </div>
       </div>
-    
-    <PieChart :chart-data="pieChartData" :option="pieChartOptions" />
+    </div>
 
     <!-- 정렬 -->
     <div style="display: flex;">
@@ -35,7 +36,7 @@
 
       <!-- 내용 -->
       <div style="text-align: left">
-        <p>{{ parseReviewContent(review.reviewContent).textContent }}</p>
+        <div v-html="review.reviewContent"></div>
       </div>
       <!-- 별점 -->
       <div style="margin-bottom: 20px;">
@@ -66,14 +67,13 @@
 import axios from 'axios';
 import { mapState, mapActions } from 'vuex'; // Vuex의 헬퍼 함수 import
 import StarRating from 'vue3-star-ratings'; // StarRating 컴포넌트 import
-import { PieChart } from 'vue-chart-3'; // PieChart 컴포넌트 import
-import { Chart, PieController, ArcElement, Tooltip, Legend } from 'chart.js';
-Chart.register( PieController, ArcElement, Tooltip, Legend );
+import { Chart, BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 export default {
   components: {
     StarRating, // StarRating 컴포넌트 등록
-    PieChart // PieChart 컴포넌트 등록
   },
   props: {
     productId: {
@@ -94,7 +94,8 @@ export default {
         3: 0,
         4: 0,
         5: 0
-      }
+      },
+      chart: null // Chart 객체를 저장할 데이터 속성
     };
   },
   computed: {
@@ -126,39 +127,6 @@ export default {
       console.log('별점 합계:', sum); // 별점 합계 디버깅
       console.log('리뷰 개수:', this.reviews.length); // 리뷰 개수 디버깅
       return sum / this.reviews.length;
-    },
-    pieChartData() {
-      return {
-        labels: ['1점', '2점', '3점', '4점', '5점'],
-        datasets: [{
-          data: [
-            this.ratingCounts[1],
-            this.ratingCounts[2],
-            this.ratingCounts[3],
-            this.ratingCounts[4],
-            this.ratingCounts[5]
-          ],
-          backgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-            '#4BC0C0',
-            '#9966FF'
-          ],
-          hoverBackgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-            '#4BC0C0',
-            '#9966FF'
-          ]
-        }]
-      };
-    },
-    pieChartOptions() {
-      return {
-        responsive: true
-      };
     }
   },
   methods: {
@@ -199,8 +167,8 @@ export default {
           }
         });
         
-        // 파이 차트 렌더링
-        this.renderPieChart();
+        // 별점 그래프 렌더링
+        this.renderBarChart();
 
         console.log('Filtered reviews:', this.reviews);
       } catch (error) {
@@ -254,13 +222,17 @@ export default {
       // 이 함수는 선택된 정렬 기준에 따라 리뷰를 정렬합니다.
       console.log('Selected sort order:', this.sortOrder);
     },
-    renderPieChart() {
-      const ctx = document.getElementById('ratingPieChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'pie',
+    renderBarChart() {
+      const ctx = document.getElementById('ratingChart').getContext('2d');
+      if (this.chart) {
+        this.chart.destroy();
+      }
+      this.chart = new Chart(ctx, {
+        type: 'bar',
         data: {
           labels: ['1점', '2점', '3점', '4점', '5점'],
           datasets: [{
+            label: '별점',
             data: [
               this.ratingCounts[1],
               this.ratingCounts[2],
@@ -269,23 +241,55 @@ export default {
               this.ratingCounts[5]
             ],
             backgroundColor: [
-              '#FF6384',
-              '#36A2EB',
-              '#FFCE56',
-              '#4BC0C0',
-              '#F4CE14'
+              '#B4D9A9',
+              '#B4D9A9',
+              '#B4D9A9',
+              '#B4D9A9',
+              '#B4D9A9'
             ],
-            hoverBackgroundColor: [
-              '#FF6384',
-              '#36A2EB',
-              '#FFCE56',
-              '#4BC0C0',
-              '#9966FF'
-            ]
+            borderWidth: 1
           }]
         },
         options: {
-          responsive: true
+          indexAxis: 'y',
+          scales: {
+            x: {
+              grid: {
+                display: false // x축 그리드 라인 제거
+              },
+              ticks: {
+                display: false // x축 레이블(0, 1, 2, 3, ...) 제거
+              }
+            },
+            y: {
+              grid: {
+                display: false // y축 그리드 라인 제거
+              },
+              ticks: {
+                beginAtZero: true // y축 눈금을 0부터 시작
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false // 범례 숨김
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0,0,0,0.7)', // 툴팁 배경색 변경
+              titleFont: { size: 16 }, // 툴팁 제목 폰트 크기 변경
+              bodyFont: { size: 14 }, // 툴팁 본문 폰트 크기 변경
+              callbacks: {
+                title: function() {
+                  return ''; // 툴팁 제목을 비워둠
+                },
+                label: function (context) {
+                  // const index = context.dataIndex; // 현재 데이터의 인덱스
+                  const value = context.raw; // 데이터 값
+                  return `${value}개`; // 툴팁에 표시할 내용
+                }
+              }
+            }
+          }
         }
       });
     },

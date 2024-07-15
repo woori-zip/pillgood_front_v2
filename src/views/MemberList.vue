@@ -20,21 +20,34 @@
           <th>가입일</th>
           <th>구독상태</th>
           <th>레벨</th>
+          <th>쿠폰 발급</th>
           <th>관리</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="member in filteredMembers" :key="member.memberId">
+        <tr v-for="member in filteredMembers" :key="member.memberUniqueId">
           <td>{{ member.name }}</td>
           <td>{{ member.email }}</td>
           <td>{{ member.phoneNumber }}</td>
           <td>{{ genderText(member.gender) }}</td>
-          <td >{{ formatDate(member.registrationDate) }}</td>
+          <td>{{ formatDate(member.registrationDate) }}</td>
           <td>{{ member.subscriptionStatus ? '구독중' : '-' }}</td>
           <td>{{ levelText(member.memberLevel) }}</td>
           <td>
+            <div v-if="!member.couponIssued">
+              <select v-model="selectedCoupons[member.memberUniqueId]">
+                <option value="" disabled>-쿠폰 선택-</option>
+                <option v-for="coupon in activeCoupons" :key="coupon.couponId" :value="coupon.couponId">{{ coupon.couponName }}</option>
+              </select>
+              <button @click="issueCoupon(member)">발급</button>
+            </div>
+            <div v-else>
+              발급 완료
+            </div>
+          </td>
+          <td>
             <button class="small-btn" @click="editMember(member)">수정</button>
-            <button class="small-btn" @click="confirmDeleteMember(member.memberId)">삭제</button>
+            <button class="small-btn" @click="confirmDeleteMember(member.memberUniqueId)">삭제</button>
           </td>
         </tr>
       </tbody>
@@ -44,25 +57,25 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import axios from '../axios'; // axios 인스턴스 가져오기
 
 export default {
   name: 'MemberList',
   data() {
     return {
       selectedFilter: '',
-      searchQuery: ''
+      searchQuery: '',
+      selectedCoupons: {}
     };
   },
   computed: {
     ...mapGetters('member', ['members']),
-    // 회원 검색
+    ...mapGetters('coupon', ['activeCoupons']),
     filteredMembers() {
       if (!this.selectedFilter && !this.searchQuery) {
-        return this.members; // 여기서 mapGetters로 가져온 members를 사용
+        return this.members;
       }
-
       const query = this.searchQuery.toLowerCase();
-
       return this.members.filter(member => {
         if (this.selectedFilter === 'memberName') {
           return member.name && member.name.toLowerCase().includes(query);
@@ -76,14 +89,16 @@ export default {
   async created() {
     await this.checkLoginStatus();
     await this.fetchMembers();
+    await this.fetchActiveCoupons();
   },
   methods: {
     ...mapActions('member', {
       checkLoginStatus: 'checkLoginStatus',
       fetchMembers: 'fetchMembers',
       deleteMemberFromStore: 'deleteMember',
-      setEditingMember: 'setEditingMember'  // Vuex 액션 추가
+      setEditingMember: 'setEditingMember'
     }),
+    ...mapActions('coupon', ['fetchActiveCoupons']),
     formatDate(date) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
       return new Date(date).toLocaleDateString(undefined, options);
@@ -93,24 +108,49 @@ export default {
       this.searchQuery = '';
     },
     editMember(member) {
-      console.log('MemberList에서 넘기는 memberId:', member.memberId);  // 콘솔 로그 추가
-      this.setEditingMember(member);  // Vuex 상태에 회원 정보 저장
+      this.setEditingMember(member);
       this.$router.push('/memberedit');
     },
     async confirmDeleteMember(memberId) {
       if (confirm('정말로 이 회원을 삭제하시겠습니까?')) {
         await this.deleteMemberFromStore(memberId);
-        await this.fetchMembers(); // 삭제 후 회원 목록 갱신
+        await this.fetchMembers();
       }
     },
     genderText(gender) {
       if (gender === 'F') return '여성';
       if (gender === 'M') return '남성';
-      return '알 수 없음'; // gender 값이 F나 M이 아닌 경우
+      return '알 수 없음';
     },
     levelText(memberLevel) {
       if (memberLevel === 'ADMIN') return '관리자';
       if (memberLevel === 'USER') return '-';
+    },
+    async issueCoupon(member) {
+      const couponId = this.selectedCoupons[member.memberUniqueId];
+      if (!couponId) {
+        alert('쿠폰을 선택해주세요.');
+        return;
+      }
+
+      const ownedCoupon = {
+        memberUniqueId: member.memberUniqueId,
+        couponId,
+        issuedDate: new Date().toISOString(),
+        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        couponUsed: false
+      };
+
+      try {
+        await axios.post('/admin/ownedcoupons/create', ownedCoupon);
+        await axios.put(`/api/members/updateCouponIssued/${member.memberUniqueId}`, { couponIssued: true });
+        member.couponIssued = true;
+        this.$forceUpdate(); // 뷰 업데이트 강제 적용
+        alert('쿠폰이 발급되었습니다.');
+      } catch (error) {
+        console.error('쿠폰 발급 실패:', error);
+        alert('쿠폰 발급에 실패했습니다.');
+      }
     }
   }
 };
