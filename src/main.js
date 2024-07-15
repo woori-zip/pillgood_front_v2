@@ -9,6 +9,15 @@ import 'v-calendar/dist/style.css'; // CSS
 import axios from 'axios';
 axios.defaults.baseURL = process.env.VUE_APP_API_URL || 'http://localhost:9095'; // 기본 URL 설정
 
+// Kakao SDK 로드
+const kakaoScript = document.createElement('script');
+kakaoScript.src = 'https://developers.kakao.com/sdk/js/kakao.js';
+kakaoScript.onload = () => {
+  /* global Kakao */ // Kakao를 전역 변수로 선언
+  Kakao.init('03f074279f45f35b6bed2cfbcc42ec4d'); // 카카오 개발자 콘솔에서 발급받은 JavaScript 키
+  console.log('Kakao SDK initialized');
+};
+document.head.appendChild(kakaoScript);
 
 console.log(QuillEditor); // QuillEditor가 제대로 불러와졌는지 확인
 
