@@ -3,7 +3,7 @@
     
     <!-- mypage nav bar -->
     <div class="btn-container">
-      <router-link to="/mypage" class="btn-link">프로필 수정</router-link>
+      <button @click="checkSurveyResult" class="btn-link">나의 건강 분석</button>
       <router-link to="/order-history" class="btn-link">주문 | 배송</router-link>
       <router-link to="/mycoupon" class="btn-link">보유 쿠폰</router-link>
       <router-link to="/reviewlist" class="btn-link">후기</router-link>
@@ -79,10 +79,38 @@
 
 <script>
 import axios from '../axios';
-import { mapState, mapActions } from 'vuex';
+import { useRouter } from 'vue-router';
+import { mapState, mapActions, useStore } from 'vuex';
 
 export default {
   name: 'MyPage',
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+
+    const checkSurveyResult = async () => {
+      try {
+        const memberId = store.state.member.memberId;
+        const response = await axios.get(`/api/surveys/member/${memberId}`);
+        
+        if (response.data && response.data.length > 0) {
+          router.push({ name: 'SurveyResult', params: { memberId } });
+        } else {
+          alert('건강 분석 결과를 찾을 수 없습니다');
+          router.push({ name: 'Survey' });
+        }
+      } catch (error) {
+        console.error('Failed to fetch survey result:', error);
+        alert('설문 결과를 불러오는 중 오류가 발생했습니다.');
+        router.push({ name: 'Survey' });
+      }
+    };
+
+    return {
+      store,
+      checkSurveyResult
+    };
+  },
   data() {
     return {
       isEditing: false,

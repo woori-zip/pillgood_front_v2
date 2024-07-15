@@ -57,6 +57,21 @@ const actions = {
       throw error;
     }
   },
+  async fetchProductsByDeficiency({ commit }, deficiencyIds) {
+    try {
+      const response = await axios.get('/api/products/by-deficiency', {
+        params: { deficiencyIds: deficiencyIds.join(',') }
+      });
+      if (response.status === 200) {
+        commit('setProducts', response.data);
+      } else {
+        throw new Error('제품 조회 실패');
+      }
+    } catch (error) {
+      console.error('제품 조회 에러:', error);
+      throw error;
+    }
+  },
   async updateProductStatus({ commit }, { productId, active }) {
     try {
       const response = await axios.put(`/admin/products/${productId}/status`, { active });

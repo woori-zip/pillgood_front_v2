@@ -16,6 +16,9 @@ const mutations = {
   },
   clearCartItems(state) {
     state.cartItems = [];
+  },
+  addCartItem(state, cartItem) {
+    state.cartItems.push(cartItem);
   }
 };
 
@@ -49,6 +52,21 @@ const actions = {
       commit('removeCartItem', cartNo);
     } catch (error) {
       console.error('장바구니 항목 삭제 에러:', error);
+    }
+  },
+  async addToCart({ commit }, cartItem) {
+    try {
+      const response = await axios.post('/api/carts/create', cartItem, { withCredentials: true });
+      if (response.status === 201) {
+        commit('addCartItem', response.data);
+        return response;
+      } else {
+        console.error('장바구니 추가 실패:', response);
+        return response;
+      }
+    } catch (error) {
+      console.error('장바구니 항목 추가 에러:', error);
+      throw error;
     }
   }
 };

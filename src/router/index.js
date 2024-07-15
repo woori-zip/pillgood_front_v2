@@ -1,5 +1,4 @@
 // src/router/index.js
-
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/HomeView.vue';
 import Register from '../views/RegisterMember.vue';
@@ -40,25 +39,28 @@ import Cart from '../views/CartPage.vue';
 import Order from '../views/OrderPage.vue';
 import OrderHistory from '../views/OrderHistory.vue';
 import PaymentSuccess from '../views/PaymentSuccess.vue';
+
 import BillingSuccess from '../views/BillingSuccess.vue';
 import PaymentFail from '../views/PaymentFail.vue'
 import CardRegistration from '../views/CardRegistration.vue'
 import ApprovePayment from '../views/ApprovePayment.vue'
 
+
 // review
-
-import ReviewCreate from '../views/ReviewCreate.vue'
-import ReviewList from '../views/ReviewList.vue'
-import ReviewDetail from '../views/ReviewDetail.vue'
-
-import Template from '../views/Template.vue';
-import store from '../store';
+import ReviewCreate from '../views/ReviewCreate.vue';
+import ReviewList from '../views/ReviewList.vue';
+import ReviewDetail from '../views/ReviewDetail.vue';
 
 // inquiry
-import Inquirylist from '../views/InquiryPage.vue';
+import InquiryList from '../views/InquiryPage.vue';
 import InquiryCreate from '../views/InquiryCreate.vue';
 import InquiryDetail from '../views/InquiryDetail.vue';
-import MyInquiries from '../views/MyInquiries.vue'
+import MyInquiries from '../views/MyInquiries.vue';
+
+// template
+import Template from '../views/Template.vue';
+
+import store from '../store';
 
 const routes = [
   { path: '/', component: Home },
@@ -85,7 +87,7 @@ const routes = [
   { path: '/noticedetail/:id', name: 'NoticeDetail', component: NoticeDetail, props: true },
 
   // survey
-  { path: '/surveyresult', name: 'SurveyResult', component: SurveyResult },
+  { path: '/surveyresult/:memberId', name: 'SurveyResult', component: SurveyResult },
   { path: '/survey', name: 'Survey', component: Survey, meta: { requiresAuth: true } },
 
   // cart
@@ -100,11 +102,11 @@ const routes = [
   { path: '/payment/fail', name: 'PaymentFail', component: PaymentFail },
   { path: '/payment/card', name: 'CardRegistration', component: CardRegistration},
   { path: '/payment/approve', name: 'ApprovePayment', component: ApprovePayment},
- 
+
   // return
   { path: '/refundcreate', name: 'RefundCreate', component: RefundCreate },
-  { path: '/refunddetail/:orderNo', name: 'RefundDetail', component: RefundDetail, props: true }, // 수정된 부분
-  { path: '/refundlist', name: 'RefundList', component: RefundList }, // 추가된 부분
+  { path: '/refunddetail/:orderNo', name: 'RefundDetail', component: RefundDetail, props: true },
+  { path: '/refundlist', name: 'RefundList', component: RefundList },
 
   // review
   { path: '/reviewcreate', name: 'ReviewCreate', component: ReviewCreate },
@@ -112,7 +114,7 @@ const routes = [
   { path: '/reviewdetail', name: 'ReviewDetail', component: ReviewDetail },
 
   // inquiry
-  { path: '/inquiries', component: Inquirylist },
+  { path: '/inquiries', component: InquiryList },
   { path: '/inquiries/create', component: InquiryCreate, meta: { requiresAuth: true } },
   { path: '/inquiries/:id', name: 'InquiryDetail', component: InquiryDetail, props: true },
   { path: '/myinquiries', name: 'MyInquiries', component: MyInquiries },
@@ -128,7 +130,7 @@ const router = createRouter({
 // 라우터 가드 설정
 router.beforeEach((to, from, next) => {
   console.log('store:', store); // 스토어 로그 출력
-  const loggedIn = store.state?.member?.isLoggedIn;
+  const loggedIn = store.state.member?.isLoggedIn;
 
   if (to.matched.some(record => record.meta.requiresAuth) && !loggedIn) {
     next('/login');
