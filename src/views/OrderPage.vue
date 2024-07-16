@@ -20,10 +20,19 @@
         </option>
       </select>
       <p v-if="coupons.length === 0">보유중인 쿠폰이 없습니다.</p>
+      <div class="input-group">
+      <label for="usePoints">포인트 사용 (최소 1000포인트)</label>
+      <input type="number" id="usePoints" v-model.number="usePoints" :readonly="pointsApplied" />
+      <button @click="applyPoints" :disabled="pointsApplied">적용하기</button>
+      <p v-if="usePoints < 1000">포인트는 최소 1000포인트부터 사용 가능합니다.</p>
+      <p v-if="pointsError">{{ pointsError }}</p>
+    </div>
+    <div class="total-points">보유 포인트: {{ totalPoints }} 점</div>
     </div>
     <p>3만원 이상 구매시 배송비 무료</p>
     <div class="shipping-fee">배송비: {{ shippingFeeMessage }}</div>
     <div class="total-amount">총 금액: {{ totalAmount }} 원</div>
+    
     <div class="order-details">
       <h4 class="section-title">배송정보</h4>
       <div class="input-group">
@@ -92,6 +101,10 @@ export default {
       discountAmount: 0,
       shippingFee: 0,
       totalAmount: 0,
+      usePoints: 0,
+      pointsApplied: false,
+      pointsError: '',
+      totalPoints: 0,
       tossPayments: null,
       paymentWidget: null,
       currentOrderId: null, // 현재 주문 ID를 저장합니다.
@@ -117,10 +130,19 @@ export default {
     await this.fetchBillingKey();
     this.setRecipientAndPhoneNumber();
     this.calculateTotalAmount();
+    await this.fetchTotalPoints(); // 총 포인트 가져오기
   },
   methods: {
     ...mapActions('order', ['fetchUserProfile', 'fetchCoupons', 'fetchOrderDetails', 'placeOrder']),
     ...mapActions('billing', ['fetchBillingKey']),
+    async fetchTotalPoints() {
+      try {
+        const response = await axios.get('/api/points/totalPoints', { withCredentials: true });
+        this.totalPoints = response.data;
+      } catch (error) {
+        console.error('Error fetching total points:', error);
+      }
+    },
     applyCoupon() {
       const selectedCoupon = this.coupons.find(coupon => coupon.ownedCouponId === this.ownedCouponId);
       this.discountAmount = selectedCoupon ? selectedCoupon.discountAmount : 0;
@@ -129,13 +151,26 @@ export default {
     calculateTotalAmount() {
       const subtotal = this.items.reduce((total, item) => total + item.price * item.productQuantity, 0);
       this.shippingFee = subtotal >= 30000 ? 0 : 3000;
-      this.totalAmount = subtotal - this.discountAmount + this.shippingFee;
+      this.totalAmount = subtotal - this.discountAmount + this.shippingFee - this.usePoints;
     },
     setRecipientAndPhoneNumber() {
       if (this.user) {
         this.recipient = this.user.name;
         this.phoneNumber = this.user.phoneNumber;
       }
+    },
+    applyPoints() {
+      if (this.usePoints < 1000) {
+        this.pointsError = '포인트는 최소 1000포인트부터 사용 가능합니다.';
+        return;
+      }
+      if (this.usePoints > this.totalPoints) {
+        this.pointsError = '포인트가 부족합니다.';
+        return;
+      }
+      this.pointsError = '';
+      this.pointsApplied = true;
+      this.calculateTotalAmount();
     },
     async preparePayment() {
       const orderDetails = {
