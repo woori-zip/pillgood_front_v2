@@ -175,11 +175,13 @@ export default {
       }
       return text.substring(0, maxLength) + '...';
     },
-    goToReviewDetail(review) {
+    async goToReviewDetail(review) {
+      const orderDetail = await this.fetchOrderDetailById(review.orderDetailNo);
+      const order = await this.fetchOrderByOrderNo(orderDetail.orderNo);
       const queryParams = {
         reviewId: review.reviewId,
-        orderNo: review.orderNo,
-        orderDate: review.orderDate,
+        orderNo: orderDetail.orderNo,
+        orderDate: order.orderDate,
         productId: review.productId,
         productName: review.product.productName,
         productImage: review.product.productImage,

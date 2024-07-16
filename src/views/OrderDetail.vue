@@ -23,7 +23,7 @@
         </div>
         <!-- 구매확정 시 주문 상세 건별 버튼 -->
         <div class="btn-container" v-if="order.orderStatus === '구매확정'">
-          <button v-if="hasReview(detail.orderDetailNo)" class="btn btn-green" @click="goToReviewDetail(detail.orderDetailNo)">내 리뷰 보기</button>
+          <button v-if="hasReview(detail.orderDetailNo)" class="btn btn-green" @click="goToReviewDetail(order, detail)">내 리뷰 보기</button>
           <button v-else class="btn btn-green" @click="goToReviewPage(order, detail)">리뷰쓰기</button>
           <button class="btn btn-gray" @click="addToCart(detail.productId, 1)">재구매</button>
         </div>
@@ -113,25 +113,42 @@ export default {
       return `${date.toLocaleDateString('ko-KR', options).replace(/\./g, '.').replace(/\s/g, '').slice(0, -1)} 주문`;
     },
     goToReviewPage(order, detail) {
+      const queryParams = {
+        orderNo: order.orderNo,
+        orderDate: order.orderDate,
+        productId: detail.productId,
+        productName: this.getProductName(detail.productId),
+        productImage: this.getProductImage(detail.productId),
+        orderDetailNo: detail.orderDetailNo // orderDetailNo 추가
+      };
+      console.log("ReviewCreate 페이지로 넘기는 정보:", queryParams);
+
       this.$router.push({
         name: 'ReviewCreate',
-        query: {
+        query: queryParams
+      });
+    },
+    goToReviewDetail(order, detail) {
+      const review = this.reviews.find(review => review.orderDetailNo === detail.orderDetailNo);
+      if (review) {
+        const queryParams = {
+          reviewId: review.reviewId,
           orderNo: order.orderNo,
           orderDate: order.orderDate,
           productId: detail.productId,
           productName: this.getProductName(detail.productId),
           productImage: this.getProductImage(detail.productId),
-          orderDetailNo: detail.orderDetailNo // orderDetailNo 추가
-        }
-      });
-    },
-    goToReviewDetail(orderDetailNo) {
-      this.$router.push({
-        name: 'ReviewDetail',
-        params: {
-          orderDetailNo: orderDetailNo
-        }
-      });
+          orderDetailNo: detail.orderDetailNo.toString(), // orderDetailNo를 문자열로 변환
+          reviewContent: review.reviewContent,
+          rating: review.rating
+        };
+        console.log("ReviewDetail 페이지로 넘기는 정보:", queryParams);
+
+        this.$router.push({
+          name: 'ReviewDetail',
+          query: queryParams
+        });
+      }
     },
     goToReturnPage(order, detail, requestType) {
       this.$router.push({
