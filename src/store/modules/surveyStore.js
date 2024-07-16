@@ -190,22 +190,76 @@ const actions = {
   },
   async fetchProductsByDeficiency({ commit, state }) {
     try {
-        const deficiencyIds = state.selectedDeficiencies.join(',');
-        const response = await axios.get(`/api/products/by-deficiency?deficiencyIds=${deficiencyIds}`);
-        commit('setRecommendedProducts', response.data);
+      const deficiencyIds = state.selectedDeficiencies.join(',');
+      const response = await axios.get(`/api/products/by-deficiency?deficiencyIds=${deficiencyIds}`);
+      commit('setRecommendedProducts', response.data);
     } catch (error) {
-        console.error('Failed to fetch products by deficiency:', error);
+      console.error('Failed to fetch products by deficiency:', error);
     }
   },
-  async finishSurvey({ commit, state, dispatch }) {
+  async finishSurvey({ commit, state, dispatch, rootState }) {
     try {
+      // deficiencyNutrients를 초기화
+      await dispatch('deficiency/fetchDeficiencyNutrients', null, { root: true });
+
+      // products 데이터 로드
+      await dispatch('product/fetchProducts', null, { root: true });
+
       const deficiencies = Object.values(state.selectedAnswers).flatMap(answerIds => {
         return answerIds.map(answerId => {
           const answer = state.surveyAnswers.find(a => a.id === answerId);
           return answer ? answer.deficiencyId : null;
         }).filter(id => id !== null);
       });
+  
+      // 상세 질문에서 선택된 결핍 ID들을 keywords로 저장
+    const detailedDeficiencies = Object.entries(state.detailedAnswers).flatMap(([questionId, isSelected]) => {
+      if (isSelected) {
+        // detailedQuestions에서 해당 질문 ID와 매칭되는 deficiencyId를 추출
+        const detailedQuestion = Object.values(state.currentDetailedQuestions).flatMap(questions => 
+          questions.filter(dq => dq.detailedQuestionId.toString() === questionId)
+        );
+        return detailedQuestion.length > 0 ? detailedQuestion.map(dq => dq.deficiencyId) : [];
+      }
+      return [];
+    });
 
+    // 저장되는 답변 확인용
+    console.log('Selected detailedAnswers:', state.detailedAnswers);
+    console.log('Extracted detailedDeficiencies:', detailedDeficiencies);
+  
+      // 결핍 ID로부터 추천 제품 찾기
+      // console.log('rootState.product.products:', rootState.product.products);
+      // console.log('rootState.deficiency.deficiencyNutrients:', rootState.deficiency.deficiencyNutrients);
+  
+      if (!rootState.deficiency.deficiencyNutrients) {
+        console.error('rootState.deficiencyNutrients is undefined');
+        return;
+      }
+      
+      let recommendedProducts = deficiencies.flatMap(deficiencyId => {
+        const deficiencyNutrient = rootState.deficiency.deficiencyNutrients.find(dn => dn.deficiencyId === deficiencyId);
+        console.log('deficiencyNutrient:', deficiencyNutrient);
+        if (!deficiencyNutrient) {
+          console.error(`No nutrientId found for deficiencyId: ${deficiencyId}`);
+          return [];
+        }
+  
+        const productsForDeficiency = rootState.product.products.filter(product => {
+          // console.log('Checking product:', product, 'against nutrientId:', deficiencyNutrient.nutrientId);
+          return product.nutrientId === deficiencyNutrient.nutrientId;
+        });
+        console.log(`Products for deficiency ID ${deficiencyId}:`, productsForDeficiency);
+        return productsForDeficiency.map(product => product.productId);
+      });
+  
+      // 중복된 값 제거
+    recommendedProducts = [...new Set(recommendedProducts)];
+    console.log('Recommended Products (unique):', recommendedProducts);
+  
+      const uniqueKeywords = Array.from(new Set(detailedDeficiencies)).join(',');
+      console.log('Keywords:', uniqueKeywords);
+  
       const survey = {
         name: state.survey.name,
         age: state.survey.age,
@@ -217,21 +271,21 @@ const actions = {
         deficiencyId2: deficiencies[1] || null,
         deficiencyId3: deficiencies[2] || null,
         surveyDate: new Date().toISOString(),
-        recommendedProducts: state.survey.recommendedProducts || '',
-        keywords: state.survey.keywords || ''
+        recommendedProducts: recommendedProducts.join(',') || '',
+        keywords: uniqueKeywords || ''
       };
-
+  
       if (!survey.memberUniqueId) {
         throw new Error('memberUniqueId가 설정되지 않았습니다.');
       }
-
+  
       const existingSurveys = await dispatch('loadSurveyResult', survey.memberUniqueId);
       if (existingSurveys && existingSurveys.length > 0) {
         await dispatch('updateSurvey', { id: existingSurveys[0].surveyNo, survey });
       } else {
         await dispatch('sendSurveyData', survey);
       }
-
+  
       commit('setCurrentStep', 'finish');
     } catch (error) {
       console.error('Failed to finish survey:', error);
@@ -257,6 +311,7 @@ const actions = {
   async loadSurveyResult({ commit }, memberId) {
     try {
       const response = await axios.get(`/api/surveys/member/${memberId}`);
+      console.log('Survey Result Loaded: ', response.data);
       commit('setSurveyResult', response.data.length ? response.data[0] : null);
       return response.data;
     } catch (error) {
@@ -288,7 +343,14 @@ const getters = {
            state.survey.weight;
   },
   surveyResult: (state) => state.surveyResult,
+  recommendedProducts: (state, getters, rootState) => {
+    const productIds = (state.surveyResult?.recommendedProducts || "").split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+    console.log('Filtering products with IDs:', productIds);
+    console.log('rootState.product.products:', rootState.product.products);
+    return rootState.product.products.filter(product => productIds.includes(product.productId));
+  }
 };
+
 
 export default {
   namespaced: true,
