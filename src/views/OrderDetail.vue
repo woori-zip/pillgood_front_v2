@@ -25,7 +25,7 @@
         <div class="btn-container" v-if="order.orderStatus === '구매확정'">
           <button v-if="hasReview(detail.orderDetailNo)" class="btn btn-green" @click="goToReviewDetail(detail.orderDetailNo)">내 리뷰 보기</button>
           <button v-else class="btn btn-green" @click="goToReviewPage(order, detail)">리뷰쓰기</button>
-          <button class="btn btn-gray">재구매</button>
+          <button class="btn btn-gray" @click="addToCart(detail.productId, 1)">재구매</button>
         </div>
       </div>
 
@@ -35,6 +35,7 @@
 
 <script>
 import axios from '../axios'; // 'axios.js' 설정 파일을 import
+import { mapActions } from 'vuex';
 
 export default {
   props: {
@@ -52,6 +53,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions('cart', ['addToCart']),
     async fetchOrderDetails() {
       try {
         console.log(`Received order number: ${this.orderNo}`); // 콘솔에 주문 번호 출력
@@ -145,7 +147,24 @@ export default {
           refundAmount: detail ? detail.amount : null // 환불 금액을 쿼리 파라미터로 전달
         }
       });
-    }
+    },
+    async addToCart(productId, quantity) {
+    try {
+      const cartItem = {
+        productId,
+        productQuantity: quantity
+      };
+
+      const response = await this.$store.dispatch('cart/addToCart', cartItem);
+      if (response.status === 201) {
+        console.log('Product added to cart successfully:', productId);
+        this.$router.push({ name: 'Cart' }); // 장바구니 페이지로 이동
+      } else {
+        console.error('Failed to add product to cart:', productId);
+      }
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+    }}
   },
   async created() {
     console.log("OrderDetail created with orderNo:", this.orderNo);
