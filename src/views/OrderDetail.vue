@@ -22,7 +22,7 @@
           </div>
         </div>
         <!-- 구매확정 시 주문 상세 건별 버튼 -->
-        <div class="btn-container">
+        <div class="btn-container" v-if="order.orderStatus === '구매확정'">
           <button v-if="hasReview(detail.orderDetailNo)" class="btn btn-green" @click="goToReviewDetail(detail.orderDetailNo)">내 리뷰 보기</button>
           <button v-else class="btn btn-green" @click="goToReviewPage(order, detail)">리뷰쓰기</button>
           <button class="btn btn-gray">재구매</button>
