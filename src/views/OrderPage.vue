@@ -20,7 +20,8 @@
         </option>
       </select>
       <p v-if="coupons.length === 0">보유중인 쿠폰이 없습니다.</p>
-      <div class="input-group">
+    </div>
+    <div class="input-group">
       <label for="usePoints">포인트 사용 (최소 1000포인트)</label>
       <input type="number" id="usePoints" v-model.number="usePoints" :readonly="pointsApplied" />
       <button @click="applyPoints" :disabled="pointsApplied">적용하기</button>
@@ -28,20 +29,20 @@
       <p v-if="pointsError">{{ pointsError }}</p>
     </div>
     <div class="total-points">보유 포인트: {{ totalPoints }} 점</div>
-    </div>
     <p>3만원 이상 구매시 배송비 무료</p>
     <div class="shipping-fee">배송비: {{ shippingFeeMessage }}</div>
     <div class="total-amount">총 금액: {{ totalAmount }} 원</div>
-    
     <div class="order-details">
       <h4 class="section-title">배송정보</h4>
       <div class="input-group">
         <label for="recipient">수령인 이름</label>
-        <input type="text" id="recipient" v-model="recipient" />
+        <input type="text" id="recipient" v-model="recipient" @input="validateRecipient" />
+        <p v-if="errors.recipient" class="error">{{ errors.recipient }}</p>
       </div>
       <div class="input-group">
         <label for="phoneNumber">수령인 연락처</label>
-        <input type="text" id="phoneNumber" v-model="phoneNumber" />
+        <input type="text" id="phoneNumber" v-model="phoneNumber" @input="validatePhoneNumber" />
+        <p v-if="errors.phoneNumber" class="error">{{ errors.phoneNumber }}</p>
       </div>
       <div class="input-group postal-code-group">
         <label for="postalCode">우편번호</label>
@@ -57,9 +58,11 @@
         <label for="address">도로명 주소</label>
         <input type="text" id="address" v-model="address" readonly />
       </div>
+      <p v-if="errors.address" class="error">{{ errors.address }}</p>
       <div class="input-group">
         <label for="detailedAddress">나머지 주소</label>
-        <input type="text" id="detailedAddress" v-model="detailedAddress" />
+        <input type="text" id="detailedAddress" v-model="detailedAddress" @input="validateDetailedAddress" />
+        <p v-if="errors.detailedAddress" class="error">{{ errors.detailedAddress }}</p>
       </div>
       <div class="input-group">
         <label for="orderRequest">배송 요청사항</label>
@@ -108,6 +111,12 @@ export default {
       tossPayments: null,
       paymentWidget: null,
       currentOrderId: null, // 현재 주문 ID를 저장합니다.
+      errors: {
+        recipient: '',
+        phoneNumber: '',
+        address: '',
+        detailedAddress: ''
+      }
     };
   },
   computed: {
@@ -172,7 +181,38 @@ export default {
       this.pointsApplied = true;
       this.calculateTotalAmount();
     },
+    validateRecipient() {
+      this.errors.recipient = this.recipient ? '' : '이름을 입력해주세요.';
+    },
+    validatePhoneNumber() {
+      this.errors.phoneNumber = this.phoneNumber ? '' : '연락처를 입력해주세요.';
+    },
+    validateAddress() {
+      if (this.postalCode && this.address) {
+        this.errors.address = '';
+      } else {
+        this.errors.address = '주소를 등록해주세요.';
+      }
+    },
+    validateDetailedAddress() {
+      this.errors.detailedAddress = this.detailedAddress ? '' : '나머지 주소를 입력해주세요.';
+    },
+    validateForm() {
+      this.validateRecipient();
+      this.validatePhoneNumber();
+      this.validateAddress();
+      this.validateDetailedAddress();
+
+      return !this.errors.recipient &&
+        !this.errors.phoneNumber &&
+        !this.errors.address &&
+        !this.errors.detailedAddress;
+    },
     async preparePayment() {
+      if (!this.validateForm()) {
+        return;
+      }
+
       const orderDetails = {
         items: this.items,
         totalAmount: this.totalAmount,
@@ -183,7 +223,8 @@ export default {
         phoneNumber: this.phoneNumber,
         orderRequest: this.orderRequest,
         ownedCouponId: this.ownedCouponId || null,
-        subscriptionStatus: this.subscriptionStatus
+        subscriptionStatus: this.subscriptionStatus,
+        pointsToUse: this.usePoints // 포인트 사용 정보 추가
       };
 
       try {
@@ -323,6 +364,7 @@ export default {
           this.address = addr;
           elementWrap.style.display = 'none';
           document.body.scrollTop = currentScroll;
+          this.validateAddress(); // 주소 검색 후 유효성 검사
         },
         onresize: (size) => {
           elementWrap.style.height = size.height + 'px';
@@ -343,6 +385,21 @@ export default {
         this.discountAmount = 0;
       }
       this.applyCoupon();
+    },
+    recipient() {
+      this.validateRecipient();
+    },
+    phoneNumber() {
+      this.validatePhoneNumber();
+    },
+    detailedAddress() {
+      this.validateDetailedAddress();
+    },
+    postalCode() {
+      this.validateAddress();
+    },
+    address() {
+      this.validateAddress();
     }
   }
 };
@@ -506,22 +563,9 @@ export default {
   height: 200px;
 }
 
-.modal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
+.error {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
 }
 </style>
