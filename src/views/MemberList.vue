@@ -140,6 +140,7 @@ export default {
         expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         couponUsed: false
       };
+      console.log('발급 요청 데이터:', ownedCoupon); // 요청 데이터 확인용 로그
 
       try {
         await axios.post('/admin/ownedcoupons/create', ownedCoupon);
