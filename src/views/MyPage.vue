@@ -9,7 +9,6 @@
       <router-link to="/reviewlist" class="btn-link">후기</router-link>
       <router-link to="/myinquiries" class="btn-link">1:1 문의</router-link>
     </div>
-    
     <div class="box-container">
       <h4 class="text-melon">마이페이지</h4>
       <div>

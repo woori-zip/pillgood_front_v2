@@ -293,10 +293,16 @@ export default {
 };
 </script>
 
-<style>
+<style scope>
 .bttn-container {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.icon {
+  transform: rotate(90deg);
+  color: #B4D9A9;
+  display: inline-flex;
 }
 </style>
