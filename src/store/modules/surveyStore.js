@@ -288,8 +288,8 @@ const actions = {
   
       commit('setCurrentStep', 'finish');
     } catch (error) {
-      console.error('Failed to finish survey:', error);
-      alert('설문 완료 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        console.error('Failed to finish survey:', error);
+        alert('설문 완료 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
   },
   async sendSurveyData(_, survey) {
