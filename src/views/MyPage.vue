@@ -133,6 +133,7 @@ export default {
       this.isEditing = !this.isEditing;
     },
     showPasswordPrompt() {
+      this.password='';
       this.showPasswordModal = true;
     },
     closePasswordModal() {
@@ -182,7 +183,6 @@ export default {
 };
 </script>
 
-
 <style>
 .btn-link {
   padding: 5px 10px 5px 10px;
@@ -197,5 +197,30 @@ export default {
 .mypage input[readonly],
 .mypage select[readonly] {
   text-align: right;
+}
+
+.modal {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 10px;
+  text-align: center;
 }
 </style>

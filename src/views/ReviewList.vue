@@ -11,7 +11,7 @@
           <th>평점</th>
           <th>회원 이름</th>
           <th>작성일</th>
-          <th>쿠폰 발급</th>
+          <th v-if="isAdmin">쿠폰 발급</th>
         </tr>
       </thead>
       <tbody>
@@ -30,7 +30,7 @@
           </td>
           <td>{{ review.memberName }}</td>
           <td>{{ formatDate(review.reviewDate) }}</td>
-          <td>
+          <td v-if="isAdmin">
             <div v-if="!review.couponIssued">
               <select v-model="selectedCoupons[review.reviewId]">
                 <option value="" disabled>-쿠폰 선택-</option>
@@ -175,11 +175,13 @@ export default {
       }
       return text.substring(0, maxLength) + '...';
     },
-    goToReviewDetail(review) {
+    async goToReviewDetail(review) {
+      const orderDetail = await this.fetchOrderDetailById(review.orderDetailNo);
+      const order = await this.fetchOrderByOrderNo(orderDetail.orderNo);
       const queryParams = {
         reviewId: review.reviewId,
-        orderNo: review.orderNo,
-        orderDate: review.orderDate,
+        orderNo: orderDetail.orderNo,
+        orderDate: order.orderDate,
         productId: review.productId,
         productName: review.product.productName,
         productImage: review.product.productImage,

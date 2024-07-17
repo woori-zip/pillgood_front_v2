@@ -3,7 +3,7 @@
     <div class="container">
       <h2 class="text-melon" style="margin-bottom: 70px;">Product List</h2>
       <div class="row">
-        <div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3" v-for="product in products" :key="product.productId">
+        <div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3" v-for="product in filteredProducts" :key="product.productId">
           <div class="card">
             <img @click="viewProduct(product.productId)" :src="product.productImage" class="card-img-top" alt="Product Image">
             <div class="card-body">
@@ -22,11 +22,22 @@ import axios from 'axios';
 import '../assets/styles.css';
 
 export default {
-  name: 'ProductListPage',
+  name: 'ProductList',
   data() {
     return {
       products: []
     };
+  },
+  computed: {
+    filteredProducts() {
+      const searchQuery = this.$route.query.search?.toLowerCase() || '';
+      if (!searchQuery) {
+        return this.products;
+      }
+      return this.products.filter(product =>
+        product.productName.toLowerCase().includes(searchQuery)
+      );
+    }
   },
   methods: {
     async fetchProducts() {

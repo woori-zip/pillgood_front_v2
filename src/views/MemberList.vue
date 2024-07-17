@@ -72,18 +72,21 @@ export default {
     ...mapGetters('member', ['members']),
     ...mapGetters('coupon', ['activeCoupons']),
     filteredMembers() {
-      if (!this.selectedFilter && !this.searchQuery) {
-        return this.members;
+      let members = this.members;
+
+      if (this.selectedFilter && this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        members = members.filter(member => {
+          if (this.selectedFilter === 'memberName') {
+            return member.name && member.name.toLowerCase().includes(query);
+          } else if (this.selectedFilter === 'email') {
+            return member.email && member.email.toLowerCase().includes(query);
+          }
+          return true;
+        });
       }
-      const query = this.searchQuery.toLowerCase();
-      return this.members.filter(member => {
-        if (this.selectedFilter === 'memberName') {
-          return member.name && member.name.toLowerCase().includes(query);
-        } else if (this.selectedFilter === 'email') {
-          return member.email && member.email.toLowerCase().includes(query);
-        }
-        return true;
-      });
+
+      return members.sort((a, b) => new Date(b.registrationDate) - new Date(a.registrationDate));
     }
   },
   async created() {
@@ -140,6 +143,7 @@ export default {
         expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         couponUsed: false
       };
+      console.log('발급 요청 데이터:', ownedCoupon); // 요청 데이터 확인용 로그
 
       try {
         await axios.post('/admin/ownedcoupons/create', ownedCoupon);
