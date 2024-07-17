@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { provide, ref } from 'vue'
+import { provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import HeaderView from './components/HeaderView.vue'
 import FooterView from './components/FooterView.vue'
@@ -27,9 +27,16 @@ export default {
 
     provide('showHeaderAndFooter', showHeaderAndFooter)
 
-    if (route.path === '/admin') {
-      showHeaderAndFooter.value = false
+    const updateHeaderAndFooterVisibility = () => {
+      if (route.path.startsWith('/admin')) {
+        showHeaderAndFooter.value = false
+      } else {
+        showHeaderAndFooter.value = true
+      }
     }
+
+    // Watch for route changes
+    watch(route, updateHeaderAndFooterVisibility, { immediate: true })
 
     return { showHeaderAndFooter }
   },

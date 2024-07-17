@@ -38,8 +38,8 @@
               <router-link to="/cart" class="icon-link" @click="navigateToCart">
                 <i class="fa-solid fa-cart-shopping"></i>
               </router-link>
-              <router-link to="/admin">
-                <button>Go to Admin Page</button>
+              <router-link to="/admin" v-if="isAdmin">
+                <button>Admin Page</button>
               </router-link>
             </div>
           </div>

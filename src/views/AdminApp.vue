@@ -19,6 +19,9 @@
     <v-app-bar app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>관리자 대시보드</v-toolbar-title>
+      <router-link to="/">
+        <button>User Page</button>
+      </router-link>
     </v-app-bar>
     <v-main>
       <router-view></router-view>
@@ -27,35 +30,34 @@
 </template>
 
 <script>
-import { inject, onMounted } from 'vue'
+import { inject, onMounted, ref } from 'vue'
+import { useDisplay } from 'vuetify/lib/framework.mjs' // Vuetify 3에서 사용하는 방식
 
 export default {
   name: 'AdminApp',
-  data() {
-    return {
-      drawer: true,
-      isPermanent: true,
-    }
-  },
-  watch: {
-    $route() {
-      if (this.$vuetify.breakpoint.mdAndDown) {
-        this.drawer = false
-      }
-    }
-  },
   setup() {
     const showHeaderAndFooter = inject('showHeaderAndFooter')
+    const { mdAndDown } = useDisplay()
+
+    const drawer = ref(true)
+    const isPermanent = ref(true)
 
     onMounted(() => {
       showHeaderAndFooter.value = false
     })
 
-    return {}
+    return {
+      drawer,
+      isPermanent,
+      mdAndDown
+    }
   },
+  watch: {
+    $route() {
+      if (this.mdAndDown.value) {
+        this.drawer = false
+      }
+    }
+  }
 }
 </script>
-
-<!-- <style>
-@import '../../node_modules/@mdi/font/css/materialdesignicons.css'
-</style> -->
