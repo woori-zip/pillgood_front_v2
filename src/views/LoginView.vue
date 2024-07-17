@@ -1,5 +1,6 @@
 <template>
-  <div class="box-container box-shadow">
+  <div class="main-container">
+  <div class="box-container-no-shade">
     <h4 class="text-melon">로그인</h4>
     <!-- 기존 로그인 폼 -->
     <form @submit.prevent="handleLogin">
@@ -25,6 +26,7 @@
     </form>
     <!-- 카카오 로그인 컴포넌트 추가 -->
     <KakaoLogin @loginSuccess="handleKakaoLoginSuccess" />
+  </div>
   </div>
 </template>
 

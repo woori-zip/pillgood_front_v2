@@ -20,12 +20,21 @@ body {
   width: 1000px;
   margin: auto;
   padding: 10px;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
 .box-container {
   background: white;
   padding: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  text-align: center;
+}
+
+.box-container-no-shade {
+  background: white;
+  padding: 30px;
   border-radius: 20px;
   text-align: center;
 }
@@ -138,6 +147,7 @@ h1 {
   color: #94b58b;
   font-weight: bold;
   display: block;
+  text-align: center;
 }
 
 .text-gray {
@@ -270,6 +280,12 @@ td {
 
 .line-table tr:nth-child(even) {
   background-color: #f9f9f9;
+}
+
+.line-table select {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
 }
 
 /* -------------------------------------------------------------filter-containere */
