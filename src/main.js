@@ -8,10 +8,17 @@ import { setupCalendar, Calendar, DatePicker } from 'v-calendar';
 import 'v-calendar/dist/style.css'; // CSS
 import axios from 'axios';
 axios.defaults.baseURL = process.env.VUE_APP_API_URL || 'http://localhost:9095'; // 기본 URL 설정
-import vuetify from './plugins/vuetify'
-import 'vuetify/styles'
-// import '@mdi/font/css/materialdesignicons.css'
 
+import 'vuetify/styles'
+// import vuetify from './plugins/vuetify'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+
+const vuetify = createVuetify({
+  components,
+  directives,
+})
 
 // Kakao SDK 로드
 const kakaoScript = document.createElement('script');
@@ -42,4 +49,4 @@ app.component('VDatePicker', DatePicker);
 app.use(store);
 app.use(router);
 app.mount('#app');
-app.use(vuetify)
+app.use(vuetify);

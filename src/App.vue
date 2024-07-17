@@ -88,7 +88,7 @@ export default {
 }
 </script>
 
-<style>
+<!-- <style>
 @import './assets/layout.css'
 
 html,
@@ -102,4 +102,4 @@ body {
   display: flex;
   flex-direction: column;
 }
-</style>
+</style> -->
