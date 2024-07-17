@@ -17,10 +17,9 @@ export default {
     };
   },
   created() {
-    const clientId = '03f074279f45f35b6bed2cfbcc42ec4d'; // 카카오 개발자 콘솔에서 발급받은 클라이언트 ID로 교체
-    const redirectUri = 'http://localhost:8080/kakaocallback';
-    const scope = 'profile_nickname'; // 동의 항목을 닉네임만 포함하도록 변경
-    this.kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+    const clientId = '03f074279f45f35b6bed2cfbcc42ec4d';
+    const redirectUri = 'http://localhost:8080/login'; // 리다이렉트 URI
+    this.kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`;
   },
   methods: {
     kakaoLogin() {
