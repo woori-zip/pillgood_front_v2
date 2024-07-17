@@ -9,6 +9,8 @@ import RefundCreate from '../views/RefundCreate.vue';
 import RefundDetail from '../views/RefundDetail.vue';
 import RefundList from '../views/RefundList.vue'; // 추가된 import
 
+import AdminApp from '@/AdminApp.vue';
+
 // member
 import MemberList from '../views/MemberList.vue';
 import MemberEdit from '../views/MemberEdit.vue';
@@ -75,6 +77,8 @@ const routes = [
   { path: '/mypage', component: MyPage, meta: { requiresAuth: true } },
   { path: '/memberlist', component: MemberList },
   { path: '/memberedit', component: MemberEdit },
+
+  { path: '/admin', name: 'AdminApp' , component: AdminApp },
 
   // product
   { path: '/productcreate', component: ProductCreate, meta: { requiresAuth: true } },
