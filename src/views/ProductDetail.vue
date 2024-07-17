@@ -32,7 +32,6 @@
       <button @click="activeTab = 'description'" :class="{ active: activeTab === 'description' }">상품설명</button>
       <button @click="activeTab = 'details'" :class="{ active: activeTab === 'details' }">상세정보</button>
       <button @click="activeTab = 'reviews'" :class="{ active: activeTab === 'reviews' }">후기</button>
-      <button @click="activeTab = 'inquiries'" :class="{ active: activeTab === 'inquiries' }">문의</button>
     </div>
     <!-- 탭 내용 -->
     <div class="tab-content">
@@ -47,15 +46,6 @@
 
       <div v-if="activeTab === 'reviews'">
         <ReviewView :productId="product.productId" /> 
-      </div>
-
-      <div v-if="activeTab === 'inquiries'">
-        <ul>
-          <li v-for="inquiry in product.inquiries" :key="inquiry.id" class="inquiry">
-            <p>{{ inquiry.content }}</p>
-            <p class="answered">Answered: {{ inquiry.answered ? 'Yes' : 'No' }}</p>
-          </li>
-        </ul>
       </div>
 
     </div>
@@ -83,7 +73,6 @@ export default {
         description: '',
         fullDescription: '',
         details: '',
-        inquiries: []
       },
       quantity: 1 // 초기 수량 설정
     };

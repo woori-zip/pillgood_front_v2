@@ -1,48 +1,37 @@
 <template>
   <div class="main-container">
-    <h4 class="text-melon">{{ surveyResult?.name }} 님의 설문 조사 결과</h4>
     <div v-if="isLoading" class="loading">Loading...</div>
     <div v-else class="box-container box-shadow">
+      <h4 class="text-melon">{{ surveyResult?.name }} 님의 설문 조사 결과</h4>
       <div v-if="surveyResult">
         <table class="result-table table-borderless">
           <tr>
-            <td>나이</td>
-            <td>{{ surveyResult.age }}</td>
-          </tr>
-          <tr>
-            <td>성별</td>
-            <td>{{ surveyResult.gender }}</td>
-          </tr>
-          <tr>
-            <td>키 (cm)</td>
-            <td>{{ surveyResult.height }}</td>
-          </tr>
-          <tr>
-            <td>몸무게 (kg)</td>
-            <td>{{ surveyResult.weight }}</td>
-          </tr>
-          <tr>
-            <td>신체질량지수 (BMI)</td>
-            <td>{{ calculateBMI(surveyResult.weight, surveyResult.height) }}</td>
+            <td>{{ surveyResult.age }} 세 | 
+              ( {{ genderDisplay }} ) | 
+              {{ surveyResult.height }} cm / {{ surveyResult.weight }} kg
+              ( BMI: {{ calculateBMI(surveyResult.weight, surveyResult.height) }} )</td>
           </tr>
         </table>
-        <div class="def-container box-shadow">
+        <div class="def-container">
           <div v-for="(deficiency, index) in uniqueDeficiencies" :key="index" class="def-id box-shadow">
             <h2>#{{ getDeficiencyName(deficiency) }}</h2>
           </div>
         </div>
+        <h4 class="text-melon">{{ surveyResult?.name }} 님을 위한 추천 제품</h4>
         <div class="product-container">
-          <div v-for="(product, index) in recommendedProducts" :key="index" class="product-item">
-            <router-link :to="{ name: 'ProductDetail', params: { id: product.productId } }">
-              <img :src="product.productImage" alt="제품 사진" class="product-image">
-              <h5>{{ product.productName }}</h5>
-            </router-link>
-            <button 
-              :disabled="isAddedToCart[product.productId]"
-              @click="addToCart(product.productId)"
-              class="btn btn-green">
-              {{ isAddedToCart[product.productId] ? "담겼습니다 ✅" : "장바구니에 담기" }}
-            </button>
+          <div v-for="(product, index) in recommendedProducts" :key="index" class="product-grid-item">
+            <div class="product-item box-shadow">
+              <router-link :to="{ name: 'ProductDetail', params: { id: product.productId } }">
+                <img :src="product.productImage" alt="productImg" class="product-image">
+                <h5>{{ product.productName }}</h5>
+              </router-link>
+              <button 
+                :disabled="isAddedToCart[product.productId]"
+                @click="addToCart(product.productId)"
+                class="btn btn-green">
+                {{ isAddedToCart[product.productId] ? "담겼습니다 ✅" : "장바구니에 담기" }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -85,6 +74,12 @@ export default {
       return [...new Set(ids)]; // 중복 제거
     });
 
+    const genderDisplay = computed(() => {
+      if (surveyResult.value?.gender === 'M') return '남';
+      if (surveyResult.value?.gender === 'F') return '여';
+      return '';
+    });
+
     onMounted(async () => {
       const memberId = store.state.member.memberId;
       console.log('memberId:', memberId);
@@ -101,7 +96,9 @@ export default {
       await store.dispatch('deficiency/fetchDeficiencies');
       await store.dispatch('survey/fetchProductsByDeficiency', uniqueDeficiencies.value);
       await store.dispatch('product/fetchProducts');
-      // 여기 recommendedProducts를 로그로 출력하여 값이 제대로 설정되었는지 확인
+
+      console.log('recommendedProducts from surveyResult:', surveyResult.value.recommendedProducts);
+      // recommendedProducts를 로그로 출력하여 값이 제대로 설정되었는지 확인
       const recommendedProducts = store.getters['survey/recommendedProducts'];
       console.log('recommendedProducts after fetch:', recommendedProducts);
     });
@@ -128,12 +125,14 @@ export default {
       calculateBMI,
       getDeficiencyName,
       uniqueDeficiencies,
+      genderDisplay,
       isAddedToCart,
       addToCart
     };
   }
 };
 </script>
+
 
 <style scoped>
 @import '../assets/styles.css';
@@ -144,29 +143,40 @@ export default {
 
 .def-container {
   margin-top: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
 }
 
 .def-id {
   background-color: #B4D9A9;
-  margin: 10px auto;
   padding: 10px;
-  width: 200px;
+  text-align: center;
+  border-radius: 30px; /* 둥근 모서리 추가 */
 }
 
 .def-id h2 {
   color: white;
+  margin: 0;
 }
 
 .product-container {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
+  padding: 10px;
+}
+
+.product-grid-item {
+  display: flex;
+  justify-content: center;
 }
 
 .product-item {
-  width: 30%;
+  width: 100%;
+  padding: 7px;
   text-align: center;
 }
 
@@ -180,4 +190,13 @@ export default {
 .btn {
   margin-top: 10px;
 }
+
+/* 반응형 디자인을 위한 미디어 쿼리 */
+@media (max-width: 600px) {
+  .def-container {
+    grid-template-columns: 1fr; /* 화면이 좁아지면 세로 배열 */
+  }
+}
 </style>
+
+

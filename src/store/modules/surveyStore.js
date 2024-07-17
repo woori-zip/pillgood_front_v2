@@ -197,70 +197,96 @@ const actions = {
       console.error('Failed to fetch products by deficiency:', error);
     }
   },
-  async finishSurvey({ commit, state, dispatch, rootGetters, rootState }) {
+  async finishSurvey({ commit, state, dispatch, rootState }) {
     try {
-        const deficiencies = Object.values(state.selectedAnswers).flatMap(answerIds => {
-            return answerIds.map(answerId => {
-                const answer = state.surveyAnswers.find(a => a.id === answerId);
-                return answer ? answer.deficiencyId : null;
-            }).filter(id => id !== null);
-        });
+      // deficiencyNutrients를 초기화
+      await dispatch('deficiency/fetchDeficiencyNutrients', null, { root: true });
 
-        // 상세 질문에서 선택된 결핍 ID들을 keywords로 저장
-        const detailedDeficiencies = Object.keys(state.detailedAnswers).flatMap(questionId => {
-            // 상세 질문의 결핍 ID를 가져옵니다.
-            const detailedQuestion = rootState.deficiency.deficiencies
-                .find(d => d.deficiencyId.toString() === questionId);
+      // products 데이터 로드
+      await dispatch('product/fetchProducts', null, { root: true });
 
-            return detailedQuestion ? detailedQuestion.deficiencyId : null;
+      const deficiencies = Object.values(state.selectedAnswers).flatMap(answerIds => {
+        return answerIds.map(answerId => {
+          const answer = state.surveyAnswers.find(a => a.id === answerId);
+          return answer ? answer.deficiencyId : null;
         }).filter(id => id !== null);
+      });
+  
+      // 상세 질문에서 선택된 결핍 ID들을 keywords로 저장
+    const detailedDeficiencies = Object.entries(state.detailedAnswers).flatMap(([questionId, isSelected]) => {
+      if (isSelected) {
+        // detailedQuestions에서 해당 질문 ID와 매칭되는 deficiencyId를 추출
+        const detailedQuestion = Object.values(state.currentDetailedQuestions).flatMap(questions => 
+          questions.filter(dq => dq.detailedQuestionId.toString() === questionId)
+        );
+        return detailedQuestion.length > 0 ? detailedQuestion.map(dq => dq.deficiencyId) : [];
+      }
+      return [];
+    });
 
-        // 저장되는 답변 확인용
-        console.log('Selected detailedAnswers:', state.detailedAnswers);
-        console.log('Extracted detailedDeficiencies:', detailedDeficiencies);
-
-        // 결핍 ID로부터 추천 제품 찾기
-        const products = rootGetters['product/products'];
-        const recommendedProducts = deficiencies.flatMap(deficiencyId => {
-            return products.filter(product => {
-                const deficiencyNutrient = rootState.deficiency.deficiencies.find(dn => dn.deficiencyId === deficiencyId);
-                return deficiencyNutrient ? product.nutrientId === deficiencyNutrient.nutrientId : false;
-            }).map(product => product.productId);
+    // 저장되는 답변 확인용
+    console.log('Selected detailedAnswers:', state.detailedAnswers);
+    console.log('Extracted detailedDeficiencies:', detailedDeficiencies);
+  
+      // 결핍 ID로부터 추천 제품 찾기
+      // console.log('rootState.product.products:', rootState.product.products);
+      // console.log('rootState.deficiency.deficiencyNutrients:', rootState.deficiency.deficiencyNutrients);
+  
+      if (!rootState.deficiency.deficiencyNutrients) {
+        console.error('rootState.deficiencyNutrients is undefined');
+        return;
+      }
+      
+      let recommendedProducts = deficiencies.flatMap(deficiencyId => {
+        const deficiencyNutrient = rootState.deficiency.deficiencyNutrients.find(dn => dn.deficiencyId === deficiencyId);
+        console.log('deficiencyNutrient:', deficiencyNutrient);
+        if (!deficiencyNutrient) {
+          console.error(`No nutrientId found for deficiencyId: ${deficiencyId}`);
+          return [];
+        }
+  
+        const productsForDeficiency = rootState.product.products.filter(product => {
+          // console.log('Checking product:', product, 'against nutrientId:', deficiencyNutrient.nutrientId);
+          return product.nutrientId === deficiencyNutrient.nutrientId;
         });
-
-        // 중복 제거 및 문자열로 변환
-        const uniqueKeywords = Array.from(new Set(detailedDeficiencies)).join(',');
-
-        console.log('Keywords:', uniqueKeywords);
-        console.log('Recommended Products:', recommendedProducts);
-
-        const survey = {
-            name: state.survey.name,
-            age: state.survey.age,
-            gender: state.survey.gender,
-            height: state.survey.height,
-            weight: state.survey.weight,
-            memberUniqueId: store.state.member.memberId,
-            deficiencyId1: deficiencies[0] || null,
-            deficiencyId2: deficiencies[1] || null,
-            deficiencyId3: deficiencies[2] || null,
-            surveyDate: new Date().toISOString(),
-            recommendedProducts: recommendedProducts.join(',') || '',
-            keywords: uniqueKeywords || ''  // 상세 질문의 결핍 ID들을 콤마로 연결한 문자열로 저장
-        };
-
-        if (!survey.memberUniqueId) {
-            throw new Error('memberUniqueId가 설정되지 않았습니다.');
-        }
-
-        const existingSurveys = await dispatch('loadSurveyResult', survey.memberUniqueId);
-        if (existingSurveys && existingSurveys.length > 0) {
-            await dispatch('updateSurvey', { id: existingSurveys[0].surveyNo, survey });
-        } else {
-            await dispatch('sendSurveyData', survey);
-        }
-
-        commit('setCurrentStep', 'finish');
+        console.log(`Products for deficiency ID ${deficiencyId}:`, productsForDeficiency);
+        return productsForDeficiency.map(product => product.productId);
+      });
+  
+      // 중복된 값 제거
+    recommendedProducts = [...new Set(recommendedProducts)];
+    console.log('Recommended Products (unique):', recommendedProducts);
+  
+      const uniqueKeywords = Array.from(new Set(detailedDeficiencies)).join(',');
+      console.log('Keywords:', uniqueKeywords);
+  
+      const survey = {
+        name: state.survey.name,
+        age: state.survey.age,
+        gender: state.survey.gender,
+        height: state.survey.height,
+        weight: state.survey.weight,
+        memberUniqueId: store.state.member.memberId,
+        deficiencyId1: deficiencies[0] || null,
+        deficiencyId2: deficiencies[1] || null,
+        deficiencyId3: deficiencies[2] || null,
+        surveyDate: new Date().toISOString(),
+        recommendedProducts: recommendedProducts.join(',') || '',
+        keywords: uniqueKeywords || ''
+      };
+  
+      if (!survey.memberUniqueId) {
+        throw new Error('memberUniqueId가 설정되지 않았습니다.');
+      }
+  
+      const existingSurveys = await dispatch('loadSurveyResult', survey.memberUniqueId);
+      if (existingSurveys && existingSurveys.length > 0) {
+        await dispatch('updateSurvey', { id: existingSurveys[0].surveyNo, survey });
+      } else {
+        await dispatch('sendSurveyData', survey);
+      }
+  
+      commit('setCurrentStep', 'finish');
     } catch (error) {
         console.error('Failed to finish survey:', error);
         alert('설문 완료 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -285,6 +311,7 @@ const actions = {
   async loadSurveyResult({ commit }, memberId) {
     try {
       const response = await axios.get(`/api/surveys/member/${memberId}`);
+      console.log('Survey Result Loaded: ', response.data);
       commit('setSurveyResult', response.data.length ? response.data[0] : null);
       return response.data;
     } catch (error) {
@@ -318,12 +345,12 @@ const getters = {
   surveyResult: (state) => state.surveyResult,
   recommendedProducts: (state, getters, rootState) => {
     const productIds = (state.surveyResult?.recommendedProducts || "").split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
-    // console.log('Filtering products with IDs:', productIds);
-    // console.log('rootState.product.products:', rootState.product.products); // 디버깅 로그
+    console.log('Filtering products with IDs:', productIds);
+    console.log('rootState.product.products:', rootState.product.products);
     return rootState.product.products.filter(product => productIds.includes(product.productId));
   }
-  
 };
+
 
 export default {
   namespaced: true,

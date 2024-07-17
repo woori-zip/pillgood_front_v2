@@ -1,6 +1,5 @@
 <template>
   <div class="main-container">
-    <h1 class="text-melon">설문 조사</h1>
     <div v-if="isLoading" class="loading">Loading...</div>
     <div v-else class="box-container-wide box-shadow">
       <div v-if="currentStep === 'personal-info'">

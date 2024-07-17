@@ -27,16 +27,13 @@ const mutations = {
 };
 
 const actions = {
-  async fetchDeficiencies({ commit }) {
+  async fetchDeficiencies({ commit, dispatch }) {
     try {
       const response = await axios.get('/api/deficiencies/list');
-      if (response.status === 200) {
-        commit('setDeficiencies', response.data);
-      } else {
-        throw new Error('Deficiencies fetch failed');
-      }
+      commit('setDeficiencies', response.data);
+      await dispatch('fetchDeficiencyNutrients'); // fetchDeficiencyNutrients 액션 호출
     } catch (error) {
-      console.error('Error fetching deficiencies:', error);
+      console.error('Failed to fetch deficiencies:', error);
       throw error;
     }
   },
@@ -45,6 +42,7 @@ const actions = {
       const response = await axios.get('/api/deficiency-nutrients/list');
       if (response.status === 200) {
         commit('setDeficiencyNutrients', response.data);
+        console.log('Fetched deficiencyNutrients:', response.data);  // 디버그 로그 추가
       } else {
         throw new Error('Deficiency Nutrients fetch failed');
       }

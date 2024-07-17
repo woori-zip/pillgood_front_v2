@@ -14,24 +14,20 @@ body {
 
 /* 메인 컨테이너 */
 .main-container {
+  display: flex;
+  flex-direction: column; /* 수직 배치 */
+  gap: 20px;
   width: 1000px;
   margin: auto;
   padding: 10px;
-  text-align: center;
-  margin: 20px auto 20px auto;
 }
 
 .box-container {
   background: white;
   padding: 30px;
-  width: 500px;
-  margin: 20px auto 20px auto;
-  text-align: center;
-}
-
-.box-shadow {
-  border-radius: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  text-align: center;
 }
 
 @media (max-width: 1200px) {
@@ -46,21 +42,22 @@ body {
 
 /* 버튼 스타일 */
 .btn-container {
-  margin: 30px 0;
-  display: flex;
-  justify-content: center;
-  padding: 0 10px;
+  display: flex; /* Flexbox 사용 */
+  justify-content: center; /* 가운데 정렬 */
+  flex-wrap: wrap; /* 줄 바꿈 허용 */
   gap: 10px;
+  margin-top: 10px;
 }
 
 .btn {
-  width: 100%;
+  display: flex; /* Flexbox 사용 */
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 5px;
   text-align: center;
   text-decoration: none;
-  display: inline-block;
   font-size: 16px;
   cursor: pointer;
 }
@@ -155,7 +152,6 @@ h1 {
   font-weight: bold;
 }
 
-
 /* 테이블 스타일 */
 
 .text-danger {
@@ -222,7 +218,6 @@ td {
   margin: 20px 0;
 }
 
-
 /* Quill 에디터 스타일 */
 .ql-editor {
   direction: ltr !important;
@@ -230,6 +225,9 @@ td {
 }
 
 /* -------------------------------------------------------------icon */
+.icon {
+  transform: rotate(90deg);
+}
 
 /* -------------------------------------------------------------calender */
 .vc-container {
