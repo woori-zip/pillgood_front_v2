@@ -13,8 +13,8 @@
           </tr>
         </table>
         <div class="def-container">
-          <div v-for="(deficiency, index) in uniqueDeficiencies" :key="index" class="def-id box-shadow">
-            <h2>#{{ getDeficiencyName(deficiency) }}</h2>
+          <div v-for="(deficiency, index) in uniqueDeficiencies" :key="index" class="def-id">
+            <h4>#{{ getDeficiencyName(deficiency) }}</h4>
           </div>
         </div>
         <h4 class="text-melon">{{ surveyResult?.name }} 님을 위한 추천 제품</h4>
@@ -145,21 +145,25 @@ export default {
   margin-top: 10px;
   margin-bottom: 30px;
   padding: 10px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
   gap: 20px;
+  justify-content: center;
 }
 
 .def-id {
   background-color: #B4D9A9;
-  padding: 10px;
+  padding: 20px;
   text-align: center;
-  border-radius: 30px; /* 둥근 모서리 추가 */
+  border-radius: 35px; /* 둥근 모서리 추가 */
+  display: inline-block;
+  white-space: nowrap;
 }
 
-.def-id h2 {
+.def-id h4 {
   color: white;
+  /* font-weight: bold; */
   margin: 0;
+  display: inline;
 }
 
 .product-container {
@@ -178,6 +182,7 @@ export default {
   width: 100%;
   padding: 7px;
   text-align: center;
+  justify-content: center;
 }
 
 .product-image {
@@ -189,6 +194,7 @@ export default {
 
 .btn {
   margin-top: 10px;
+  display: inline-block;
 }
 
 /* 반응형 디자인을 위한 미디어 쿼리 */

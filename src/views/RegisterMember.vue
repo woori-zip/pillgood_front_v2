@@ -1,6 +1,6 @@
 <template>
   <!-- 약관동의 -->
-  <div v-if="!formVisible" id="register_agree" class="box-container box-shadow">
+  <div v-if="!formVisible" id="register_agree" class="main-container box-container-no-shade">
     <h4 class="text-melon">회원 가입</h4>
     <h6>[약관 동의]</h6>
     <form id="agreementfrm" @submit.prevent="validateAgreement">
@@ -30,39 +30,41 @@
     </form>
   </div>
   <!-- 회원가입 -->
-  <div class="box-container box-shadow" v-if="formVisible">
+  <div class="main-container">
+    <h4 class="text-melon">회원 가입</h4>
+  <div class="box-container-no-shade" v-if="formVisible">
     <form @submit.prevent="createMember" id="createMemberfrm">
       <table class="line-table">
         <tr>
-          <td><label for="email">이메일:</label></td>
+          <td><label for="email">이메일</label></td>
           <td>
             <input type="email" v-model="member.email" @blur="validateEmail" required />
             <p v-if="errors.email" class="text-danger">{{ errors.email }}</p>
           </td>
         </tr>
         <tr>
-          <td><label for="password">비밀번호:</label></td>
+          <td><label for="password">비밀번호</label></td>
           <td>
             <input type="password" v-model="member.password" @blur="validatePassword" required />
             <p v-if="errors.password" class="text-danger">{{ errors.password }}</p>
           </td>
         </tr>
         <tr>
-          <td><label for="name">이름:</label></td>
+          <td><label for="name">이름</label></td>
           <td>
             <input type="text" v-model="member.name" @blur="validateName" required />
             <p v-if="errors.name" class="text-danger">{{ errors.name }}</p>
           </td>
         </tr>
         <tr>
-          <td><label for="birthdate">생년월일:</label></td>
+          <td><label for="birthdate">생년월일</label></td>
           <td>
             <v-date-picker v-model="member.birthdate" @change="validateBirthdate" required />
             <p v-if="errors.birthdate" class="text-danger">{{ errors.birthdate }}</p>
           </td>
         </tr>
         <tr>
-          <td><label for="gender">성별:</label></td>
+          <td><label for="gender">성별</label></td>
           <td>
             <select v-model="member.gender" @change="validateGender" required>
               <option value="N">성별을 선택하세요</option>
@@ -73,7 +75,7 @@
           </td>
         </tr>
         <tr>
-          <td><label for="phoneNumber">전화번호:</label></td>
+          <td><label for="phoneNumber">전화번호</label></td>
           <td>
             <input type="text" v-model="member.phoneNumber" @blur="validatePhoneNumber" required />
             <span v-if="errors.phoneNumber" class="text-danger">{{ errors.phoneNumber }}</span>
@@ -85,6 +87,7 @@
         <button type="button" class="btn btn-gray" @click="cancelRegistration">취소</button>
       </div>
     </form>
+  </div>
   </div>
 </template>
 
@@ -236,3 +239,14 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .line-table {
+  width: 100%;
+  border-collapse: collapse;
+  }
+
+  .line-table td, tr, th {
+    border: none;
+  }
+</style>

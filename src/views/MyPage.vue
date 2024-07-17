@@ -1,16 +1,15 @@
 <template>
   <div class="main-container box-shadow">
-    
-    <!-- mypage nav bar -->
-    <div class="btn-container">
+    <h3 class="text-melon">마이 페이지</h3>
+    <div class="box-container">
+      <!-- mypage nav bar -->
+    <div class="btn-container" style="margin-bottom: 15px">
       <button @click="checkSurveyResult" class="btn-link">나의 건강 분석</button>
       <router-link to="/order-history" class="btn-link">주문 | 배송</router-link>
       <router-link to="/mycoupon" class="btn-link">보유 쿠폰</router-link>
       <router-link to="/reviewlist" class="btn-link">후기</router-link>
       <router-link to="/myinquiries" class="btn-link">1:1 문의</router-link>
     </div>
-    <div class="box-container">
-      <h4 class="text-melon">마이페이지</h4>
       <div>
         <div v-if="user">
           <table class="mypage">
