@@ -46,6 +46,9 @@ import PaymentFail from '../views/PaymentFail.vue'
 import CardRegistration from '../views/CardRegistration.vue'
 import ApprovePayment from '../views/ApprovePayment.vue'
 
+// coupon
+import MyCoupon from '../views/MyCoupon.vue';
+
 
 // review
 import ReviewCreate from '../views/ReviewCreate.vue';
@@ -77,7 +80,7 @@ const routes = [
   { path: '/productcreate', component: ProductCreate, meta: { requiresAuth: true } },
   { path: '/admin/productlist', component: AdminProductList },
   { path: '/productedit/:id', name: 'ProductEdit', component: ProductEdit, props: true },
-  { path: '/productlist', component: ProductList },
+  { path: '/productlist', name:'ProductList', component: ProductList },
   { path: '/product/:id', name: 'ProductDetail', component: ProductDetail, props: true },
   { path: '/nutrientedit', component: NutrientEdit },
 
@@ -114,6 +117,8 @@ const routes = [
   { path: '/reviewcreate', name: 'ReviewCreate', component: ReviewCreate },
   { path: '/reviewlist', name: 'ReviewList', component: ReviewList },
   { path: '/reviewdetail', name: 'ReviewDetail', component: ReviewDetail },
+
+  { path: '/mycoupon', name: 'MyCoupon', component: MyCoupon },
 
   // inquiry
   { path: '/inquiries', component: InquiryList },

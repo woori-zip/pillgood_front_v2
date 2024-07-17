@@ -7,14 +7,15 @@
             <!-- 로고 이미지 -->
             <div class="logo-container">
               <router-link to="/">
-              <img src="../assets/pillgood_logo.png">&nbsp;
-              <span>: 필굿</span>
+                <img src="../assets/pillgood_logo.png">&nbsp;
+                <span>: 필굿</span>
               </router-link>
             </div>
             <!-- 검색창 -->
             <div class="search-container">
-              <input type="search" placeholder="검색어를 입력하세요" aria-label="Search"
+              <input v-model="searchQuery" type="search" placeholder="검색어를 입력하세요" aria-label="Search"
                 class="form-control form-control-white text-bg-white search-input">
+              <button @click="searchProducts">검색</button>
             </div>
             <!-- 사용자 이름 -->
             <div v-if="isLoggedIn" class="user-name">
@@ -71,6 +72,11 @@ import '../assets/layout.css';
 
 export default {
   name: 'HeaderView',
+  data() {
+    return {
+      searchQuery: '' // searchQuery를 data에 정의
+    };
+  },
   computed: {
     ...mapState('member', {
       isLoggedIn: state => state.isLoggedIn,
@@ -88,6 +94,11 @@ export default {
         this.$router.push('/cart');
       } else {
         this.$router.push('/login');
+      }
+    },
+    searchProducts() {
+      if (this.searchQuery.trim()) {
+        this.$router.push({ name: 'ProductList', query: { search: this.searchQuery.trim() } });
       }
     }
   },
