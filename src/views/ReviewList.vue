@@ -4,9 +4,8 @@
     <table class="line-table">
       <thead>
         <tr>
-          <th>리뷰 ID</th>
-          <th>제품 이름</th>
-          <th>제품 이미지</th>
+          <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+          <th colspan="2">제품 정보</th>
           <th>리뷰 내용</th>
           <th>평점</th>
           <th>회원 이름</th>
@@ -17,10 +16,10 @@
       <tbody>
         <tr v-for="review in filteredReviews" :key="review.reviewId">
           <td>{{ review.reviewId }}</td>
-          <td>{{ truncateText(review.product.productName, 15) }}</td>
           <td>
             <img style="height: 100px; width: auto;" :src="review.product.productImage" alt="Product Image" />
           </td>
+          <td>{{ truncateText(review.product.productName, 15) }}</td>
           <td @click="goToReviewDetail(review)" style="cursor: pointer;">
             <span v-html="truncateText(extractText(review.reviewContent), 15)"></span> &nbsp;
             <i v-if="containsImageTag(review.reviewContent)" class="fa-solid fa-paperclip"></i>
@@ -50,6 +49,7 @@
 
 <script>
 import axios from '../axios'; // 설정된 axios 인스턴스를 import
+import '../assets/styles.css';
 import { mapState, mapActions } from 'vuex'; // Vuex의 헬퍼 함수 import
 import StarRating from 'vue3-star-ratings'; // StarRating 컴포넌트 import
 
@@ -201,18 +201,13 @@ export default {
 </script>
 
 <style scoped>
-.review-list-container {
-  padding: 20px;
-}
-table {
+ .line-table {
   width: 100%;
   border-collapse: collapse;
-}
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-th {
-  background-color: #f4f4f4;
-}
+  margin-bottom: 30px;
+  }
+
+  .line-table td, tr, th {
+    border: none;
+  }
 </style>

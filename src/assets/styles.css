@@ -34,7 +34,7 @@ body {
 
 .box-container-no-shade {
   background: white;
-  padding: 30px;
+  padding: 20px;
   border-radius: 20px;
   text-align: center;
 }
@@ -52,6 +52,7 @@ body {
 /* 버튼 스타일 */
 .btn-container {
   display: flex; /* Flexbox 사용 */
+  align-items: center;
   justify-content: center; /* 가운데 정렬 */
   flex-wrap: wrap; /* 줄 바꿈 허용 */
   gap: 10px;
@@ -171,6 +172,16 @@ h1 {
   font-size: 0.9em;
 }
 
+a {
+  color: #94B58B; /* 기본 링크 색상 */
+  text-decoration: none; /* 기본 밑줄 제거 */
+}
+
+a:hover {
+  color: #94B58B; /* 호버 시 색상 */
+  font-weight: bold; /* 폰트 굵기 */
+}
+
 /* -------------------------------------------------------------table */
 
 table {
@@ -183,15 +194,23 @@ td {
 
 td input, select, span {
   width: 100%;
+  display: inline-block;
+  margin: 0;
 }
 
 td {
   text-align: left;
 }
 
+.mypage {
+  margin-top: 10px;
+  margin-bottom: 40px;
+}
+
 .mypage td {
   text-align: right;
 }
+
 
 .notice-table {
   width: 100%;
@@ -268,10 +287,11 @@ td {
   background-color: #EBF7F0;
 }
 
-.line-table th, td {
+.line-table th, td, tr {
   padding: 2px 2px 2px 2px;
   align-items: center; /* 세로 중앙 정렬 */
   text-align: center; /* 가로 중앙 정렬 */
+  border: none;
 }
 
 .text-left {
@@ -323,4 +343,24 @@ td {
 .image-tooltip img {
   width: 150px; /* 너비를 150px로 고정 */
   height: auto; /* 높이는 자동으로 설정하여 비율 유지 */
+}
+
+/* -------------------------------------------------------------def-container */
+
+.def-id {
+  background-color: #B4D9A9;
+  padding: 10px;
+  text-align: center;
+  border-radius: 35px; /* 둥근 모서리 추가 */
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* -------------------------------------------------------------etc */
+
+.line {
+  color: #94B58B;
+  width: 100%;
+  margin-top: 40px;
+  margin-bottom: 40px;
 }

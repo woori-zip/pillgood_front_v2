@@ -1,8 +1,7 @@
 <template>
   <!-- 약관동의 -->
   <div v-if="!formVisible" id="register_agree" class="main-container box-container-no-shade">
-    <h4 class="text-melon">회원 가입</h4>
-    <h6>[약관 동의]</h6>
+    <h4 class="text-melon">약관 동의</h4>
     <form id="agreementfrm" @submit.prevent="validateAgreement">
       <div id="fregister_chkall" class="check-container">
         <input type="checkbox" v-model="allChecked" @change="checkAllAgreements" id="chk_all">
@@ -31,8 +30,8 @@
   </div>
   <!-- 회원가입 -->
   <div class="main-container">
-    <h4 class="text-melon">회원 가입</h4>
   <div class="box-container-no-shade" v-if="formVisible">
+    <h4 class="text-melon">기본 정보</h4>
     <form @submit.prevent="createMember" id="createMemberfrm">
       <table class="line-table">
         <tr>

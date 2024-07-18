@@ -1,93 +1,146 @@
 <template>
-  <div class="main-container box-shadow">
-    <h4 class="order-title text-melon">주문 페이지</h4>
-    <div class="order-items">
-      <div class="order-item" v-for="item in items" :key="item.productId">
-        <div class="item-details">
-          <img :src="item.productImage" alt="Product Image" class="product-image" />
-          <div class="item-name">상품 이름: {{ item.productName }}</div>
-          <div class="item-quantity">수량: {{ item.productQuantity }}</div>
-          <div class="item-price">{{ item.price * item.productQuantity }} 원</div>
-        </div>
-      </div>
+  <div class="main-container">
+    <h2 class="text-melon">주문하기</h2>
+    <div class="box-container">
+    <table class="line-table">
+    <thead>
+      <tr>
+        <th>상품 정보</th>
+        <th>수량</th>
+        <th>가격</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="item in items" :key="item.productId">
+        <td class="item-info" colspan="2"><div class="item-image"><img :src="item.productImage" alt="Product Image" /></div>
+        {{ item.productName }}</td>
+        <td>{{ item.productQuantity }}</td>
+        <td>{{ item.price * item.productQuantity }} 원</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="display: flex; align-items: flex-end; flex-direction: column;">
+    <h6>배송비 {{ shippingFeeMessage }}</h6>
+    <hr style="width: 200px">
+    <h4 class="text-melon">합계: {{ totalAmount }} 원</h4>
+  </div>
+  <hr class="line">
+
+  <div class="box-container-no-shade">
+    <label for="ownedCouponId"><h4 class="text-melon">쿠폰 / 포인트 사용</h4></label>
+    <select id="ownedCouponId" v-model="ownedCouponId" @change="applyCoupon">
+      <option value="">보유중인 쿠폰 선택하기</option>
+      <option v-for="coupon in coupons" :key="coupon.ownedCouponId" :value="coupon.ownedCouponId">
+        {{ coupon.couponName }}
+      </option>
+    </select>
+    <p v-if="coupons.length === 0">보유중인 쿠폰이 없습니다.</p>
+  </div>
+  <div class="box-container-no-shade btn-container">
+    <div class="point-wrapper">
+    <input type="number" id="usePoints" v-model.number="usePoints" :readonly="pointsApplied" /> P&nbsp;/&nbsp;<span style="color: red">{{ totalPoints }}</span>&nbsp;P&nbsp;  
+    <button @click="applyPoints" :disabled="pointsApplied || usePoints < 1000" class="btn btn-green" style="height: 30px">적용하기</button></div>
+    <span class="text-info">포인트는 최소 1000 포인트 보유 시, 1000 포인트 이상 사용 가능합니다.</span>
+    <span v-if="pointsError" class="text-danger">{{ pointsError }}</span>
+  </div>
+
+  <hr class="line" style="background: white">
+
+  <div style="display: flex; align-items: flex-end; flex-direction: column;">
+    <h6>(3만원 이상 구매시 배송비 무료)</h6>
+    <h4 class="text-melon">총 결제액: {{ totalAmount }} 원</h4>
+  </div>
+
+  <hr class="line">
+
+  <div class="order-details">
+    <h4 class="text-melon">배송 정보</h4>
+    <table class="line-table" style="padding: 10px">
+      <colgroup>
+        <col style="width:170px">
+        <col style="width:*">
+      </colgroup>
+      <tbody>
+        <tr>
+          <td style="text-align: left;">배송지 선택</td>
+          <td>
+            <div class="radio-container">
+              <input type="radio" id="existingAddress" value="existing" v-model="addressType" />
+              <label for="existingAddress">기존 배송지</label>
+              <input type="radio" id="newAddress" value="new" v-model="addressType" />
+              <label for="newAddress">새로운 배송지</label>
+            </div>
+          </td>
+        </tr>
+        <tr v-if="addressType === 'existing'">
+          <td style="text-align: left;">배송지명</td>
+          <td>
+            <select v-model="selectedAddress">
+              <option v-for="address in addresses" :key="address.id" :value="address">{{ address.name }}</option>
+            </select>
+          </td>
+        </tr>
+        <tr v-if="addressType === 'new'">
+          <td style="text-align: left;"><label for="recipient">수령인 이름</label></td>
+          <td>
+            <input type="text" id="recipient" v-model="recipient" @input="validateRecipient" />
+            <p v-if="errors.recipient" class="error">{{ errors.recipient }}</p>
+          </td>
+        </tr>
+        <tr v-if="addressType === 'new'">
+          <td style="text-align: left"><label for="phoneNumber">수령인 연락처</label></td>
+          <td>
+            <input type="text" id="phoneNumber" v-model="phoneNumber" @input="validatePhoneNumber" />
+            <p v-if="errors.phoneNumber" class="error">{{ errors.phoneNumber }}</p>
+          </td>
+        </tr>
+        <tr class="postal-code-group" v-if="addressType === 'new'">
+          <td style="text-align: left"><label for="postalCode">주소</label></td>
+          <td>
+            <div class="postal-code-input">
+              <input type="text" id="postalCode" v-model="postalCode" class="postal-code-field" readonly />
+              <button @click="openDaumPostcode" class="btn btn-green" style="display: inline-block; white-space: nowrap;">우편 번호 찾기</button>
+            </div>
+            <div ref="wrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
+              <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" @click="foldDaumPostcode" alt="접기 버튼">
+            </div>
+            <input type="text" id="address" v-model="address" readonly />
+            <p v-if="errors.address" class="error">{{ errors.address }}</p>
+            <input type="text" id="detailedAddress" v-model="detailedAddress" @input="validateDetailedAddress" />
+            <p v-if="errors.detailedAddress" class="error">{{ errors.detailedAddress }}</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><label for="orderRequest">배송 요청사항</label></td>
+          <td>
+            <input type="text" id="orderRequest" v-model="orderRequest" placeholder=" 배송 요청 사항을 입력해 주세요." />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="subscription-options">
+      <label>
+        <input type="radio" v-model="subscriptionStatus" :value="true" />
+        <span class="subscription-button">정기구독</span>
+      </label>
+      <label>
+        <input type="radio" v-model="subscriptionStatus" :value="false" />
+        <span class="subscription-button">한번만 구매하기</span>
+      </label>
     </div>
-    <div class="input-group">
-      <label for="ownedCouponId">쿠폰</label>
-      <select id="ownedCouponId" v-model="ownedCouponId" @change="applyCoupon">
-        <option value="">보유중인 쿠폰 선택하기</option>
-        <option v-for="coupon in coupons" :key="coupon.ownedCouponId" :value="coupon.ownedCouponId">
-          {{ coupon.couponName }}
-        </option>
-      </select>
-      <p v-if="coupons.length === 0">보유중인 쿠폰이 없습니다.</p>
-    </div>
-    <div class="input-group">
-      <label for="usePoints">포인트 사용 (최소 1000포인트)</label>
-      <input type="number" id="usePoints" v-model.number="usePoints" :readonly="pointsApplied" />
-      <button @click="applyPoints" :disabled="pointsApplied">적용하기</button>
-      <p v-if="usePoints < 1000">포인트는 최소 1000포인트부터 사용 가능합니다.</p>
-      <p v-if="pointsError">{{ pointsError }}</p>
-    </div>
-    <div class="total-points">보유 포인트: {{ totalPoints }} 점</div>
-    <p>3만원 이상 구매시 배송비 무료</p>
-    <div class="shipping-fee">배송비: {{ shippingFeeMessage }}</div>
-    <div class="total-amount">총 금액: {{ totalAmount }} 원</div>
-    <div class="order-details">
-      <h4 class="section-title">배송정보</h4>
-      <div class="input-group">
-        <label for="recipient">수령인 이름</label>
-        <input type="text" id="recipient" v-model="recipient" @input="validateRecipient" />
-        <p v-if="errors.recipient" class="error">{{ errors.recipient }}</p>
-      </div>
-      <div class="input-group">
-        <label for="phoneNumber">수령인 연락처</label>
-        <input type="text" id="phoneNumber" v-model="phoneNumber" @input="validatePhoneNumber" />
-        <p v-if="errors.phoneNumber" class="error">{{ errors.phoneNumber }}</p>
-      </div>
-      <div class="input-group postal-code-group">
-        <label for="postalCode">우편번호</label>
-        <div class="postal-code-input">
-          <input type="text" id="postalCode" v-model="postalCode" class="postal-code-field" readonly />
-          <button @click="openDaumPostcode" class="btn btn-gray">우편번호 검색</button>
-        </div>
-        <div ref="wrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
-          <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" @click="foldDaumPostcode" alt="접기 버튼">
-        </div>
-      </div>
-      <div class="input-group">
-        <label for="address">도로명 주소</label>
-        <input type="text" id="address" v-model="address" readonly />
-      </div>
-      <p v-if="errors.address" class="error">{{ errors.address }}</p>
-      <div class="input-group">
-        <label for="detailedAddress">나머지 주소</label>
-        <input type="text" id="detailedAddress" v-model="detailedAddress" @input="validateDetailedAddress" />
-        <p v-if="errors.detailedAddress" class="error">{{ errors.detailedAddress }}</p>
-      </div>
-      <div class="input-group">
-        <label for="orderRequest">배송 요청사항</label>
-        <input type="text" id="orderRequest" v-model="orderRequest" placeholder="배송 요청사항 입력해 주세요." />
-      </div>
-      <div class="subscription-options">
-        <label>
-          <input type="radio" v-model="subscriptionStatus" :value="true" />
-          <span class="subscription-button">정기구독</span>
-        </label>
-        <label>
-          <input type="radio" v-model="subscriptionStatus" :value="false" />
-          <span class="subscription-button">한번만 구매하기</span>
-        </label>
-      </div>
-    </div>
-    <div id="payment-method" class="w-100"></div>
-    <div id="agreement" class="w-100"></div>
-    <button id="payment-request-button" @click="preparePayment" class="order-button btn btn-green">결제하기</button>
+  </div>
+  <div id="payment-method" class="w-100"></div>
+  <div id="agreement" class="w-100"></div>
+  <button id="payment-request-button" @click="preparePayment" class="order-button btn btn-green">결제하기</button>
+  </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 import axios from '../axios';
+import '../assets/styles.css';
 
 export default {
   name: 'OrderPage',
@@ -111,6 +164,9 @@ export default {
       tossPayments: null,
       paymentWidget: null,
       currentOrderId: null, // 현재 주문 ID를 저장합니다.
+      addressType: 'existing', // 기본값을 기존 배송지로 설정
+      addresses: [], // 기존 배송지 목록
+      selectedAddress: null, // 선택된 기존 배송지
       errors: {
         recipient: '',
         phoneNumber: '',
@@ -140,6 +196,7 @@ export default {
     this.setRecipientAndPhoneNumber();
     this.calculateTotalAmount();
     await this.fetchTotalPoints(); // 총 포인트 가져오기
+    this.fetchAddresses(); // 기존 배송지 목록을 가져오는 함수 호출
   },
   methods: {
     ...mapActions('order', ['fetchUserProfile', 'fetchCoupons', 'fetchOrderDetails', 'placeOrder']),
@@ -151,6 +208,13 @@ export default {
       } catch (error) {
         console.error('Error fetching total points:', error);
       }
+    },
+    fetchAddresses() {
+      // API 호출 또는 데이터를 가져오는 로직
+      this.addresses = [
+        { id: 1, name: '배송지1', recipient: '홍길동', phoneNumber: '010-1234-5678', postalCode: '12345', address: '서울시 강남구', detailedAddress: '역삼동 123-45' },
+        { id: 2, name: '배송지2', recipient: '김철수', phoneNumber: '010-8765-4321', postalCode: '54321', address: '서울시 서초구', detailedAddress: '서초동 67-89' }
+      ];
     },
     applyCoupon() {
       const selectedCoupon = this.coupons.find(coupon => coupon.ownedCouponId === this.ownedCouponId);
@@ -377,7 +441,7 @@ export default {
     foldDaumPostcode() {
       const elementWrap = this.$refs.wrap;
       elementWrap.style.display = 'none';
-    },
+    }
   },
   watch: {
     ownedCouponId(newVal) {
@@ -405,112 +469,60 @@ export default {
 };
 </script>
 
+
 <style scoped>
-.order-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
+.item-info {
+  height: 120px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.item-image{
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-right: 30px;
 }
 
-.order-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 20px;
+.box-container-no-shade label, select, p {
+  margin: 10px;
 }
 
-.section-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 10px;
+.btn-container {
+  position: relative;
+  display: inline-block;
 }
 
-.order-items {
-  margin-bottom: 20px;
-}
-
-.order-item {
+.point-wrapper {
+  white-space: nowrap;
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
+  align-items: center;
+
 }
 
-.item-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.item-name,
-.item-quantity,
-.item-price {
-  font-size: 1rem;
-  margin-bottom: 5px;
-}
-
-.total-amount {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.shipping-fee {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}
-
-.order-details {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 10px;
-}
-
-.input-group label {
-  font-size: 1rem;
-  text-align: left;
-  margin-bottom: 5px;
-}
-
-.input-group input, .input-group select {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-  width: 100%;
-  text-align: left;
-}
-
-.postal-code-group {
-  display: flex;
-  gap: 10px;
+.text-info {
+  position: absolute;
+  left: px;
+  font-size: 0.9em;
 }
 
 .postal-code-input {
   display: flex;
-  width: 100%;
-  gap: 10px;
+  align-items: center;
+  width: 300px;
 }
 
 .postal-code-field {
-  text-align: left;
+  margin-right: 10px;
 }
 
 .btn {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #f5f5f5;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-}
-
-.btn:hover {
-  background-color: #ddd;
 }
 
 .subscription-options {
@@ -540,14 +552,14 @@ export default {
 }
 
 .subscription-options input[type="radio"]:checked + .subscription-button {
-  background-color: #5cb85c;
+  background-color: #B4D9A9;
   color: white;
 }
 
 .order-button {
   width: 100%;
   padding: 10px;
-  background-color: #5cb85c;
+  background-color: #B4D9A9;
   color: white;
   border: none;
   border-radius: 4px;
@@ -555,7 +567,7 @@ export default {
 }
 
 .order-button:hover {
-  background-color: #4cae4c;
+  background-color: #B4D9A9;
 }
 
 .product-image {
@@ -567,5 +579,27 @@ export default {
   color: red;
   font-size: 12px;
   margin-top: 5px;
+}
+
+.radio-container {
+ display: flex;
+ align-items: center;
+ justify-content: flex-start;
+}
+
+.radio-container label {
+  margin-right: 20px; /* 라벨 사이의 간격 조절 */
+}
+
+.radio-container input[type="radio"] {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px; /* 라디오 버튼과 라벨 사이의 간격 조절 */
+}
+
+select {
+  width: 100; /* select 요소의 너비를 부모 요소에 맞게 설정 */
+  box-sizing: border-box; /* 패딩과 테두리를 포함한 너비 계산 */
+  margin-left: 0;
 }
 </style>

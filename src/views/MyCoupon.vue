@@ -1,6 +1,7 @@
 <template>
-  <div class="main-container box-shadow">
-    <h1 class="text-melon">보유 쿠폰</h1>
+  <div class="main-container">
+        <h2 class="text-melon">보유 쿠폰</h2>
+    <div class="box-container-no-shade">
     <div v-if="coupons && coupons.length > 0">
       <table class="line-table">
         <thead>
@@ -22,11 +23,13 @@
     <div v-else>
       <p>보유한 쿠폰이 없습니다.</p>
     </div>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from '../axios';
+import '../assets/styles.css';
 
 export default {
   name: 'MyCoupon',
@@ -74,10 +77,6 @@ export default {
 
 .line-table th {
   background-color: #f4f4f4;
-}
-
-.text-melon {
-  color: #C6EDC2;
 }
 
 .box-shadow {

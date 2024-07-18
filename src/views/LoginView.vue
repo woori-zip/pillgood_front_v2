@@ -1,34 +1,51 @@
 <template>
   <div class="main-container">
-  <div class="box-container-no-shade">
-    <h4 class="text-melon">로그인</h4>
-    <!-- 기존 로그인 폼 -->
-    <form @submit.prevent="handleLogin">
-      <table>
-        <tr>
-          <td><label for="email" class="text-melon">이메일</label></td>
-          <td><input type="email" id="email" v-model="email" required /></td>
-        </tr>
-        <tr>
-          <td><label for="password" class="text-melon">비밀번호</label></td>
-          <td><input type="password" id="password" v-model="password" required /></td>
-        </tr>
-      </table>
+    <div class="box-container">
+      <div class="form-container">
+        <!-- 기존 로그인 폼 -->
+        <form @submit.prevent="handleLogin" class="login-form">
+          <h4 class="text-melon">로그인</h4>
+          <table>
+            <tr>
+              <td><label for="email" class="text-melon">이메일</label></td>
+              <td><input type="email" id="email" v-model="email" required /></td>
+            </tr>
+            <tr>
+              <td><label for="password" class="text-melon">비밀번호</label></td>
+              <td><input type="password" id="password" v-model="password" required /></td>
+            </tr>
+          </table>
+          <div class="btn-container">
+            <button type="submit" class="btn btn-green">로그인</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 중앙에 세로 선 추가 -->
+      <div class="vertical-line"></div>
+
+      <!-- 카카오 로그인 컴포넌트 추가 -->
+      <div class="social-container">
+        <h4 class="text-melon">소셜 로그인</h4>
+        <KakaoLogin @loginSuccess="handleKakaoLoginSuccess" />
+      </div>
+
+      <div class="btn-container2">
+        <button type="button" class="btn btn-gray" @click="navigateToRegister">회원가입</button>
+      </div>
+
       <div class="check-container">
         <input id="chk_all" type="checkbox" v-model="rememberEmail">
         <label for="chk_all" class="text-gray">이메일 기억하기</label>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <router-link to="/forgotpassword">비밀번호 재설정</router-link>
       </div>
-      <router-link to="/forgotpassword">비밀번호 재설정</router-link>
-      <div class="btn-container">
-        <button type="submit" class="btn btn-green">로그인</button>
-        <button type="button" class="btn btn-gray" @click="navigateToRegister">회원가입</button>
-      </div>
-    </form>
-    <!-- 카카오 로그인 컴포넌트 추가 -->
-    <KakaoLogin @loginSuccess="handleKakaoLoginSuccess" />
-  </div>
+    </div>
   </div>
 </template>
+
+
+
 
 <script>
 import { mapActions } from 'vuex'
@@ -162,9 +179,59 @@ export default {
 };
 </script>
 
-<style>
-.social-login-container {
-  margin-top: 20px;
+<style scoped>
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+.box-container {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* 두 개의 폼과 세로선을 위한 자동 크기 열 */
+  grid-template-areas:
+    'form line social'
+    'join join join'
+    'options options options';
+  gap: 10px;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%; /* 원하는 너비로 설정 */
+  max-width: 800px; /* 최대 너비 설정 */
+}
+
+.form-container {
+  grid-area: form;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.social-container {
+  grid-area: social;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.check-container {
+  grid-area: options;
+  border-radius: 10px;
   text-align: center;
+}
+
+.btn-container2 {
+  grid-area: join;
+  display: flex;
+  justify-content: center;
+  padding: 0px;
 }
 </style>

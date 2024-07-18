@@ -1,14 +1,24 @@
 <template>
-  <div>
-    <h1>결제가 성공적으로 완료되었습니다!</h1>
-    <p>주문 ID: {{ orderId }}</p>
-    <p>결제 금액: {{ amount }} 원</p>
-    <button @click="goHome">홈으로 돌아가기</button>
+  <div class="main-container">
+    <div class="box-container">
+      <h2 class="text-melon">결제가 성공적으로 완료되었습니다!</h2>
+      <hr class="line">
+      <div>
+        <p>주문 번호: {{ orderId }}</p>
+        <h4>결제 금액: {{ amount }} 원</h4>
+      </div>
+      <hr class="line">
+      <div class="btn-container">
+        <button @click="goOrderDetail" class="btn btn-green">주문 내역 확인하기</button>
+        <button @click="goHome" class="btn btn-gray">홈으로 돌아가기</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from '../axios';
+import '../assets/styles.css';
 
 export default {
   name: 'PaymentSuccess',
@@ -53,6 +63,9 @@ export default {
         throw error;
       }
     },
+    goOrderDetail() {
+      this.$router.push(`/order-detail/${this.orderId}`);
+    },
     goHome() {
       this.$router.push('/');
     }
@@ -61,5 +74,5 @@ export default {
 </script>
 
 <style scoped>
-/* 스타일을 여기에 추가하세요 */
+/* 필요한 스타일을 여기에 추가하세요 */
 </style>
