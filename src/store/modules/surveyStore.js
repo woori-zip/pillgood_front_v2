@@ -25,7 +25,8 @@ const state = {
   currentQuestionIndex: 0,
   currentDetailedQuestionIndex: 0,
   currentDetailedQuestions: {},
-  surveyResult: null, 
+  surveyResult: null,
+  ageGroupDeficiencyData: [], // 추가된 부분
 };
 
 const mutations = {
@@ -80,6 +81,9 @@ const mutations = {
   },
   setDeficiencies(state, deficiencies) {
     state.deficiencies = deficiencies;
+  },
+  setAgeGroupDeficiencyData(state, data) { // 추가된 부분
+    state.ageGroupDeficiencyData = data;
   },
 };
 
@@ -211,32 +215,29 @@ const actions = {
           return answer ? answer.deficiencyId : null;
         }).filter(id => id !== null);
       });
-  
-      // 상세 질문에서 선택된 결핍 ID들을 keywords로 저장
-    const detailedDeficiencies = Object.entries(state.detailedAnswers).flatMap(([questionId, isSelected]) => {
-      if (isSelected) {
-        // detailedQuestions에서 해당 질문 ID와 매칭되는 deficiencyId를 추출
-        const detailedQuestion = Object.values(state.currentDetailedQuestions).flatMap(questions => 
-          questions.filter(dq => dq.detailedQuestionId.toString() === questionId)
-        );
-        return detailedQuestion.length > 0 ? detailedQuestion.map(dq => dq.deficiencyId) : [];
-      }
-      return [];
-    });
 
-    // 저장되는 답변 확인용
-    console.log('Selected detailedAnswers:', state.detailedAnswers);
-    console.log('Extracted detailedDeficiencies:', detailedDeficiencies);
-  
+      // 상세 질문에서 선택된 결핍 ID들을 keywords로 저장
+      const detailedDeficiencies = Object.entries(state.detailedAnswers).flatMap(([questionId, isSelected]) => {
+        if (isSelected) {
+          // detailedQuestions에서 해당 질문 ID와 매칭되는 deficiencyId를 추출
+          const detailedQuestion = Object.values(state.currentDetailedQuestions).flatMap(questions => 
+            questions.filter(dq => dq.detailedQuestionId.toString() === questionId)
+          );
+          return detailedQuestion.length > 0 ? detailedQuestion.map(dq => dq.deficiencyId) : [];
+        }
+        return [];
+      });
+
+      // 저장되는 답변 확인용
+      console.log('Selected detailedAnswers:', state.detailedAnswers);
+      console.log('Extracted detailedDeficiencies:', detailedDeficiencies);
+
       // 결핍 ID로부터 추천 제품 찾기
-      // console.log('rootState.product.products:', rootState.product.products);
-      // console.log('rootState.deficiency.deficiencyNutrients:', rootState.deficiency.deficiencyNutrients);
-  
       if (!rootState.deficiency.deficiencyNutrients) {
         console.error('rootState.deficiencyNutrients is undefined');
         return;
       }
-      
+
       let recommendedProducts = deficiencies.flatMap(deficiencyId => {
         const deficiencyNutrient = rootState.deficiency.deficiencyNutrients.find(dn => dn.deficiencyId === deficiencyId);
         console.log('deficiencyNutrient:', deficiencyNutrient);
@@ -244,22 +245,21 @@ const actions = {
           console.error(`No nutrientId found for deficiencyId: ${deficiencyId}`);
           return [];
         }
-  
+
         const productsForDeficiency = rootState.product.products.filter(product => {
-          // console.log('Checking product:', product, 'against nutrientId:', deficiencyNutrient.nutrientId);
           return product.nutrientId === deficiencyNutrient.nutrientId;
         });
         console.log(`Products for deficiency ID ${deficiencyId}:`, productsForDeficiency);
         return productsForDeficiency.map(product => product.productId);
       });
-  
+
       // 중복된 값 제거
-    recommendedProducts = [...new Set(recommendedProducts)];
-    console.log('Recommended Products (unique):', recommendedProducts);
-  
+      recommendedProducts = [...new Set(recommendedProducts)];
+      console.log('Recommended Products (unique):', recommendedProducts);
+
       const uniqueKeywords = Array.from(new Set(detailedDeficiencies)).join(',');
       console.log('Keywords:', uniqueKeywords);
-  
+
       const survey = {
         name: state.survey.name,
         age: state.survey.age,
@@ -274,22 +274,22 @@ const actions = {
         recommendedProducts: recommendedProducts.join(',') || '',
         keywords: uniqueKeywords || ''
       };
-  
+
       if (!survey.memberUniqueId) {
         throw new Error('memberUniqueId가 설정되지 않았습니다.');
       }
-  
+
       const existingSurveys = await dispatch('loadSurveyResult', survey.memberUniqueId);
       if (existingSurveys && existingSurveys.length > 0) {
         await dispatch('updateSurvey', { id: existingSurveys[0].surveyNo, survey });
       } else {
         await dispatch('sendSurveyData', survey);
       }
-  
+
       commit('setCurrentStep', 'finish');
     } catch (error) {
-        console.error('Failed to finish survey:', error);
-        alert('설문 완료 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      console.error('Failed to finish survey:', error);
+      alert('설문 완료 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
   },
   async sendSurveyData(_, survey) {
@@ -317,6 +317,36 @@ const actions = {
     } catch (error) {
       console.error('Failed to load survey result:', error);
       return null;
+    }
+  },
+  async fetchAgeGroupDeficiencyData({ commit, dispatch, state }) { // 추가된 부분
+    try {
+      // 결핍 데이터를 먼저 가져옵니다.
+      await dispatch('fetchDeficiencies');
+      const response = await axios.get('/api/surveys/age-group-deficiency');
+      const data = response.data;
+      // 결핍 ID와 결핍 이름 간의 매핑을 생성합니다.
+      const deficiencyMap = state.deficiencies.reduce((map, deficiency) => {
+        map[deficiency.deficiencyId] = deficiency.deficiencyName;
+        return map;
+      }, {});
+
+      console.log('Deficiency Map:', deficiencyMap); // 추가된 로그
+
+      // 결핍 데이터를 결핍 이름으로 매핑합니다.
+      const mappedData = data.map(item => { 
+        const ageGroup = item[0];
+        const deficiencyId = item[1];
+        const count = item[2];
+        const deficiencyName = deficiencyMap[deficiencyId] || `Unknown (${deficiencyId})`;
+        return [ageGroup, deficiencyName, count];
+      });
+
+      console.log('Mapped Data:', mappedData); // 추가된 로그
+
+      commit('setAgeGroupDeficiencyData', mappedData);
+    } catch (error) {
+      console.error('Failed to fetch age group deficiency data:', error);
     }
   },
 };
@@ -348,9 +378,9 @@ const getters = {
     console.log('Filtering products with IDs:', productIds);
     console.log('rootState.product.products:', rootState.product.products);
     return rootState.product.products.filter(product => productIds.includes(product.productId));
-  }
+  },
+  ageGroupDeficiencyData: (state) => state.ageGroupDeficiencyData, // 추가된 부분
 };
-
 
 export default {
   namespaced: true,
