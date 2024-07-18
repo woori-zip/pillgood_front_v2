@@ -34,14 +34,14 @@
           <v-list-item-title>후기 관리</v-list-item-title>
         </v-list-item>
 
-        <v-list-item link to="/">
+        <v-list-item link to="/admin/inquirys">
           <v-list-item-icon>
             <v-icon>mdi-comment</v-icon>
           </v-list-item-icon>
           <v-list-item-title>문의 관리</v-list-item-title>
         </v-list-item>
 
-        <v-list-item link to="/">
+        <v-list-item link to="/admin/coupons">
           <v-list-item-icon>
             <v-icon>mdi-comment</v-icon>
           </v-list-item-icon>

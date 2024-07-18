@@ -15,6 +15,8 @@ import AdminMemberList from '../views/admin/AdminMemberList.vue'
 import AdminProductList from '../views/admin/AdminProductList.vue'
 import AdminNoticeList from '../views/admin/AdminNoticeList.vue'
 import AdminReviewList from '../views/admin/AdminReviewList.vue'
+import AdminInquiryList from '../views/admin/AdminInquiryList.vue'
+import AdminCouponList from '../views/admin/AdminCouponList.vue'
 
 // member
 import MemberList from '../views/MemberList.vue';
@@ -92,6 +94,8 @@ const routes = [
       { path: 'products', component: AdminProductList },
       { path: 'notices', component: AdminNoticeList },
       { path: 'reviews', component: AdminReviewList },
+      { path: 'inquirys', component: AdminInquiryList },
+      { path: 'coupons', component: AdminCouponList },
       // Other admin routes can be added here
     ]
   },

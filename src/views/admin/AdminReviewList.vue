@@ -36,7 +36,10 @@
           <img :src="item.product.productImage" alt="Product Image" style="height: 100px; width: auto;">
         </template>
         <template v-slot:[`item.reviewContent`]="{ item }">
-          <span class="clickable" @click="openDetailDialog(item)">{{ truncateText(extractText(item.reviewContent), 15) }}</span>
+          <span class="clickable" @click="openDetailDialog(item)">
+            {{ truncateText(extractText(item.reviewContent), 15) }}A
+            <i v-if="containsImageTag(item.reviewContent)" class="fa-solid fa-paperclip"></i>
+          </span>
         </template>
         <template v-slot:[`item.rating`]="{ item }">
           <star-rating v-model="item.rating" :star-size="30" :show-rating="false" :disable-click="true"></star-rating>
@@ -222,6 +225,9 @@ export default {
       if (!date) return '';
       return new Date(date).toLocaleDateString();
     },
+    containsImageTag(content) {
+      return /<img[^>]*src="[^"]*"[^>]*>/g.test(content);
+    }
   },
   created() {
     this.fetchReviews();
@@ -241,7 +247,6 @@ export default {
 
 .clickable {
   cursor: pointer;
-  color: blue;
   text-decoration: underline;
 }
 
