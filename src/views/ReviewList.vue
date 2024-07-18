@@ -19,7 +19,7 @@
           <td>{{ review.reviewId }}</td>
           <td>{{ truncateText(review.product.productName, 15) }}</td>
           <td>
-            <img style="height: 100px; width: auto;" :src="review.product.productImage" alt="Product Image" />
+            <img style="height: 100px; width: auto;" :src="review.product.productImage" alt="Prod uct Image" />
           </td>
           <td @click="goToReviewDetail(review)" style="cursor: pointer;">
             <span v-html="truncateText(extractText(review.reviewContent), 15)"></span> &nbsp;

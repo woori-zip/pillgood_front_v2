@@ -18,7 +18,25 @@
               label="영양제"
               dense
               required
+              @change="handleNutrientChange"
             ></v-select>
+          </v-col>
+          <v-col v-if="localProduct.nutrientId === 'new'" cols="12" sm="5">
+            <v-text-field
+              v-model="newNutrientName"
+              label="Enter Nutrient Name"
+              required
+            ></v-text-field>
+          </v-col>
+          <v-col v-if="localProduct.nutrientId === 'new'" cols="12" sm="5">
+            <v-text-field
+              v-model="newNutrientDescription"
+              label="Enter Nutrient Description"
+              required
+            ></v-text-field>
+          </v-col>
+          <v-col v-if="localProduct.nutrientId === 'new'" cols="12" sm="2">
+            <v-btn @click="saveNewNutrient">Save</v-btn>
           </v-col>
           <v-col cols="12" sm="6">
             <v-text-field v-model="localProduct.price" label="가격" type="number" required></v-text-field>
@@ -70,7 +88,9 @@ export default {
   },
   data() {
     return {
-      localProduct: { ...this.product }
+      localProduct: { ...this.product },
+      newNutrientName: '',
+      newNutrientDescription: ''
     };
   },
   computed: {
@@ -83,7 +103,32 @@ export default {
     }
   },
   methods: {
+    ...mapActions('nutrient', ['fetchNutrients', 'createNutrient']),
     ...mapActions('product', ['updateProduct']),
+    handleNutrientChange() {
+      if (this.localProduct.nutrientId !== 'new') {
+        this.newNutrientName = '';
+        this.newNutrientDescription = '';
+      }
+    },
+    async saveNewNutrient() {
+      if (!this.newNutrientName || !this.newNutrientDescription) {
+        alert('영양제와 효능을 입력해주세요');
+        return;
+      }
+
+      try {
+        const newNutrient = await this.createNutrient({
+          nutrientName: this.newNutrientName,
+          description: this.newNutrientDescription
+        });
+        this.localProduct.nutrientId = newNutrient.nutrientId;
+        alert('새로운 영양제 등록 성공');
+        await this.fetchNutrients();
+      } catch (error) {
+        alert('새로운 영양제를 등록하는 데 실패했습니다.');
+      }
+    },
     async handleUpdateProduct() {
       if (this.localProduct.nutrientId === 'new') {
         alert('새 영양제를 저장 후 다시 시도해주세요.');
