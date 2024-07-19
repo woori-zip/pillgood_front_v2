@@ -1,8 +1,20 @@
 <template>
   <div class="main-container">
-    <h1 class="text-melon">{{ notice.noticeTitle }}</h1>
     <div class="box-container">
-      <p v-html="notice.noticeContent"></p>
+      <table class="line-table" v-if="notice">
+        <tr>
+          <td>제목</td>
+          <td><strong>{{ notice.noticeTitle }}</strong></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="content-cell">{{ notice.noticeContent }}</div>
+          </td>
+        </tr>
+      </table>
+      <div v-else>
+        Loading...
+      </div>
     </div>
     <div class="btn-container">
       <router-link to="/noticelist" class="btn btn-gray btn-small">목록으로</router-link>
@@ -11,32 +23,41 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
+import '@/assets/styles.css';
 
 export default {
   name: 'NoticeDetail',
   data() {
     return {
-      notice: {}
+      notice: null
     };
-  },
-  computed: {
-    ...mapGetters('notice', ['notices'])
   },
   methods: {
     ...mapActions('notice', ['fetchNotice']),
     async loadNotice() {
       const noticeId = this.$route.params.id;
-      await this.fetchNotice(noticeId);
-      this.notice = this.notices.find(n => n.noticeNo == noticeId);
+      try {
+        const response = await this.fetchNotice(noticeId);
+        this.notice = response.data; // fetchNotice 액션의 반환 값을 사용하여 notice를 설정
+      } catch (error) {
+        console.error('공지사항을 불러오지 못했습니다:', error);
+      }
     }
   },
-  created() {
-    this.loadNotice();
+  async created() {
+    await this.loadNotice();
   }
 };
 </script>
 
 <style scoped>
-/* 추가적인 스타일이 필요하다면 여기에 작성합니다. */
+.line-table tr td {
+  padding: 10px;
+}
+
+.content-cell {
+  min-height: 300px; /* 내용 부분의 최소 높이 설정 */
+  display: flex;
+}
 </style>
