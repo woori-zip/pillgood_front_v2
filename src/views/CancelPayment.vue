@@ -27,6 +27,7 @@ export default {
     return {
       cancelReason: '',
       orderNo: this.$route.params.orderNo,
+      paymentKey: null,
       cancelAmount: null,
     };
   },
@@ -51,8 +52,7 @@ export default {
       try {
         const response = await axios.post('/api/payment/cancel', {
           paymentKey: this.paymentKey,
-          cancelReason: this.cancelReason,
-          orderNo: this.orderNo
+          cancelReason: this.cancelReason
         });
         if (response.status === 200) {
           this.$router.push({ name: 'CancelSuccess' }); // 결제 취소 성공 페이지로 이동
