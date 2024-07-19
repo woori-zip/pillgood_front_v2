@@ -23,33 +23,30 @@
                 class="form-control form-control-white text-bg-white search-input">
               <i class="fa-solid fa-magnifying-glass search-icon" @click="searchProducts"></i>
             </div>
-
-            <div class="header-right">
-              <!-- 사용자 이름 -->
-              <div v-if="isLoggedIn" class="user-name" style="margin-right: 5px;">
-              {{ userName }} 님
-              </div>
-              <!-- 아이콘 -->
-              <div class="icon-container">
-                <button v-if="isLoggedIn" @click="navigateTo('/mypage')" class="icon-link">
-                  <i class="fa-solid fa-user"></i>
-                </button>
-                <button v-if="isLoggedIn" @click="logoutAndNavigate" class="icon-link">
-                  <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </button>
-                <button v-else @click="navigateTo('/login')" class="icon-link">
-                  <i class="fa-solid fa-user"></i>
-                </button>
-                <button @click="navigateTo('/cart')" class="icon-link">
-                  <i class="fa-solid fa-cart-shopping"></i>
-                </button>
-                <button @click="navigateTo('/noticelist')" class="icon-link">
-                  <i class="fa-solid fa-bullhorn"></i>
-                </button>
-                <button v-if="isAdmin" @click="navigateTo('/admin')" class="icon-link">
-                  <i class="fa-solid fa-gear"></i>
-                </button>
-              </div>
+            <!-- 사용자 이름 -->
+            <div v-if="isLoggedIn" class="user-name">
+             {{ userName }} 님
+            </div>
+            <!-- 아이콘 -->
+            <div class="icon-container">
+              <router-link v-if="isLoggedIn" to="/mypage" class="icon-link">
+                <i class="fa-solid fa-user"></i>
+              </router-link>
+              <button v-if="isLoggedIn" @click="logout" class="icon-link">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              </button>
+              <router-link v-else to="/login" class="icon-link">
+                <i class="fa-solid fa-user"></i>
+              </router-link>
+              <router-link to="/cart" class="icon-link" @click="navigateToCart">
+                <i class="fa-solid fa-cart-shopping"></i>
+              </router-link>
+              <router-link to="/noticelist" class="icon-link">
+                <i class="fa-solid fa-bullhorn"></i>
+              </router-link>
+              <router-link to="/admin" v-if="isAdmin">
+                <button>Admin Page</button>
+              </router-link>
             </div>
           </div>
 

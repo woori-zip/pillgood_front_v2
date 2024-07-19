@@ -27,15 +27,16 @@
             </td>
           </tr>
           <tr>
-            <td><strong>내용</strong></td>
-            <td colspan="3">
-              <RichTextEditor v-if="isEditing" v-model="editableInquiry.inquiryContent" @input="validateContent" />
-              <span v-else v-html="inquiry.inquiryContent"></span>
-              <div v-if="contentError" style="color: red;">내용을 입력하세요.</div>
-            </td>
-            <td v-if="attachedImages.length" style="margin-top: 10px">
-              <div v-for="image in attachedImages" :key="image.url" style="display: inline-block; margin: 5px;">
-                <img :src="image.url" alt="Attached Image" style="width: 100px;">
+            <td colspan="5">
+              <div class="content-cell">
+                <RichTextEditor v-if="isEditing" v-model="editableInquiry.inquiryContent" @input="validateContent" />
+                <span v-else v-html="inquiry.inquiryContent"></span>
+                <div v-if="contentError" style="color: red;">내용을 입력하세요.</div>
+                <div v-if="attachedImages.length" style="margin-top: 10px">
+                  <div v-for="image in attachedImages" :key="image.url" style="display: inline-block; margin: 5px;">
+                    <img :src="image.url" alt="Attached Image" style="width: 100px;">
+                  </div>
+                </div>
               </div>
             </td>
           </tr>
@@ -147,6 +148,7 @@ export default {
         await this.updateInquiry(this.editableInquiry);
         this.isEditing = false;
         Object.assign(this.inquiry, this.editableInquiry);
+        this.fetchInquiry(this.id); // 상태를 갱신하여 최신 데이터 반영
         alert('문의가 수정되었습니다.');
       } catch (error) {
         console.error('문의 수정 실패:', error);
@@ -186,7 +188,7 @@ export default {
       try {
         await this.deleteInquiry(this.id);
         alert('문의가 삭제되었습니다.');
-        this.goBack();
+        this.$router.goBack();
       } catch (error) {
         console.error('문의 삭제 실패:', error);
       }
@@ -204,8 +206,8 @@ export default {
         await this.updateAnswer(this.editableAnswer);
         this.isEditingAnswer = false;
         Object.assign(this.answer, this.editableAnswer);
+        this.fetchAnswer(this.id); // 상태를 갱신하여 최신 데이터 반영
         alert('답변이 수정되었습니다.');
-        this.$router.go(); // 페이지 새로고침
       } catch (error) {
         console.error('답변 수정 실패:', error);
       }
@@ -239,7 +241,6 @@ export default {
         alert('답변이 작성되었습니다.');
         this.isEditingAnswer = false;
         await this.fetchAnswer(this.inquiry.inquiryNo);
-        this.$router.go(); // 페이지 새로고침
       } catch (error) {
         console.error('답변 작성 실패:', error);
       }
@@ -289,16 +290,30 @@ export default {
 };
 </script>
 
-<style scope>
+<style>
 .bttn-container {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
 
+.icon-container {
+  position: relative;
+}
+
 .icon {
   transform: rotate(90deg);
   color: #B4D9A9;
   display: inline-flex;
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%) rotate(90deg); /* 아이콘을 수직으로 가운데 정렬하고 회전 */
+}
+
+.content-cell {
+  min-height: 300px; /* 내용 부분의 최소 높이 설정 */
+  display: flex;
+  padding: 20px;
 }
 </style>

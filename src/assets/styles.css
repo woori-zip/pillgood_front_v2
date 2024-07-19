@@ -61,6 +61,32 @@ body {
   }
 }
 
+@media (max-width: 768px) {
+  .main-container {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .box-container-wide {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .line-table {
+    width: 100%;
+    font-size: 14px; /* 폰트 크기 조정 */
+  }
+
+  .check-container-vertical {
+    width: 100%;
+    font-size: 14px; /* 폰트 크기 조정 */
+  }
+
+  .survey {
+    font-size: 16px; /* 설문조사 폰트 크기 조정 */
+  }
+}
+
 /* 버튼 스타일 */
 .btn-container {
   display: flex; /* Flexbox 사용 */
@@ -139,10 +165,6 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
-/* .search-container {
-  margin-bottom: 10px;
-} */
 
 .search-container select,
 .search-container input {
@@ -223,39 +245,11 @@ td {
   text-align: right;
 }
 
-
-.notice-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-}
-
-.notice-table th, .notice-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.notice-table th {
-  background-color: #f2f2f2;
-  color: black;
-}
-
-.notice-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.notice-table tr:hover {
-  background-color: #ddd;
-}
-
-.notice-table th, .notice-table td {
-  text-align: center;
-}
-
 /* 페이지네이션 스타일 */
 .pagination {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin: 20px 0;
 }
 
@@ -263,11 +257,6 @@ td {
 .ql-editor {
   direction: ltr !important;
   text-align: left !important;
-}
-
-/* -------------------------------------------------------------icon */
-.icon {
-  transform: rotate(90deg);
 }
 
 /* -------------------------------------------------------------calender */
@@ -300,7 +289,7 @@ td {
 }
 
 .line-table th, td, tr {
-  padding: 2px 2px 2px 2px;
+  padding: 4px 4px 4px 4px;
   align-items: center; /* 세로 중앙 정렬 */
   text-align: center; /* 가로 중앙 정렬 */
   border: none;
