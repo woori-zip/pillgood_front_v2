@@ -38,11 +38,11 @@
               <router-link v-else to="/login" class="icon-link">
                 <i class="fa-solid fa-user"></i>
               </router-link>
-              <router-link to="/inquiries" class="icon-link"> <!-- 문의 페이지로 편하게 이동하려고 잠깐 넣어 뒀음 -->
-                <i class="fa-solid fa-location-dot"></i>
-              </router-link>
               <router-link to="/cart" class="icon-link" @click="navigateToCart">
                 <i class="fa-solid fa-cart-shopping"></i>
+              </router-link>
+              <router-link to="/noticelist" class="icon-link">
+                <i class="fa-solid fa-bullhorn"></i>
               </router-link>
               <router-link to="/admin" v-if="isAdmin">
                 <button>Admin Page</button>

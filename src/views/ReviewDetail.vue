@@ -32,8 +32,9 @@
     </div>
     <div v-else v-html="extractText(reviewContent)"></div>
     <div class="btn-container">
-    <button v-if="!isEditing" @click="isEditing = true" class="btn btn-green">수정</button>
-    <button v-else @click="saveReview" class="btn btn-green">저장</button>
+      <button v-if="!isEditing" @click="isEditing = true" class="btn btn-green">수정</button>
+      <button v-else @click="saveReview" class="btn btn-green">저장</button>
+      <button @click="navigateToReviewList" class="btn btn-gray">목록으로</button>
     </div>
     </div>
   </div>
@@ -117,7 +118,6 @@ export default {
     async saveReview() {
       try {
         const response = await axios.put(`/api/reviews/update/${this.reviewId}`, {
-        
           reviewContent: this.reviewContent,
           rating: this.rating
         }, {
@@ -129,6 +129,9 @@ export default {
       } catch (error) {
         console.error('Failed to update review:', error);
       }
+    },
+    navigateToReviewList() {
+      this.$router.push('/reviewlist');
     }
   }
 };
@@ -142,5 +145,4 @@ export default {
   border-radius: 20px;
   text-align: left;
 }
-
 </style>

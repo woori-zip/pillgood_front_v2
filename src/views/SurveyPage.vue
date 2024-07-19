@@ -15,7 +15,7 @@
           </tr>
           <tr>
             <td><label for="gender">성별</label></td>
-            <td> 
+            <td>
               <select v-model="survey.gender" id="gender" required>
                 <option value="">선택하세요</option>
                 <option value="M">남성</option>
@@ -37,16 +37,16 @@
         </div>
       </div>
 
-      <div v-else-if="currentStep === 'questions'" class="survey">
+      <div v-else-if="currentStep === 'questions'">
         <h2 class="text-melon">🔎</h2>
         <div v-if="currentQuestion">
           <p class="text-bold question-text">{{ currentQuestionIndex + 1 }}. {{ currentQuestion.questionContent }}</p>
           <div class="check-container-vertical">
             <div v-for="answer in getAnswersForQuestion(currentQuestion.id)" :key="answer.id" class="form-check">
-              <input 
-                :id="'answer-' + answer.id" 
-                :value="answer.id" 
-                type="checkbox" 
+              <input
+                :id="'answer-' + answer.id"
+                :value="answer.id"
+                type="checkbox"
                 @change="handleAnswerSelection({ questionId: currentQuestion.id, answerId: answer.id })">
               <label :for="'answer-' + answer.id">{{ answer.answerContent }}</label>
             </div>
@@ -177,24 +177,5 @@ export default {
 </script>
 
 <style scoped>
-/* 기존 스타일 유지 */
 
-/* .btn-container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-} */
-
-.line-table {
-  width: 60%;
-  border-collapse: collapse;
-  }
-
-.line-table td, tr, th {
-    border: none;
-}
-
-.survey {
-  font-size: 20px;
-}
 </style>
