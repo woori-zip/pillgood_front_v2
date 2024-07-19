@@ -5,7 +5,7 @@
     </div>
     <div class="product-main">
       <div class="product-image">
-        <img :src="product.productImage || '../assets/product_01.png'" alt="Product Image" />
+        <img :src="product.productImages[0] || '../assets/product_01.png'" alt="Product Image" />
       </div>
       <div class="product-info" style="justify-content: space-around;">
         <div class="box-container-no-shade">
@@ -41,6 +41,7 @@
 
       <div v-if="activeTab === 'description'">
         <p>{{ product.fullDescription }}</p>
+        <img :src="product.productImages[1] || '../assets/product_01.png'" alt="Second Product Image" style="width: 100%;"/>
       </div>
 
       <div v-if="activeTab === 'details'">
@@ -85,7 +86,7 @@ export default {
         productId: 0,
         productName: '',
         price: 0,
-        productImage: '',
+        productImages: [],
         description: '',
         fullDescription: '',
         details: '',
@@ -98,16 +99,21 @@ export default {
       try {
         const response = await axios.get(`/api/products/detail/${this.id}`);
         this.product = response.data;
-        this.product.productImage = this.extractFirstImage(response.data.productImage);
+        this.product.productImages = this.extractImages(response.data.productImage);
+        console.log('Product images:', this.product.productImages);
       } catch (error) {
         console.error('Error fetching product details:', error);
       }
     },
-    extractFirstImage(htmlString) {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(htmlString, 'text/html');
-      const imgTag = doc.querySelector('img');
-      return imgTag ? imgTag.src : null;
+    extractImages(htmlString) {
+      const regex = /<img[^>]+src="([^">]+)"/g;
+      const matches = [];
+      let match;
+      while ((match = regex.exec(htmlString)) !== null) {
+        matches.push(match[1]);
+      }
+      console.log('Extracted image URLs:', matches);
+      return matches;
     },
     decreaseQuantity() {
       if (this.quantity > 1) {

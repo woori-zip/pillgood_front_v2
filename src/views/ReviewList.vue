@@ -10,7 +10,6 @@
           <th>평점</th>
           <th>회원 이름</th>
           <th>작성일</th>
-          <th v-if="isAdmin">쿠폰 발급</th>
         </tr>
       </thead>
       <tbody>
@@ -20,8 +19,8 @@
             <img style="height: 100px; width: auto;" :src="review.product.productImage" alt="Prod uct Image" />
           </td>
           <td>{{ truncateText(review.product.productName, 15) }}</td>
-          <td @click="goToReviewDetail(review)" style="cursor: pointer;">
-            <span v-html="truncateText(extractText(review.reviewContent), 15)"></span> &nbsp;
+          <td @click="goToReviewDetail(review)" style="cursor: pointer; white-space: nowrap; display: inline-flex;">
+            <span v-html="truncateText(extractText(review.reviewContent), 20)"></span>
             <i v-if="containsImageTag(review.reviewContent)" class="fa-solid fa-paperclip"></i>
           </td>
           <td>
@@ -29,18 +28,6 @@
           </td>
           <td>{{ review.memberName }}</td>
           <td>{{ formatDate(review.reviewDate) }}</td>
-          <td v-if="isAdmin">
-            <div v-if="!review.couponIssued">
-              <select v-model="selectedCoupons[review.reviewId]">
-                <option value="" disabled>-쿠폰 선택-</option>
-                <option v-for="coupon in activeCoupons" :key="coupon.couponId" :value="coupon.couponId">{{ coupon.couponName }}</option>
-              </select>
-              <button @click="issueCoupon(review.reviewId, review.memberUniqueId, selectedCoupons[review.reviewId])">발급</button>
-            </div>
-            <div v-else>
-              발급 완료
-            </div>
-          </td>
         </tr>
       </tbody>
     </table>
