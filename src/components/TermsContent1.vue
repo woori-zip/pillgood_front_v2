@@ -244,3 +244,10 @@ export default {
 name: 'TermsContent1'
 }
 </script>
+
+<style scoped>
+.agreement-container {
+  width: 40%;
+  height: 300px;
+}
+</style>

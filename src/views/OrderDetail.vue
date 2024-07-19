@@ -1,41 +1,48 @@
 <template>
   <div class="main-container">
-    <h1>주문 상세 내역</h1>
+    <div class="box-container-no-shade">
+    <!-- <h3 class="text-melon">주문 상세 내역</h3> -->
 
     <!-- 주문 상세 -->
-    <div v-if="order" class="order-container box-shadow" style="padding:20px">
-      <p style="text-align: left;">
-        <span style="font-weight: bold; font-size: 20px;">{{ order.orderStatus }}</span> {{ order.orderNo }}
-      </p>
-
-      <!-- 주문상세 리스트 -->
-      <div v-for="detail in order.details" :key="detail.orderDetailNo">
-        <div style="display: flex">
-          <img :src="getProductImage(detail.productId)" style="height: 100px; width: auto; border-radius: 15px; margin-right: 20px;">
-          <div>
-            <p style="text-align: left;">
-              <span style="color:gray;">{{ formatDate(order.orderDate) }}</span><br>
-              <span style="font-size:20px;">{{ getProductName(detail.productId) }}</span><br>
-              <span style="font-size:20px; font-weight:bold">{{ detail.amount }}원</span><br>
-              <a href="#">주문상세</a>
-            </p>
-          </div>
-        </div>
-        <!-- 구매확정 시 주문 상세 건별 버튼 -->
-        <div class="btn-container" v-if="order.orderStatus === '구매확정'">
-          <button v-if="hasReview(detail.orderDetailNo)" class="btn btn-green" @click="goToReviewDetail(order, detail)">내 리뷰 보기</button>
-          <button v-else class="btn btn-green" @click="goToReviewPage(order, detail)">리뷰쓰기</button>
-          <button class="btn btn-gray" @click="addToCart(detail.productId, 1)">재구매</button>
-        </div>
-      </div>
-
-    </div>
+    <div v-if="order" class="box-container">
+    <p style="text-align: left;">
+      <span style="font-weight: bold; font-size: 20px;">{{ order.orderStatus }}</span> {{ order.orderNo }}
+    </p>
+    <!-- 주문상세 리스트 -->
+    <table class="line-table">
+      <thead>
+        <tr>
+          <th>주문 날짜</th>
+          <th>제품명</th>
+          <th>금액</th>
+          <th>리뷰 쓰기/재구매</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="detail in order.details" :key="detail.orderDetailNo">
+          <td>{{ formatDate(order.orderDate) }}</td>
+          <td>{{ getProductName(detail.productId) }}</td>
+          <td>{{ detail.amount }}원</td>
+          <td v-if="order.orderStatus === '구매확정'">
+            <div class="btn-container">
+              <button v-if="hasReview(detail.orderDetailNo)" class="btn btn-green" @click="goToReviewDetail(order, detail)">내 리뷰 보기</button>
+              <button v-else class="btn btn-green" @click="goToReviewPage(order, detail)">리뷰쓰기</button>
+              <button class="btn btn-gray" @click="addToCart(detail.productId, 1)">재구매</button>
+            </div>
+          </td>
+          <td v-else>구매 확정을 완료해 주세요</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  </div>
   </div>
 </template>
 
 <script>
 import axios from '../axios'; // 'axios.js' 설정 파일을 import
 import { mapActions } from 'vuex';
+import '../assets/styles.css';
 
 export default {
   props: {
@@ -189,3 +196,12 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+  .main-container {
+    padding: 0;
+    margin-top: 5px;
+  }
+
+
+</style>

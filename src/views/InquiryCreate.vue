@@ -1,15 +1,13 @@
 <template>
-  <div class="inquiry-create">
     <div class="main-container">
-      <div class="box-container box-shadow">
+      <div class="box-container">
         <h4 class="text-melon">문의 작성</h4>
         <form @submit.prevent="submitInquiry">
           <div>
-            <label for="title">제목:</label>
+            <label for="title">제목</label>
             <input type="text" v-model="inquiry.inquiryTitle" id="title" required>
           </div>
           <div>
-            <label for="type">유형:</label>
             <select v-model="inquiry.inquiryType" id="type" required>
               <option value="상품">상품</option>
               <option value="배송">배송</option>
@@ -17,18 +15,17 @@
               <option value="반품">반품</option>
             </select>
           </div>
-          <div>
-            <label for="content">내용:</label>
+          <div style="margin-top: 5px;">
             <RichTextEditor v-model="inquiry.inquiryContent" @input="validateContent" />
             <div v-if="contentError" style="color: red;">내용을 입력하세요.</div>
           </div>
-          <br>
-          <button type="submit" class="btn-green">문의 등록</button>&nbsp;
-          <button @click="goHome" class="btn-green">나가기</button>
+          <div class="btn-container">
+          <button type="submit" class="btn btn-green">문의 등록</button>
+          <button @click="goHome" class="btn btn-gray">나가기</button>
+          </div>
         </form>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -74,7 +71,7 @@ export default {
 
         await this.createInquiry(this.inquiry);
         alert('문의가 작성되었습니다.');
-        this.$router.push('/inquiries');
+        this.$router.push('/myinquiries');
       } catch (error) {
         console.error('문의 등록 실패:', error);
       }

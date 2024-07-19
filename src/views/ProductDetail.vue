@@ -8,10 +8,11 @@
         <img :src="product.productImage || '../assets/product_01.png'" alt="Product Image" />
       </div>
       <div class="product-info" style="justify-content: space-around;">
-        <div>
+        <div class="box-container-no-shade">
           <h1 class="product-title">{{ product.productName }}</h1>
           <p class="product-price">{{ product.price }}원</p>
           <p>{{ product.description }}</p>
+          <p> 예시 설명 텍스트 예시 설명 텍스트 </p>
 
           <div class="quantity-selector">
             <button @click="decreaseQuantity">-</button>
@@ -20,7 +21,7 @@
           </div>
 
           <!-- 버튼 -->
-          <div class="btn-container" style="justify-content: end;">
+          <div class="btn-container" style="align-item: center; justify-content: end;">
             <button @click="addToCart" class="btn btn-gray">장바구니 담기</button>
             <button @click="buyNow" class="btn btn-green">바로 구매</button>
           </div>
@@ -32,6 +33,8 @@
       <button @click="activeTab = 'description'" :class="{ active: activeTab === 'description' }">상품설명</button>
       <button @click="activeTab = 'details'" :class="{ active: activeTab === 'details' }">상세정보</button>
       <button @click="activeTab = 'reviews'" :class="{ active: activeTab === 'reviews' }">후기</button>
+      <button @click="activeTab = 'inquiryinfo'" :class="{ active: activeTab === 'inquiryinfo' }">문의</button>
+      <button @click="activeTab = 'scrinfo'" :class="{ active: activeTab === 'scrinfo' }">배송/취소/환불</button>
     </div>
     <!-- 탭 내용 -->
     <div class="tab-content">
@@ -48,6 +51,14 @@
         <ReviewView :productId="product.productId" /> 
       </div>
 
+      <div v-if="activeTab === 'inquiryinfo'">
+        <InquiryInfo /> 
+      </div>
+
+      <div v-if="activeTab === 'scrinfo'">
+        <SRCInfo /> 
+      </div>
+
     </div>
     <!-- 탭 끝 -->
   </div>
@@ -55,11 +66,16 @@
 
 <script>
 import axios from 'axios';
+import '../assets/styles.css';
 import ReviewView from '../components/ReviewView.vue'; // ReviewView 컴포넌트 불러오기
+import InquiryInfo from '../components/InquiryInfo.vue'; // 문의 안내 컴포넌트
+import SRCInfo from '../components/SRCInfo.vue'; // 배송 취소 환불 안내 컴포넌트
 
 export default {
   components: {
-    ReviewView // 컴포넌트 등록
+    ReviewView, // 컴포넌트 등록
+    InquiryInfo,
+    SRCInfo
   },
   props: ['id'],
   data() {
@@ -144,7 +160,6 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
 .breadcrumb {
@@ -196,6 +211,8 @@ export default {
   align-items: center;
   gap: 10px;
   margin: auto;
+  margin-top: 10px;
+  margin-bottom: 15px;
   width: 150px;
 }
 
@@ -208,10 +225,6 @@ export default {
   cursor: pointer;
 }
 
-.button-group {
-  display: flex;
-  gap: 10px;
-}
 
 /* .btn {
   width: 120px;

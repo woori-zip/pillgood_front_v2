@@ -1,42 +1,46 @@
 <template>
   <div class="main-container">
+    <h2 class="text-melon">장바구니</h2>
       <div class="box-container box-shadow">
-          <div class="cart-title text-melon">장바구니</div>
-          <div class="btn-container">
-              <button @click="selectAllItems" class="btn btn-green">전체 선택</button>
-              <button @click="deselectAllItems" class="btn btn-gray">전체 선택 해제</button>
-          </div>
-          <table class="cart-table" v-if="localCartItems.length > 0">
-              <thead>
-                  <tr>
-                      <th></th>
-                      <th>상품 이미지</th>
-                      <th>상품 이름</th>
-                      <th>수량</th>
-                      <th>가격</th>
-                      <th>삭제</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  <tr v-for="item in localCartItems" :key="item.cartNo">
-                      <td><input type="checkbox" v-model="item.selected" /></td>
-                      <td><div class="item-image"><img :src="item.productImage || '../assets/product_01.png'" alt=""></div></td>
-                      <td>{{ item.productName }}</td>
-                      <td>
-                          <div class="item-quantity">
-                              <button @click="decreaseQuantity(item)">-</button>
-                              <span>{{ item.productQuantity }}</span>
-                              <button @click="increaseQuantity(item)">+</button>
-                          </div>
-                      </td>
-                      <td>{{ item.price * item.productQuantity }} 원</td>
-                      <td><button @click="deleteCartItem(item)" class="btn-delete">삭제</button></td>
-                  </tr>
-              </tbody>
+        <div class="bttn-container" style="width: 300px;">
+          <button @click="selectAllItems" class="btn btn-green">전체 선택</button>
+          <button @click="deselectAllItems" class="btn btn-gray">전체 선택 해제</button>
+        </div>
+        <hr class="line">
+          <table class="line-table" v-if="localCartItems.length > 0">
+
+            <thead>
+              <tr>
+                <th></th>
+                  <th colspan="2">상품</th>
+                  <th>수량</th>
+                  <th>가격</th>
+                  <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in localCartItems" :key="item.cartNo">
+                <td><input type="checkbox" v-model="item.selected" /></td>
+                <td ><div class="item-image"><img :src="item.productImage || '../assets/product_01.png'" alt=""></div></td>
+                <td>{{ item.productName }}</td>
+                <td>
+                  <div class="item-quantity">
+                    <button @click="decreaseQuantity(item)">-</button>
+                    <span>{{ item.productQuantity }}</span>
+                    <button @click="increaseQuantity(item)">+</button>
+                    </div>
+                </td>
+                <td>{{ item.price * item.productQuantity }} 원</td>
+                <td>
+                  <button @click="deleteCartItem(item)" class="btn btn-gray">삭제</button>
+                  </td>
+              </tr>
+            </tbody>
           </table>
           <div v-else>
               장바구니에 상품이 없습니다.
           </div>
+          <hr class="line">
           <div class="total-amount" v-if="localCartItems.length > 0">선택한 상품 총 금액: {{ totalAmount }} 원</div>
           <div class="btn-container" v-if="localCartItems.length > 0">
               <button @click="placeOrder" class="btn btn-green">주문하기</button>
@@ -161,46 +165,17 @@ export default {
 </script>
 
 <style scoped>
-.main-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
-  text-align: center;
+.bttn-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-.box-container {
-  background: white;
-  padding: 30px;
-  width: 100%;
-  text-align: center;
-}
-
-.box-shadow {
-  border-radius: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.cart-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.cart-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-.cart-table th, .cart-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
-}
-
-.cart-table th {
-  background-color: #f1f1f1;
+.delete-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
 .item-image img {
@@ -237,42 +212,5 @@ export default {
   background-color: #f1f1f1;
   border-radius: 8px;
   margin-top: 20px;
-}
-
-.btn-container {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.btn-container button {
-  width: 48%;
-  padding: 10px;
-  border-radius: 5px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.btn-green {
-  background-color: #C6EDC2;
-  border: none;
-}
-
-.btn-green:hover {
-  background-color: #4cae4c;
-  color: white;
-}
-
-.btn-gray {
-  background-color: #ddd;
-  border: none;
-}
-
-.btn-gray:hover {
-  background-color: #bbb;
-  color: white;
 }
 </style>

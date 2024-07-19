@@ -1,9 +1,9 @@
 <template>
   <div class="main-container">
-    <h1>후기 상세보기</h1>
-
+    <h2 class="text-melon">후기 상세보기</h2>
+    <div class="box-container">
     <!-- 제품정보 출력 -->
-    <div style="display: flex; padding: 20px;" class="box-shadow">
+    <div style="display: flex; padding: 20px;">
       <img :src="productImage" alt="Product Image" style="width: 100px;">
       <div style="text-align: left;">
         <p>
@@ -16,7 +16,6 @@
 
     <!-- 이미지 -->
     <div v-if="!isEditing">
-      <h3>첨부된 이미지</h3>
       <div v-for="image in extractImages(reviewContent)" :key="image" style="display: inline-block; margin: 5px;">
         <img :src="image" alt="Review Image" style="width: 100px;">
       </div>
@@ -32,9 +31,11 @@
       <RichTextEditor v-model="reviewContent" />
     </div>
     <div v-else v-html="extractText(reviewContent)"></div>
-
-    <button v-if="!isEditing" @click="isEditing = true">수정</button>
-    <button v-else @click="saveReview">저장</button>
+    <div class="btn-container">
+    <button v-if="!isEditing" @click="isEditing = true" class="btn btn-green">수정</button>
+    <button v-else @click="saveReview" class="btn btn-green">저장</button>
+    </div>
+    </div>
   </div>
 </template>
 
@@ -42,6 +43,7 @@
 import axios from '../axios'
 import StarRating from 'vue3-star-ratings';
 import { mapState } from 'vuex';
+import '../assets/styles.css';
 import RichTextEditor from '@/components/RichTextEditor.vue';
 
 export default {
@@ -133,5 +135,12 @@ export default {
 </script>
 
 <style scoped>
-/* 스타일 설정 */
+.box-container {
+  background: white;
+  padding: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  text-align: left;
+}
+
 </style>

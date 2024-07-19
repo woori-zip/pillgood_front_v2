@@ -1,10 +1,7 @@
 <template>
   <div class="main-container box-shadow">
-    <div class="box container">
-      <h2>나의 문의</h2>
-      <div class="bttn-container">
-        <button @click="goToInquiryCreate" class="btn btn-green">글쓰기</button>
-      </div>
+    <h2 class="text-melon">나의 문의</h2>
+    <div class="box-container-no-shade">
       <div v-if="inquiries && inquiries.length > 0"> 
         <table class="line-table">
           <thead>
@@ -12,7 +9,7 @@
               <th>제목</th>
               <th>유형</th>
               <th>상태</th>
-              <th>날짜</th>
+              <th>작성일</th>
             </tr>
           </thead>
           <tbody>
@@ -32,12 +29,16 @@
       <div v-else>
         <p>문의가 없습니다.</p>
       </div>
+        <div class="btn-container" style="margin-top: 10px;">
+        <button @click="goToInquiryCreate" class="btn btn-green">글쓰기</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex';
+import '../assets/styles.css';
 
 export default {
   name: 'MyInquiries',
@@ -76,27 +77,14 @@ export default {
 };
 </script>
 
-<style>
-.line-table {
+<style scoped>
+ .line-table {
   width: 100%;
   border-collapse: collapse;
-}
+  margin-bottom: 30px;
+  }
 
-.line-table th, .line-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.line-table th {
-  background-color: #f2f2f2;
-}
-
-.router-link {
-  text-decoration: none;
-  color: inherit;
-}
-
-.router-link:hover {
-  text-decoration: underline;
-}
+  .line-table td, tr, th {
+    border: none;
+  }
 </style>
