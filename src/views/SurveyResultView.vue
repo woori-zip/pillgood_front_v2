@@ -74,13 +74,21 @@ export default {
     };
 
     const getDeficiencyName = (id) => {
-      const deficiency = deficiencies.value?.find(def => def.deficiencyId === id);
+      const deficiency = deficiencies.value.find(def => def.deficiencyId === id);
+      if (deficiency) {
+        console.log(`Deficiency found: ${deficiency.deficiencyName} for ID: ${id}`);
+      } else {
+        console.log(`Deficiency not found for ID: ${id}`);
+        console.log('Current deficiencies:', deficiencies.value); // 현재 deficiencies 배열 출력
+      }
       return deficiency ? deficiency.deficiencyName : 'Unknown';
     };
 
     const uniqueDeficiencies = computed(() => {
       const ids = [surveyResult.value?.deficiencyId1, surveyResult.value?.deficiencyId2, surveyResult.value?.deficiencyId3];
-      return [...new Set(ids)]; // 중복 제거
+      const uniqueIds = [...new Set(ids)].filter(id => id !== null); // 중복 제거 및 null 필터링
+      console.log('Unique deficiencies:', uniqueIds); // uniqueDeficiencies 배열 출력
+      return uniqueIds;
     });
 
     const genderDisplay = computed(() => {
@@ -101,13 +109,16 @@ export default {
         return;
       }
 
-      // Deficiencies and Products Fetch
-      await store.dispatch('deficiency/fetchDeficiencies');
-      await store.dispatch('survey/fetchProductsByDeficiency', uniqueDeficiencies.value);
+      await store.dispatch('deficiency/fetchDeficiencies'); // 여기서부터 고우리 수정
+
+      // deficiencies 배열 출력
+      console.log('Loaded deficiencies:', deficiencies.value);
+      
       await store.dispatch('product/fetchProducts');
-      // 여기 recommendedProducts를 로그로 출력하여 값이 제대로 설정되었는지 확인
-      const recommendedProducts = store.getters['survey/recommendedProducts'];
-      console.log('recommendedProducts after fetch:', recommendedProducts);
+
+      const deficienciesArray = [surveyResult.value.deficiencyId1, surveyResult.value.deficiencyId2, surveyResult.value.deficiencyId3];
+      await store.dispatch('survey/fetchProductsByDeficiency', deficienciesArray);
+      // console.log('Recommended Products:', store.getters['survey/recommendedProducts']);  // 추천 제품 로그 출력
 
       await store.dispatch('survey/fetchAgeGroupDeficiencyData'); // 추가된 부분
     });
@@ -141,7 +152,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 @import '../assets/styles.css';
 

@@ -8,6 +8,7 @@ const state = {
 const mutations = {
   setDeficiencies(state, deficiencies) {
     state.deficiencies = deficiencies;
+    console.log('State deficiencies set:', state.deficiencies); // 디버깅 로그 추가
   },
   setDeficiencyNutrients(state, deficiencyNutrients) {
     state.deficiencyNutrients = deficiencyNutrients;
@@ -27,14 +28,17 @@ const mutations = {
 };
 
 const actions = {
-  async fetchDeficiencies() {
+  async fetchDeficiencies({ commit }) {
     try {
-      const response = await axios.get('/api/deficiencies');
+      const response = await axios.get('/api/deficiencies/list');
+      const deficiencies = response.data;
       const data = response.data;
 
       // deficiencies 배열 생성
       this.deficiencies = [...new Set(data.map(item => item.deficiency_name))].map(name => ({ deficiencyName: name }));
       console.log('Fetched deficiencies:', this.deficiencies);
+      console.log('Fetched deficiencies:', deficiencies); // 디버깅 로그 추가
+      commit('setDeficiencies', deficiencies);
     } catch (error) {
       console.error('Error fetching deficiencies:', error);
     }

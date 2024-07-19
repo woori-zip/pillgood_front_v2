@@ -4,7 +4,7 @@
       <header class="header-shadow">
         <div class="container">
           <div class="form-container">
-            <!-- 로고 이미지 -->
+            <!-- 로고 이미지 컨테이너 -->
             <div class="logo-container">
 
               <!-- 메뉴 -->
@@ -25,7 +25,7 @@
             </div>
             <!-- 사용자 이름 -->
             <div v-if="isLoggedIn" class="user-name">
-             {{ userName }} 님
+            {{ userName }} 님
             </div>
             <!-- 아이콘 -->
             <div class="icon-container">
