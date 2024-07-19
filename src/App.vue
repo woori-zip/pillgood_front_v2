@@ -19,7 +19,7 @@ export default {
   name: 'App',
   components: {
     HeaderView,
-    FooterView,
+    FooterView
   },
   setup() {
     const route = useRoute()

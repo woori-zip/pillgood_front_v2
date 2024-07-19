@@ -27,28 +27,16 @@ const mutations = {
 };
 
 const actions = {
-  async fetchDeficiencies({ commit, dispatch }) {
+  async fetchDeficiencies() {
     try {
-      const response = await axios.get('/api/deficiencies/list');
-      commit('setDeficiencies', response.data);
-      await dispatch('fetchDeficiencyNutrients'); // fetchDeficiencyNutrients 액션 호출
+      const response = await axios.get('/api/deficiencies');
+      const data = response.data;
+
+      // deficiencies 배열 생성
+      this.deficiencies = [...new Set(data.map(item => item.deficiency_name))].map(name => ({ deficiencyName: name }));
+      console.log('Fetched deficiencies:', this.deficiencies);
     } catch (error) {
-      console.error('Failed to fetch deficiencies:', error);
-      throw error;
-    }
-  },
-  async fetchDeficiencyNutrients({ commit }) {
-    try {
-      const response = await axios.get('/api/deficiency-nutrients/list');
-      if (response.status === 200) {
-        commit('setDeficiencyNutrients', response.data);
-        console.log('Fetched deficiencyNutrients:', response.data);  // 디버그 로그 추가
-      } else {
-        throw new Error('Deficiency Nutrients fetch failed');
-      }
-    } catch (error) {
-      console.error('Error fetching deficiency nutrients:', error);
-      throw error;
+      console.error('Error fetching deficiencies:', error);
     }
   },
   async createDeficiency({ commit }, deficiency) {
