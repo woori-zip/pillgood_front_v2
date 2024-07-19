@@ -17,6 +17,7 @@
             <h4>#{{ getDeficiencyName(deficiency) }}</h4>
           </div>
         </div>
+        <hr class="line">
         <h4 class="text-melon">{{ surveyResult?.name }} 님을 위한 추천 제품</h4>
         <div class="product-container">
           <div v-for="(product, index) in recommendedProducts" :key="index" class="product-grid-item">
@@ -137,10 +138,6 @@ export default {
 <style scoped>
 @import '../assets/styles.css';
 
-.result-table {
-  border: 0;
-}
-
 .def-container {
   margin-top: 10px;
   margin-bottom: 30px;
@@ -148,15 +145,6 @@ export default {
   display: flex;
   gap: 20px;
   justify-content: center;
-}
-
-.def-id {
-  background-color: #B4D9A9;
-  padding: 20px;
-  text-align: center;
-  border-radius: 35px; /* 둥근 모서리 추가 */
-  display: inline-block;
-  white-space: nowrap;
 }
 
 .def-id h4 {

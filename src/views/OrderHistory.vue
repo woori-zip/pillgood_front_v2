@@ -1,9 +1,10 @@
 <template>
   <div class="main-container">
-    <h1>주문 내역</h1>
+    <h2 class="text-melon">주문 내역</h2>
+    <div class="box-container-no-shade">
 
     <!-- 주문 리스트 -->
-    <div v-for="order in orders" :key="order.orderNo" class="order-container box-shadow" style="padding:20px">
+    <div v-for="order in orders" :key="order.orderNo" class="box-container">
       <p style="text-align: left;">
         <span style="font-weight: bold; font-size: 20px;">{{ order.orderStatus }}</span> 
         {{ order.orderNo }} 
@@ -18,12 +19,13 @@
         <button class="btn btn-gray" @click="goToReturnPage(order, null, '반품')">환불요청</button>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
-
 <script>
 import axios from '../axios'; // 'axios.js' 설정 파일을 import
+import '../assets/styles.css';
 
 export default {
   data() {
@@ -86,7 +88,7 @@ export default {
   font-size: 20px;
 }
 
-.order-container {
-  margin-bottom: 20px;
-}
+.box-container {
+   margin-top: 20px;
+ }
 </style>

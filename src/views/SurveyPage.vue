@@ -52,7 +52,7 @@
             </div>
           </div>
         </div>
-        <div class="btn-container" style="background: yellow">
+        <div class="btn-container">
           <button @click="previousStep" class="btn btn-gray" v-if="currentQuestionIndex > 0">이전</button>
           <button @click="nextStep" class="btn btn-green" v-if="canProceed && !isLastQuestion">다음</button>
           <button @click="nextStep" class="btn btn-green" v-if="isLastQuestion && canProceed">다음</button>
@@ -61,9 +61,9 @@
 
       <div v-else-if="currentStep === 'detailed-questions'" class="survey">
         <h2 class="text-melon">🔎</h2>
-        <p class="text-bold">해당하는 것을 모두 선택하세요</p>
+        <p class="text-bold">· 해당하는 것을 모두 선택하세요</p>
         <div v-for="dq in currentDetailedQuestionsGroup" :key="dq.detailedQuestionId">
-          <div class="check-container">
+          <div class="check-container-vertical">
             <input type="checkbox" :id="'answer-' + dq.detailedQuestionId" :value="dq.detailedQuestionId" v-model="detailedAnswers[dq.detailedQuestionId]">
             <label :for="'answer-' + dq.detailedQuestionId">{{ dq.questionContent }}</label>
           </div>

@@ -5,19 +5,22 @@
       <router-view />
     </main>
     <FooterView />
+    <BackToTop />
   </div>
 </template>
 
 <script>
 import HeaderView from './components/HeaderView.vue';
 import FooterView from './components/FooterView.vue';
+import BackToTop from './components/BackToTop.vue';
 import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'App',
   components: {
     HeaderView,
-    FooterView
+    FooterView,
+    BackToTop
   },
   computed: {
     ...mapState('member', {
