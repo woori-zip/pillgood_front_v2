@@ -141,10 +141,11 @@ const actions = {
     }
   },
   async logout({ commit }) { // 로그아웃
+  
+    router.push('/login');
     try {
       // 기억된 이메일을 임시 변수에 저장
       const rememberedEmail = localStorage.getItem('rememberedEmail');
-  
       // 로그아웃 요청
       await axios.post('/api/members/logout', {}, { withCredentials: true });
       console.log("로그아웃 요청 완료");
@@ -164,7 +165,6 @@ const actions = {
       console.log("로그아웃 후 쿠키 상태: ", document.cookie);
   
       // 로그인 페이지로 이동
-      router.push('/login');
     } catch (error) {
       console.error('로그아웃 에러: ', error);
     }

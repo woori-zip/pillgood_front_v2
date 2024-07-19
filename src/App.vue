@@ -38,7 +38,6 @@ export default {
       }
     }
 
-    // Watch for route changes
     watch(route, updateHeaderAndFooterVisibility, { immediate: true })
 
     return { showHeaderAndFooter }
@@ -97,19 +96,3 @@ export default {
   },
 }
 </script>
-
-<!-- <style>
-@import './assets/layout.css'
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%
-}
-
-#app {
-  display: flex;
-  flex-direction: column;
-}
-</style> -->

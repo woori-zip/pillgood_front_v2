@@ -1,7 +1,7 @@
-// src/main.js (사용자 앱)
+// src/admin.js (관리자 앱)
 import { createApp } from 'vue';
-import App from './App.vue';
-import router from './router/index';
+import AdminApp from './AdminApp.vue';
+import adminRouter from './router/admin'; // 관리자의 라우터 설정
 import store from './store'; // Vuex 스토어를 불러옴
 import { QuillEditor } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css'; // CSS 경로
@@ -11,35 +11,37 @@ import BackToTop from './components/BackToTop.vue';
 import axios from 'axios';
 axios.defaults.baseURL = process.env.VUE_APP_API_URL || 'http://localhost:9095'; // 기본 URL 설정
 
-// Kakao SDK 로드
-const kakaoScript = document.createElement('script');
-kakaoScript.src = 'https://developers.kakao.com/sdk/js/kakao.js';
-kakaoScript.onload = () => {
-  /* global Kakao */ // Kakao를 전역 변수로 선언
-  Kakao.init('03f074279f45f35b6bed2cfbcc42ec4d'); // 카카오 개발자 콘솔에서 발급받은 JavaScript 키
-  console.log('Kakao SDK initialized');
-};
-document.head.appendChild(kakaoScript);
+import 'vuetify/styles';
+import '@mdi/font/css/materialdesignicons.css';
+import { createVuetify } from 'vuetify';
+import * as components from 'vuetify/components';
+import * as directives from 'vuetify/directives';
+
+const vuetify = createVuetify({
+  components,
+  directives,
+});
 
 console.log(QuillEditor); // QuillEditor가 제대로 불러와졌는지 확인
 
-const app = createApp(App);
+const adminApp = createApp(AdminApp);
 
-setupCalendar(app, {
+setupCalendar(adminApp, {
   componentPrefix: 'vc' // v-calendar 대신 vc-calendar 사용
-})
+});
 
 // QuillEditor 컴포넌트를 전역으로 등록
-app.component('QuillEditor', QuillEditor);
+adminApp.component('QuillEditor', QuillEditor);
 
 // V-calendar 전역으로 등록
-app.component('VCalendar', Calendar);
-app.component('VDatePicker', DatePicker);
+adminApp.component('VCalendar', Calendar);
+adminApp.component('VDatePicker', DatePicker);
 
 // BackToTop 컴포넌트를 전역 등록
-app.component('BackToTop', BackToTop);
+adminApp.component('BackToTop', BackToTop);
 
 // Vuex와 Router 등록 후 애플리케이션 마운트
-app.use(store);
-app.use(router);
-app.mount('#app');
+adminApp.use(store);
+adminApp.use(adminRouter);
+adminApp.use(vuetify);
+adminApp.mount('#admin-app');
