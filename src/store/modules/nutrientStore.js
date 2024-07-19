@@ -36,7 +36,7 @@ const actions = {
   async createNutrientEfficiency({ commit }, nutrientEfficiency) {
     try {
       const response = await axios.post('/admin/nutrientefficiencies/create', nutrientEfficiency);
-      console.lot('영양제 생성 서버 응답:', response)
+      console.log('영양제 생성 서버 응답:', response)
       if (response.status === 200) {
         commit('addNutrientEfficiency', response.data);
       } else {
@@ -72,7 +72,8 @@ const actions = {
     } catch (error) {
       console.error('Error fetching nutrients:', error);
     }
-  },  async deleteNutrientEfficiency({ commit }, id) {
+  },  
+  async deleteNutrientEfficiency({ commit }, id) {
     try {
       const response = await axios.delete(`/admin/nutrientefficiencies/delete/${id}`);
       if (response.status === 200) {

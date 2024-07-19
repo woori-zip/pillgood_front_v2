@@ -17,7 +17,7 @@
         <tr v-for="review in filteredReviews" :key="review.reviewId">
           <td>{{ review.reviewId }}</td>
           <td>
-            <img style="height: 100px; width: auto;" :src="review.product.productImage" alt="Product Image" />
+            <img style="height: 100px; width: auto;" :src="review.product.productImage" alt="Prod uct Image" />
           </td>
           <td>{{ truncateText(review.product.productName, 15) }}</td>
           <td @click="goToReviewDetail(review)" style="cursor: pointer;">

@@ -1,5 +1,5 @@
 import axios from '../../axios';
-import store from '../index'; 
+import store from '../index';
 
 const state = {
   reviews: [],
@@ -13,7 +13,7 @@ const mutations = {
     state.reviews.push(review);
   },
   updateReview(state, updatedReview) {
-    const index = state.reviews.findIndex(review => review.id === updatedReview.id);
+    const index = state.reviews.findIndex(review => review.reviewId === updatedReview.reviewId);
     if (index !== -1) {
       state.reviews.splice(index, 1, updatedReview);
     }
@@ -23,21 +23,19 @@ const mutations = {
 const actions = {
   async fetchReviews({ commit }) {
     try {
-        const response = await axios.get('/api/reviews/list');
-        const reviews = await Promise.all(response.data.map(async review => {
+      const response = await axios.get('/api/reviews/list');
+      const reviews = await Promise.all(response.data.map(async review => {
         const orderDetailResponse = await axios.get(`/api/order-details/${review.orderDetailNo}`);
         const productId = orderDetailResponse.data.productId;
         const productResponse = await axios.get(`/api/products/detail/${productId}`);
         const productImage = extractFirstImage(productResponse.data.productImage);
-        const memberUniqueId = review.memberUniqueId; // memberUniqueId를 가져옴
-        const memberResponse = await axios.get(`/api/members/findById`, { params: { memberUniqueId } });
+
         return {
           ...review,
           product: {
             ...productResponse.data,
             productImage
-          },
-          memberName: memberResponse.data.user.name
+          }
         };
       }));
       commit('setReviews', reviews);
