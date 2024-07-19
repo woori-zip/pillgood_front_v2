@@ -39,6 +39,10 @@ body {
   text-align: center;
 }
 
+.header-right {
+  display:contents;
+}
+
 @media (max-width: 1200px) {
   .main-container {
     width: 100%;
@@ -46,6 +50,14 @@ body {
   
   .box-container {
     width: 100%;
+  }
+
+  .header-right {
+    display: flex;
+  }
+
+  .user-name {
+    margin-right: 20px;
   }
 }
 

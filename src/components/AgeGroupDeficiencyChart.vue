@@ -41,15 +41,24 @@ export default {
         return;
       }
 
-      const deficiencies = [...new Set(filteredData.map(item => item[1]))];
-      const counts = deficiencies.map(deficiency => {
-        return filteredData.reduce((acc, item) => {
-          if (item[1] === deficiency) {
-            return acc + item[2];
-          }
-          return acc;
-        }, 0);
-      });
+      // 결핍 유형별 총 인원 수를 계산하고 정렬
+      const deficiencyCounts = filteredData.reduce((acc, item) => {
+        const deficiency = item[1];
+        const count = item[2];
+        if (!acc[deficiency]) {
+          acc[deficiency] = 0;
+        }
+        acc[deficiency] += count;
+        return acc;
+      }, {});
+
+      // 상위 세 개 항목 선택
+      const topDeficiencies = Object.entries(deficiencyCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+
+      const deficiencies = topDeficiencies.map(item => item[0]);
+      const counts = topDeficiencies.map(item => item[1]);
 
       if (chartInstance) {
         chartInstance.destroy();
@@ -68,8 +77,9 @@ export default {
           }]
         },
         options: {
+          indexAxis: 'y', // 가로 막대형 차트로 변경
           scales: {
-            y: {
+            x: {
               beginAtZero: true,
               ticks: {
                 stepSize: 1
@@ -79,7 +89,7 @@ export default {
                 text: '인원 수 (명)'
               }
             },
-            x: {
+            y: {
               title: {
                 display: true,
                 text: '결핍 유형'
@@ -100,7 +110,9 @@ export default {
     };
 
     onMounted(() => {
-      loadDataAndCreateChart();
+      store.dispatch('survey/fetchAgeGroupDeficiencyData').then(() => {
+        loadDataAndCreateChart();
+      });
     });
 
     watch(() => props.userAge, () => {
@@ -117,7 +129,7 @@ export default {
 <style scoped>
 .chart-container {
   position: relative;
-  height: 400px;
+  height: 500px; /* 차트 높이 조정 */
   width: 100%;
 }
 </style>
