@@ -1,9 +1,9 @@
 <template>
-  <div class="overlay" @click.self="closeMenu">
+  <div class="overlay" @click="closeMenu">
     <div class="menu" @click.stop>
-      <div class="logo-container">
+      <div class="logo-wrapper">
         <router-link to="/">
-          <img src="../assets/pillgood_logo.png">&nbsp;
+          <img src="../assets/pillgood_logo.png" class="logo-image">&nbsp;
         </router-link>
       </div>
 
@@ -27,13 +27,11 @@
 export default {
   name: 'HamburgerMenu',
   methods: {
-    toggleMenu() {
-      this.isMenuOpen = !this.isMenuOpen;
-    },
     closeMenu() {
-      this.isMenuOpen = false;
+      this.$emit('close');
     },
     navigateTo(event, location) {
+      event.preventDefault();  // 기본 동작 방지
       this.$router.push(location);
       this.closeMenu();
     }
@@ -61,6 +59,18 @@ export default {
   flex-direction: column;
   padding: 20px;
 }
+
+.logo-wrapper {
+  width: 80%;
+  margin: 0 auto; /* 중앙 정렬 */
+  margin-bottom: 20px; /* 로고와 메뉴 아이템 사이에 간격 추가 */
+}
+
+.logo-image {
+  width: 100%;
+  height: auto; /* 이미지 비율 유지 */
+}
+
 .menu ul {
   padding: 0;
   margin: 0;

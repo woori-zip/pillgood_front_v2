@@ -10,18 +10,18 @@ import BackToTop from './components/BackToTop.vue';
 import axios from 'axios';
 axios.defaults.baseURL = process.env.VUE_APP_API_URL || 'http://localhost:9095'; // 기본 URL 설정
 
-import 'vuetify/styles'
-// import vuetify from './plugins/vuetify'
-import '@mdi/font/css/materialdesignicons.css' // 이 부분이 중요합니다.
-import { createVuetify } from 'vuetify'
-import '@mdi/font/css/materialdesignicons.css' 
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
+// import 'vuetify/styles'
+// // import vuetify from './plugins/vuetify'
+// import '@mdi/font/css/materialdesignicons.css' // 이 부분이 중요합니다.
+// import { createVuetify } from 'vuetify'
+// import '@mdi/font/css/materialdesignicons.css' 
+// import * as components from 'vuetify/components'
+// import * as directives from 'vuetify/directives'
 
-const vuetify = createVuetify({
-  components,
-  directives,
-})
+// const vuetify = createVuetify({
+//   components,
+//   directives,
+// })
 
 // Kakao SDK 로드
 const kakaoScript = document.createElement('script');
@@ -55,4 +55,4 @@ app.component('BackToTop', BackToTop);
 app.use(store);
 app.use(router);
 app.mount('#app');
-app.use(vuetify);
+// app.use(vuetify);
