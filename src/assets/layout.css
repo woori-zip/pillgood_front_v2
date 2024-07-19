@@ -21,15 +21,12 @@ main {
 
 .header-container {
   width: 100%;
-  margin-top: 30px;
+  /* background: yellow; */
   position: relative;
+  top: 0; /* 상단에 위치 */
+  left: 0; /* 왼쪽에 위치 */
   z-index: 10;
-}
-
-.header-shadow {
   box-shadow: 0 4px 10px -2px rgba(0,0,0,0.05);
-  position: relative;
-  z-index: 10;
 }
 
 .container {
@@ -49,7 +46,6 @@ main {
 }
 
 .user-name {
-  margin-left: 20px;
   font-size: 16px;
   color: #333;
 }
@@ -60,6 +56,7 @@ main {
   display: flex;
   align-items: center;
   padding: 10px;
+  margin-bottom: 5px;
 }
 
 .logo-container img {
@@ -75,31 +72,35 @@ main {
 /* ------------------------------------------------ search */
 
 .search-container {
-  flex: 1 1 auto;
-  margin: 0 20px;
   display: flex;
-  justify-content: center;
   align-items: center;
 }
 
-.search-container input {
-  width: 90%;
+.search-input {
+  flex: 1;
   border: 1px solid #B4D9A9;
-  margin: auto;
   border-radius: 5px;
+  padding: 10px;
+}
+
+.search-icon {
+  font-size: 20px;
+  color: #B4D9A9;
+  margin-left: 5px; /* input 태그와 i 태그 사이의 간격을 10px로 설정 */
+  cursor: pointer;
 }
 
 /* ------------------------------------------------ icon */
 
 .icon-container {
   color: #B4D9A9;
-  font-size: 20px;
   display: flex;
   align-items: center;
-  gap: 20px;
+  font-size: 15px;
+  gap: 15px;
 }
 
-.icon-container {
+.icon-container button {
   color: inherit;
 }
 
@@ -117,6 +118,10 @@ main {
   cursor: pointer;
 }
 
+.icon-link i {
+  font-size: 1em; /* 기본 아이콘 크기 */
+}
+
 .icon-link:hover {
   color: greenyellow;
 }
@@ -124,6 +129,9 @@ main {
 /* 버튼의 기본 스타일 제거 */
 button.icon-link {
   all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ------------------------------------------------ nav */
@@ -165,7 +173,7 @@ button.icon-link {
 @media (max-width: 1200px) {
   .header-container {
     width: 100%;
-    margin-top: 10px;
+    padding-bottom: 10px;
   }
 
   .container {
@@ -194,7 +202,6 @@ button.icon-link {
   }
   
   .search-container {
-    margin: 10px 0;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -208,7 +215,7 @@ button.icon-link {
     justify-content: center;
     align-items: center;
     gap: 20px;
-    margin: 5px 0 5px 0;
+    margin: 0 0 0 10px;
   }
   
   .nav-container {
@@ -228,6 +235,14 @@ button.icon-link {
 
   .survey {
     display: none;
+  }
+
+  .header-right {
+    display: flex;
+  }
+
+  .user-name {
+    margin-right: 30px;
   }
 
 }

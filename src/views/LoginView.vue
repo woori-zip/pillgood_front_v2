@@ -1,20 +1,18 @@
 <template>
   <div class="main-container">
-    <div class="box-container">
+    <div class="login-box">
       <div class="form-container">
         <!-- 기존 로그인 폼 -->
         <form @submit.prevent="handleLogin" class="login-form">
           <h4 class="text-melon">로그인</h4>
-          <table>
-            <tr>
-              <td><label for="email" class="text-melon">이메일</label></td>
-              <td><input type="email" id="email" v-model="email" required /></td>
-            </tr>
-            <tr>
-              <td><label for="password" class="text-melon">비밀번호</label></td>
-              <td><input type="password" id="password" v-model="password" required /></td>
-            </tr>
-          </table>
+          <div class="input-container">
+            <label for="email" class="text-melon">이메일</label>
+            <input type="email" id="email" v-model="email" required />
+          </div>
+          <div class="input-container">
+            <label for="password" class="text-melon">비밀번호</label>
+            <input type="password" id="password" v-model="password" required />
+          </div>
           <div class="btn-container">
             <button type="submit" class="btn btn-green">로그인</button>
           </div>
@@ -44,13 +42,11 @@
   </div>
 </template>
 
-
-
-
 <script>
 import { mapActions } from 'vuex'
 import axios from '../axios'
 import KakaoLogin from '../components/KakaoLogin.vue'; // 카카오 로그인 컴포넌트 추가
+import '../assets/styles.css';
 
 function saveEmailToLocalStorage(email) {
   localStorage.setItem('rememberedEmail', email);
@@ -75,7 +71,6 @@ export default {
   },
   data() {
     return {
-      // email: '',
       password: '',
       loginError: '', // 로그인 에러 메시지 상태 추가
       rememberEmail: !!localStorage.getItem('rememberedEmail'),
@@ -169,54 +164,94 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 60vh;
-}
-
-.box-container {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr; /* 두 개의 폼과 세로선을 위한 자동 크기 열 */
-  grid-template-areas:
-    'form line social'
-    'join join join'
-    'options options options';
-  gap: 10px;
+  height: 100vh;
   padding: 20px;
-  border-radius: 10px;
-  width: 80%; /* 원하는 너비로 설정 */
-  max-width: 800px; /* 최대 너비 설정 */
 }
 
-.form-container {
-  grid-area: form;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.login-form {
+.login-box {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.social-container {
-  grid-area: social;
+  flex-direction: column; /* 세로 정렬 */
+  align-items: center; /* 수평 중앙 정렬 */
   padding: 20px;
   border-radius: 10px;
+  width: 100%; /* 너비를 부모 요소에 맞추기 */
+  max-width: 600px; /* 최대 너비 설정 */
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-container,
+.social-container {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.check-container {
-  grid-area: options;
-  border-radius: 10px;
-  text-align: center;
+.login-form {
+  width: 100%;
 }
 
-.btn-container2 {
-  grid-area: join;
+.input-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.input-container label {
+  margin-bottom: 5px;
+}
+
+.input-container input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.btn-container {
   display: flex;
   justify-content: center;
-  padding: 0px;
+}
+
+.btn-container2,
+.check-container {
+  margin-top: 20px;
+  text-align: center; /* 중앙 정렬 */
+}
+
+.check-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vertical-line {
+  width: 80%;
+  height: 1px; /* 선의 높이 */
+  background-color: #ddd; /* 선의 색상 */
+  margin: 20px 0; /* 위아래 마진 */
+}
+
+@media (min-width: 600px) {
+  .login-box {
+    flex-direction: row; /* 큰 화면에서는 가로 정렬 */
+    justify-content: space-between;
+  }
+
+  .vertical-line {
+    width: 1px; /* 높이 대신 너비를 1px로 설정 */
+    height: auto; /* 높이를 자동으로 설정 */
+    margin: 0 20px; /* 좌우 마진 */
+  }
+
+  .form-container,
+  .social-container {
+    width: 45%;
+  }
+
+  .check-container {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 </style>

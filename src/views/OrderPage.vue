@@ -19,7 +19,7 @@
       </tr>
     </tbody>
   </table>
-  <div style="display: flex; align-items: flex-end; flex-direction: column;">
+  <div style="display: flex; align-items: flex-end; flex-direction: column; margin-top: 10px;">
     <h6>배송비 {{ shippingFeeMessage }}</h6>
     <hr style="width: 200px">
     <h4 class="text-melon">합계: {{ totalAmount }} 원</h4>
@@ -484,6 +484,17 @@ export default {
   object-fit: cover;
   border-radius: 8px;
   margin-right: 30px;
+  overflow: hidden;
+  display: flex;
+  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: center; /* 가로 중앙 정렬 */
+  background: rgb(221, 220, 220);
+}
+
+.item-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
 }
 
 .box-container-no-shade label, select, p {
@@ -503,9 +514,8 @@ export default {
 }
 
 .text-info {
-  position: absolute;
-  left: px;
   font-size: 0.9em;
+  color: gray
 }
 
 .postal-code-input {

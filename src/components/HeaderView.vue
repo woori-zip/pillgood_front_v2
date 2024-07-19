@@ -4,22 +4,22 @@
       <header class="header-shadow">
         <div class="container">
           <div class="form-container">
-            <!-- 로고 이미지 -->
+            <!-- 로고 이미지 컨테이너 -->
             <div class="logo-container">
               <!-- 메뉴 -->
-              <i class="fa-solid fa-bars" @click="toggleMenu"></i>
-              <HamburgerMenu v-if="isMenuOpen" @close="toggleMenu" />
+              <i class="fa-solid fa-bars" @click="toggleMenu" style="font-size: 20px; color: #B4D9A9;"></i>
+              <HamburgerMenu v-if="isMenuOpen" @close="toggleMenu" /> &nbsp;&nbsp;&nbsp;
               <!-- 메뉴 끝 -->
-              <router-link to="/">
+              <router-link to="/" style="display: flex; align-items: center;">
                 <img src="../assets/pillgood_logo.png">&nbsp;
-                <span>: 필굿</span>
+                <span style="white-space: nowrap;">: 필굿</span>
               </router-link>
             </div>
             <!-- 검색창 -->
             <div class="search-container">
               <input v-model="searchQuery" type="search" placeholder="검색어를 입력하세요" aria-label="Search"
                 class="form-control form-control-white text-bg-white search-input">
-              <button @click="searchProducts">검색</button>
+              <i class="fa-solid fa-magnifying-glass search-icon" @click="searchProducts"></i>
             </div>
             <!-- 사용자 이름 -->
             <div v-if="isLoggedIn" class="user-name">
@@ -36,17 +36,18 @@
               <router-link v-else to="/login" class="icon-link">
                 <i class="fa-solid fa-user"></i>
               </router-link>
-              <router-link to="/inquiries" class="icon-link">
-                <i class="fa-solid fa-location-dot"></i>
-              </router-link>
               <router-link to="/cart" class="icon-link" @click="navigateToCart">
                 <i class="fa-solid fa-cart-shopping"></i>
               </router-link>
-              <button @click="goToAdminPage" v-if="isAdmin">
-                Admin Page
-              </button>
+              <router-link to="/noticelist" class="icon-link">
+                <i class="fa-solid fa-bullhorn"></i>
+              </router-link>
+              <router-link to="/admin" v-if="isAdmin">
+                <button>Admin Page</button>
+              </router-link>
             </div>
           </div>
+
         </div>
       </header>
     </div>
@@ -77,6 +78,13 @@ export default {
     })
   },
   methods: {
+    logoutAndNavigate() {
+      this.logout();
+      this.$router.push('/');
+    },
+    navigateTo(path) {
+      this.$router.push(path);
+    },
     logout() {
       this.$store.dispatch('member/logout');
     },

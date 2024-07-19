@@ -1,92 +1,94 @@
 <template>
   <div class="main-container">
-    <h1 class="text-melon">공지사항 목록</h1>
-    <input v-model="searchQuery" @input="filterNotices" type="text" placeholder="검색어 입력" class="search-container" />
-    <table class="notice-table box-container">
-      <thead>
-        <tr>
-          <th>번호</th>
-          <th>제목</th>
-          <th>수정</th>
-          <th>삭제</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="notice in filteredNotices" :key="notice.noticeNo">
-          <td>{{ notice.noticeNo }}</td>
-          <td class="text-bold clickable" @click="goToDetail(notice.noticeNo)">{{ notice.noticeTitle }}</td>
-          <td>
-            <router-link :to="{ name: 'NoticeEdit', params: { id: notice.noticeNo } }" class="btn btn-gray btn-small">수정</router-link>
-          </td>
-          <td>
-            <button @click="confirmDelete(notice.noticeNo)" class="btn btn-red btn-small">삭제</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="pagination btn-container">
-      <button @click="fetchPreviousPage" :disabled="currentPage <= 0" class="btn btn-gray btn-small">이전</button>
-      <span>{{ currentPage + 1 }} / {{ totalPages }}</span>
-      <button @click="fetchNextPage" :disabled="currentPage >= totalPages - 1" class="btn btn-gray btn-small">다음</button>
-    </div>
-    <div class="btn-container">
-      <router-link to="/noticecreate" class="btn btn-green btn-small">새 공지사항 작성</router-link>
+    <h1 class="text-melon" @click="resetSearch">공지사항</h1>
+    <div class="box-container-no-shade">
+      <div class="search-container">
+        <select v-model="searchOption" style="margin-right: 10px;">
+          <option value="title" selected>제목</option>
+          <option value="content">내용</option>
+        </select>
+        <div>
+          <input type="text" v-model="inputSearchQuery" placeholder="검색어를 입력하세요" />
+        </div>
+        <button class="icon-button" @click="searchNotices"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </div>
+
+      <table class="line-table">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>제목</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="notice in filteredNotices" :key="notice.noticeNo">
+            <td>{{ notice.noticeNo }}</td>
+            <td @click="goToDetail(notice.noticeNo)">{{ notice.noticeTitle }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="btn-container">
+        <div class="pagination">
+          <button @click="fetchPreviousPage" :disabled="currentPage <= 0" class="small-btn btn-gray">이전</button>
+          <span>&nbsp;{{ currentPage + 1 }} / {{ totalPages }}&nbsp;</span>
+          <button @click="fetchNextPage" :disabled="currentPage >= totalPages - 1" class="small-btn btn-gray">다음</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import '@/assets/styles.css'; // CSS 파일을 불러옵니다.
+import '@/assets/styles.css';
 
 export default {
   name: 'NoticeList',
   data() {
     return {
+      searchOption: 'title',
+      inputSearchQuery: '',
       searchQuery: ''
     };
   },
   computed: {
     ...mapGetters('notice', ['notices', 'totalNotices', 'totalPages', 'currentPage']),
     filteredNotices() {
-      if (this.searchQuery) {
-        const lowerQuery = this.searchQuery.toLowerCase();
-        return this.notices.filter(notice =>
-          notice.noticeTitle.toLowerCase().includes(lowerQuery) ||
-          notice.noticeContent.toLowerCase().includes(lowerQuery)
-        );
+      if (!this.searchQuery) {
+        return this.notices;
       }
-      return this.notices;
+      const lowerQuery = this.searchQuery.toLowerCase();
+      return this.notices.filter(notice => {
+        if (this.searchOption === 'title') {
+          return notice.noticeTitle.toLowerCase().includes(lowerQuery);
+        } else if (this.searchOption === 'content') {
+          return notice.noticeContent.toLowerCase().includes(lowerQuery);
+        }
+      });
     }
   },
   methods: {
-    ...mapActions('notice', ['fetchNotices', 'deleteNotice']),
-    async confirmDelete(noticeNo) {
-      if (confirm('정말로 이 공지사항을 삭제하시겠습니까?')) {
-        try {
-          await this.deleteNotice(noticeNo);
-          alert('공지사항이 삭제되었습니다.');
-        } catch (error) {
-          console.error('공지사항 삭제 실패:', error);
-          alert('공지사항 삭제에 실패했습니다.');
-        }
-      }
-    },
-    async fetchPreviousPage() {
+    ...mapActions('notice', ['fetchNotices']),
+    fetchPreviousPage() {
       if (this.currentPage > 0) {
-        await this.fetchNotices({ page: this.currentPage - 1, size: 10 });
+        this.fetchNotices({ page: this.currentPage - 1, size: 10 });
       }
     },
-    async fetchNextPage() {
+    fetchNextPage() {
       if (this.currentPage < this.totalPages - 1) {
-        await this.fetchNotices({ page: this.currentPage + 1, size: 10 });
+        this.fetchNotices({ page: this.currentPage + 1, size: 10 });
       }
     },
-    filterNotices() {
-      // Implement the search logic here if necessary
+    searchNotices() {
+      this.searchQuery = this.inputSearchQuery;
     },
     goToDetail(noticeNo) {
       this.$router.push({ name: 'NoticeDetail', params: { id: noticeNo } });
+    },
+    resetSearch() {
+      this.inputSearchQuery = '';
+      this.searchQuery = '';
+      this.fetchNotices({ page: 0, size: 10 });
     }
   },
   created() {
@@ -96,9 +98,5 @@ export default {
 </script>
 
 <style scoped>
-.clickable {
-  cursor: pointer;
-  color: blue;
-  text-decoration: underline;
-}
+
 </style>
