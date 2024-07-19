@@ -79,7 +79,6 @@ export default {
   methods: {
     logout() {
       this.$store.dispatch('member/logout');
-      this.$router.push('/');
     },
     navigateToCart() {
       if (this.isLoggedIn) {
