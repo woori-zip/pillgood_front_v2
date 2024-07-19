@@ -181,7 +181,7 @@ const actions = {
     }
   },
   handleAnswerSelection({ commit }, { questionId, answerId }) {
-    console.log('Handling answer selection:', questionId, answerId);  // 디버그 로그 추가
+    // console.log('Handling answer selection:', questionId, answerId);  // 디버그 로그 추가
     commit('setSelectedAnswers', { questionId, answerId });
   },
   async fetchDeficiencies({ commit }) {
@@ -192,16 +192,35 @@ const actions = {
       console.error('Failed to fetch deficiencies:', error);
     }
   },
-  async fetchProductsByDeficiency({ commit, state }) {
-    try {
-      const deficiencyIds = state.selectedDeficiencies.join(',');
-      const response = await axios.get(`/api/products/by-deficiency?deficiencyIds=${deficiencyIds}`);
-      commit('setRecommendedProducts', response.data);
-    } catch (error) {
-      console.error('Failed to fetch products by deficiency:', error);
-    }
-  },
-  async finishSurvey({ commit, state, dispatch, rootState }) {
+    async fetchProductsByDeficiency({ commit }, deficiencyIds) {
+      try {
+        // 디버깅 로그 추가
+        // console.log('fetchProductsByDeficiency called with:', deficiencyIds);
+  
+        // deficiencyIds가 배열인지 확인하고, 배열로 변환
+        if (!Array.isArray(deficiencyIds)) {
+          deficiencyIds = [deficiencyIds];
+        }
+  
+        // 디버깅 로그 추가
+        // console.log('Converted deficiencyIds to array:', deficiencyIds);
+  
+        const response = await axios.get('/api/products/by-deficiency', {
+          params: { deficiencyIds: deficiencyIds.join(',') }
+        });
+  
+        if (response.status === 200) {
+          const products = response.data;
+          console.log('Fetched products by deficiency:', products);
+          commit('setRecommendedProducts', products);
+        } else {
+          console.error('Failed to fetch products by deficiency:', response);
+        }
+      } catch (error) {
+        console.error('Error fetching products by deficiency:', error);
+      }
+    },
+  async finishSurvey({ commit, state, dispatch, rootState }) { // 고우리 수정
     try {
       // deficiencyNutrients를 초기화
       await dispatch('deficiency/fetchDeficiencyNutrients', null, { root: true });
@@ -216,6 +235,8 @@ const actions = {
         }).filter(id => id !== null);
       });
 
+      // console.log('Deficiencies:', deficiencies); // 고우리 추가
+
       // 상세 질문에서 선택된 결핍 ID들을 keywords로 저장
       const detailedDeficiencies = Object.entries(state.detailedAnswers).flatMap(([questionId, isSelected]) => {
         if (isSelected) {
@@ -229,36 +250,25 @@ const actions = {
       });
 
       // 저장되는 답변 확인용
-      console.log('Selected detailedAnswers:', state.detailedAnswers);
-      console.log('Extracted detailedDeficiencies:', detailedDeficiencies);
+      // console.log('Selected detailedAnswers:', state.detailedAnswers);
+      // console.log('Extracted detailedDeficiencies:', detailedDeficiencies);
 
+      
       // 결핍 ID로부터 추천 제품 찾기
-      if (!rootState.deficiency.deficiencyNutrients) {
-        console.error('rootState.deficiencyNutrients is undefined');
-        return;
+      let recommendedProducts = [];
+
+      for (const deficiencyId of deficiencies) {
+        await dispatch('survey/fetchProductsByDeficiency', deficiencyId);
+        const fetchedProducts = rootState.product.products.filter(product => product.nutrientId === deficiencyId);
+        recommendedProducts = recommendedProducts.concat(fetchedProducts.map(product => product.productId));
       }
-
-      let recommendedProducts = deficiencies.flatMap(deficiencyId => {
-        const deficiencyNutrient = rootState.deficiency.deficiencyNutrients.find(dn => dn.deficiencyId === deficiencyId);
-        console.log('deficiencyNutrient:', deficiencyNutrient);
-        if (!deficiencyNutrient) {
-          console.error(`No nutrientId found for deficiencyId: ${deficiencyId}`);
-          return [];
-        }
-
-        const productsForDeficiency = rootState.product.products.filter(product => {
-          return product.nutrientId === deficiencyNutrient.nutrientId;
-        });
-        console.log(`Products for deficiency ID ${deficiencyId}:`, productsForDeficiency);
-        return productsForDeficiency.map(product => product.productId);
-      });
 
       // 중복된 값 제거
       recommendedProducts = [...new Set(recommendedProducts)];
-      console.log('Recommended Products (unique):', recommendedProducts);
+      // console.log('Recommended Products (unique):', recommendedProducts);
 
       const uniqueKeywords = Array.from(new Set(detailedDeficiencies)).join(',');
-      console.log('Keywords:', uniqueKeywords);
+      // console.log('Keywords:', uniqueKeywords);
 
       const survey = {
         name: state.survey.name,
@@ -271,9 +281,11 @@ const actions = {
         deficiencyId2: deficiencies[1] || null,
         deficiencyId3: deficiencies[2] || null,
         surveyDate: new Date().toISOString(),
-        recommendedProducts: recommendedProducts.join(',') || '',
+        recommendedProducts: recommendedProducts.join(',') || '',  // 추천 제품 저장
         keywords: uniqueKeywords || ''
       };
+
+      // console.log('Updating survey data:', survey);  // 업데이트 전 로그 출력
 
       if (!survey.memberUniqueId) {
         throw new Error('memberUniqueId가 설정되지 않았습니다.');
@@ -311,7 +323,7 @@ const actions = {
   async loadSurveyResult({ commit }, memberId) {
     try {
       const response = await axios.get(`/api/surveys/member/${memberId}`);
-      console.log('Survey Result Loaded: ', response.data);
+      // console.log('Survey Result Loaded: ', response.data);
       commit('setSurveyResult', response.data.length ? response.data[0] : null);
       return response.data;
     } catch (error) {

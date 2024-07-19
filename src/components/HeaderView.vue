@@ -11,7 +11,7 @@
               <i class="fa-solid fa-bars" @click="toggleMenu" style="font-size: 20px; color: #B4D9A9;"></i>
               <HamburgerMenu v-if="isMenuOpen" @close="toggleMenu" /> &nbsp;&nbsp;&nbsp;
               <!-- 메뉴 끝 -->
-
+              
               <router-link to="/" style="display: flex; align-items: center;">
                 <img src="../assets/pillgood_logo.png">&nbsp;
                 <span style="white-space: nowrap;">: 필굿</span>
@@ -92,7 +92,6 @@ export default {
     },
     logout() {
       this.$store.dispatch('member/logout');
-      this.$router.push('/');
     },
     navigateToCart() {
       if (this.isLoggedIn) {

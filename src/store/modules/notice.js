@@ -17,6 +17,7 @@ const getters = {
 };
 
 const actions = {
+  // 공지사항 목록 조회
   async fetchNotices({ commit }, { page = 0, size = 10 } = {}) {
     try {
       const response = await axios.get('/api/notices', {
@@ -36,12 +37,15 @@ const actions = {
       throw error;
     }
   },
-  async fetchNotice({ commit }, noticeId) { // 개별 공지사항 조회 액션 추가
+  
+  // 개별 공지사항 조회
+  async fetchNotice({ commit }, noticeId) {
     try {
       const response = await axios.get(`/api/notices/${noticeId}`);
       if (response.status === 200) {
         commit('setNotice', response.data);
         console.log('공지사항 개별 조회 성공:', response.data);
+        return response; // 데이터를 반환
       } else {
         console.error('공지사항 개별 조회 실패:', response.data);
         throw new Error('공지사항 개별 조회 실패');
@@ -51,6 +55,8 @@ const actions = {
       throw error;
     }
   },
+  
+  // 공지사항 생성
   async createNotice({ dispatch }, notice) {
     try {
       const response = await axios.post('/admin/notices/create', notice);
@@ -66,6 +72,8 @@ const actions = {
       throw error;
     }
   },
+  
+  // 공지사항 수정
   async updateNotice({ dispatch }, notice) {
     try {
       const response = await axios.put(`/admin/notices/update/${notice.id}`, notice);
@@ -81,6 +89,8 @@ const actions = {
       throw error;
     }
   },
+  
+  // 공지사항 삭제
   async deleteNotice({ dispatch }, noticeNo) {
     try {
       const response = await axios.delete(`/admin/notices/delete/${noticeNo}`);
@@ -96,6 +106,8 @@ const actions = {
       throw error;
     }
   },
+  
+  // 공지사항 제목으로 검색
   async searchNoticeByTitle(_, title) {
     try {
       const response = await axios.get(`/api/notices/search?title=${title}`);

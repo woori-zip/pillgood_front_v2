@@ -3,8 +3,12 @@
     <h2 class="text-melon">결제 취소 요청</h2>
     <div class="box-container-no-shade">
       <div class="input-group">
-        <label for="paymentKey">결제 키</label>
+        <label for="paymentKey">결제 번호</label>
         <input type="text" id="paymentKey" v-model="paymentKey" readonly />
+      </div>
+      <div class="input-group">
+        <label for="cancelAmount">취소 금액</label>
+        <input type="number" id="cancelAmount" v-model="cancelAmount" readonly/>
       </div>
       <div class="input-group">
         <label for="cancelReason">취소 사유</label>
@@ -24,6 +28,7 @@ export default {
       cancelReason: '',
       orderNo: this.$route.params.orderNo,
       paymentKey: null,
+      cancelAmount: null,
     };
   },
   async created() {
@@ -35,6 +40,7 @@ export default {
         const response = await axios.get(`/api/payment/payment-info/${this.orderNo}`);
         if (response.status === 200 && response.data) {
           this.paymentKey = response.data.paymentNo; // 주문 정보에서 결제 키를 가져옵니다.
+          this.cancelAmount = response.data.amount
         } else {
           console.error('결제 키를 가져오는 중 오류 발생:', response);
         }
@@ -46,8 +52,7 @@ export default {
       try {
         const response = await axios.post('/api/payment/cancel', {
           paymentKey: this.paymentKey,
-          cancelReason: this.cancelReason,
-          orderNo: this.orderNo
+          cancelReason: this.cancelReason
         });
         if (response.status === 200) {
           this.$router.push({ name: 'CancelSuccess' }); // 결제 취소 성공 페이지로 이동

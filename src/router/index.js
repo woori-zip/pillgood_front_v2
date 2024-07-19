@@ -106,7 +106,7 @@ const routes = [
   { path: '/payment/fail', name: 'PaymentFail', component: PaymentFail },
   { path: '/payment/card', name: 'CardRegistration', component: CardRegistration },
   { path: '/payment/approve', name: 'ApprovePayment', component: ApprovePayment },
-  { path: '/payment/cancel', name: 'CancelPayment', component: CancelPayment },
+  { path: '/cancel-payment/:orderNo', name: 'CancelPayment', component: CancelPayment },
   { path: '/payment/cancel-success', name: 'CancelSuccess', component: CancelSuccess },
 
   // return
