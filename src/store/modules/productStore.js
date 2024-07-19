@@ -1,7 +1,9 @@
 import axios from '../../axios';
 
 const state = {
-  products: []
+  products: [],
+  topSellingProducts: [],
+  latestProducts: []
 };
 
 const mutations = {
@@ -10,6 +12,12 @@ const mutations = {
   },
   setProducts(state, products) {
     state.products = products;
+  },
+  setTopSellingProducts(state, products) {
+    state.topSellingProducts = products;
+  },
+  setLatestProducts(state, products) {
+    state.latestProducts = products;
   },
   updateProductStatus(state, { productId, active }) {
     const product = state.products.find(product => product.productId === productId);
@@ -88,6 +96,40 @@ const actions = {
       throw error;
     }
   },
+  async fetchTopSellingProducts({ commit }) {
+    try {
+      const response = await axios.get('/api/products/top-selling');
+      if (response.status === 200) {
+        const products = response.data;
+        for (let product of products) {
+          await fetchProductImage(product);
+        }
+        commit('setTopSellingProducts', products);
+      } else {
+        throw new Error('Failed to fetch top selling products');
+      }
+    } catch (error) {
+      console.error('Error fetching top selling products:', error);
+      throw error;
+    }
+  },
+  async fetchLatestProducts({ commit }) {
+    try {
+      const response = await axios.get('/api/products/latest');
+      if (response.status === 200) {
+        const products = response.data;
+        for (let product of products) {
+          await fetchProductImage(product);
+        }
+        commit('setLatestProducts', products);
+      } else {
+        throw new Error('Failed to fetch latest products');
+      }
+    } catch (error) {
+      console.error('Error fetching latest products:', error);
+      throw error;
+    }
+  },
   // 비동기 방식 : 두 개의 매개변수를 받는데, 첫번째 매개변수는 사용하지 않으므로 '_'로 표시
   async fetchProductDetails(_, productId) {
     try {
@@ -124,8 +166,27 @@ const actions = {
   }
 };
 
+async function fetchProductImage(product) {
+  try {
+    const response = await axios.get(`/api/products/detail/${product.productId}`);
+    product.productImage = extractFirstImage(response.data.productImage);
+  } catch (error) {
+    console.error(`Error fetching image for product ID ${product.productId}:`, error);
+    product.productImage = null; // 기본 이미지로 설정
+  }
+}
+
+function extractFirstImage(htmlString) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, 'text/html');
+  const imgTag = doc.querySelector('img');
+  return imgTag ? imgTag.src : null;
+}
+
 const getters = {
-  products: state => state.products
+  products: state => state.products,
+  topSellingProducts: state => state.topSellingProducts,
+  latestProducts: state => state.latestProducts
 };
 
 export default {

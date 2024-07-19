@@ -6,6 +6,12 @@
           <div class="form-container">
             <!-- 로고 이미지 -->
             <div class="logo-container">
+
+              <!-- 메뉴 -->
+              <i class="fa-solid fa-bars" @click="toggleMenu"></i>
+              <HamburgerMenu v-if="isMenuOpen" @close="toggleMenu" />
+              <!-- 메뉴 끝 -->
+
               <router-link to="/">
                 <img src="../assets/pillgood_logo.png">&nbsp;
                 <span>: 필굿</span>
@@ -43,26 +49,6 @@
               </router-link>
             </div>
           </div>
-          <!-- 일반 사용자 카테고리 -->
-          <nav class="nav-container" v-if="!isAdmin">
-            <ul>
-              <li><router-link to="/productlist"><i class="fa-solid fa-bars"></i>&nbsp;카테고리</router-link></li>
-              <li><a href="#">신제품</a></li>
-              <li><a href="#">베스트</a></li>
-              <li><a href="#">필굿리포트</a></li>
-            </ul>
-          </nav>
-          <!-- 관리자 카테고리 -->
-          <nav class="nav-container" v-if="isAdmin">
-            <ul>
-              <li><a href="/memberlist">회원관리</a></li>
-              <!-- 상품목록 페이지로 수정 예정. 목록 페이지 안 만들어서 등록 페이지 붙임. -->
-              <li><a href="/admin/productlist">상품관리</a></li>
-              <li><a href="#">베스트</a></li>
-              <li><a href="#">필굿리포트</a></li>
-              <li><a href="/noticelist">공지사항관리</a></li>
-            </ul>
-          </nav>
         </div>
       </header>
     </div>
@@ -72,12 +58,17 @@
 <script>
 import { mapState } from 'vuex';
 import '../assets/layout.css';
+import HamburgerMenu from './HamburgerMenu.vue';
 
 export default {
   name: 'HeaderView',
+  components: {
+    HamburgerMenu
+  },
   data() {
     return {
-      searchQuery: '' // searchQuery를 data에 정의
+      searchQuery: '', // searchQuery를 data에 정의
+      isMenuOpen: false
     };
   },
   computed: {
@@ -103,6 +94,9 @@ export default {
       if (this.searchQuery.trim()) {
         this.$router.push({ name: 'ProductList', query: { search: this.searchQuery.trim() } });
       }
+    },
+    toggleMenu() {
+      this.isMenuOpen = !this.isMenuOpen;
     }
   },
   watch: {

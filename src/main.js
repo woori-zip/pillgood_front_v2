@@ -12,6 +12,7 @@ axios.defaults.baseURL = process.env.VUE_APP_API_URL || 'http://localhost:9095';
 
 import 'vuetify/styles'
 // import vuetify from './plugins/vuetify'
+import '@mdi/font/css/materialdesignicons.css' // 이 부분이 중요합니다.
 import { createVuetify } from 'vuetify'
 import '@mdi/font/css/materialdesignicons.css' 
 import * as components from 'vuetify/components'

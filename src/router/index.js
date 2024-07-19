@@ -70,9 +70,6 @@ import InquiryCreate from '../views/InquiryCreate.vue';
 import InquiryDetail from '../views/InquiryDetail.vue';
 import MyInquiries from '../views/MyInquiries.vue';
 
-// template
-import Template from '../views/Template.vue';
-
 import store from '../store';
 
 const routes = [
@@ -151,7 +148,6 @@ const routes = [
   { path: '/inquiries/:id', name: 'InquiryDetail', component: InquiryDetail, props: true },
   { path: '/myinquiries', name: 'MyInquiries', component: MyInquiries },
 
-  { path: '/template', component: Template }
 ];
 
 const router = createRouter({
