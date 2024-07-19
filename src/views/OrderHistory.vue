@@ -2,29 +2,28 @@
   <div class="main-container">
     <h2 class="text-melon">주문 내역</h2>
     <div class="box-container-no-shade">
-
-    <!-- 주문 리스트 -->
-    <div v-for="order in orders" :key="order.orderNo" class="box-container">
-      <p style="text-align: left;">
-        <span style="font-weight: bold; font-size: 20px;">{{ order.orderStatus }}</span> 
-        {{ order.orderNo }} 
-        <span style="color:gray;">{{ formatDate(order.orderDate) }}</span><br>
-      </p>
-      <p style="text-align: left;">
-        <span style="font-size:20px;">총액: {{ order.totalAmount }}원</span><br>
-        <router-link :to="{ name: 'OrderDetail', params: { orderNo: order.orderNo }}">주문상세보기</router-link>
-      </p>
-      <div v-if="order.orderStatus !== '구매확정'" class="btn-container">
-        <button class="btn btn-green" @click="confirmPurchase(order.orderNo)">구매확정</button>
-        <button class="btn btn-gray" @click="goToReturnPage(order, null, '반품')">환불요청</button>
+      <!-- 주문 리스트 -->
+      <div v-for="order in orders" :key="order.orderNo" class="box-container">
+        <p style="text-align: left;">
+          <span style="font-weight: bold; font-size: 20px;">{{ order.orderStatus }}</span>
+          {{ order.orderNo }}
+          <span style="color:gray;">{{ formatDate(order.orderDate) }}</span><br>
+        </p>
+        <p style="text-align: left;">
+          <span style="font-size:20px;">총액: {{ order.totalAmount }}원</span><br>
+          <router-link :to="{ name: 'OrderDetail', params: { orderNo: order.orderNo }}">주문상세보기</router-link>
+        </p>
+        <div v-if="order.orderStatus !== '구매확정'" class="btn-container">
+          <button class="btn btn-green" @click="confirmPurchase(order.orderNo)">구매확정</button>
+          <button class="btn btn-gray" @click="goToReturnPage(order)">환불요청</button>
+        </div>
       </div>
-    </div>
     </div>
   </div>
 </template>
 
 <script>
-import axios from '../axios'; // 'axios.js' 설정 파일을 import
+import axios from '../axios';
 import '../assets/styles.css';
 
 export default {
@@ -37,11 +36,7 @@ export default {
   methods: {
     async fetchOrders() {
       try {
-        const response = await axios.get('/api/orders/member'); // 사용자 주문 내역 호출
-        console.log("주문 테이블에서 불러온 정보:", response.data);
-        this.orders = response.data;
-
-        // 주문 날짜 기준으로 내림차순 정렬
+        const response = await axios.get('/api/orders/member');
         this.orders = response.data.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
       } catch (error) {
         console.error('Failed to fetch orders:', error);
@@ -51,17 +46,14 @@ export default {
     },
     async confirmPurchase(orderNo) {
       try {
-        const response = await axios.put(`/api/orders/update-status/${orderNo}`, { status: '구매확정' }, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        console.log("구매확정 업데이트:", response.data);
-        // 상태 업데이트 후, 목록을 다시 불러옵니다.
+        await axios.put(`/api/orders/update-status/${orderNo}`, { status: '구매확정' });
         await this.fetchOrders();
       } catch (error) {
         console.error('Failed to confirm purchase:', error);
       }
+    },
+    goToReturnPage(order) {
+      this.$router.push({ name: 'CancelPayment', params: { orderNo: order.orderNo } });
     },
     formatDate(dateString) {
       const options = { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
@@ -71,16 +63,14 @@ export default {
   },
   async created() {
     await this.fetchOrders();
-    console.log("OrderList created");
   }
 };
 </script>
 
-
-
-
 <style scoped>
-.order-history-container {
+.main-container {
+  max-width: 800px;
+  margin: 0 auto;
   padding: 20px;
 }
 
@@ -89,6 +79,11 @@ export default {
 }
 
 .box-container {
-   margin-top: 20px;
- }
+  margin-top: 20px;
+}
+
+.btn-container {
+  display: flex;
+  gap: 10px;
+}
 </style>

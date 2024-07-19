@@ -6,12 +6,10 @@
           <div class="form-container">
             <!-- 로고 이미지 -->
             <div class="logo-container">
-
               <!-- 메뉴 -->
               <i class="fa-solid fa-bars" @click="toggleMenu"></i>
               <HamburgerMenu v-if="isMenuOpen" @close="toggleMenu" />
               <!-- 메뉴 끝 -->
-
               <router-link to="/">
                 <img src="../assets/pillgood_logo.png">&nbsp;
                 <span>: 필굿</span>
@@ -25,7 +23,7 @@
             </div>
             <!-- 사용자 이름 -->
             <div v-if="isLoggedIn" class="user-name">
-             {{ userName }} 님
+              {{ userName }} 님
             </div>
             <!-- 아이콘 -->
             <div class="icon-container">
@@ -38,15 +36,15 @@
               <router-link v-else to="/login" class="icon-link">
                 <i class="fa-solid fa-user"></i>
               </router-link>
-              <router-link to="/inquiries" class="icon-link"> <!-- 문의 페이지로 편하게 이동하려고 잠깐 넣어 뒀음 -->
+              <router-link to="/inquiries" class="icon-link">
                 <i class="fa-solid fa-location-dot"></i>
               </router-link>
               <router-link to="/cart" class="icon-link" @click="navigateToCart">
                 <i class="fa-solid fa-cart-shopping"></i>
               </router-link>
-              <router-link to="/admin" v-if="isAdmin">
-                <button>Admin Page</button>
-              </router-link>
+              <button @click="goToAdminPage" v-if="isAdmin">
+                Admin Page
+              </button>
             </div>
           </div>
         </div>
@@ -97,6 +95,9 @@ export default {
     },
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
+    },
+    goToAdminPage() {
+      window.location.href = '/admin';
     }
   },
   watch: {
