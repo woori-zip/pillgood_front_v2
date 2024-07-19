@@ -1,6 +1,6 @@
 <template>
   <div class="main-container">
-    <h1>리뷰 작성</h1>
+    <h2 class="text-melon">리뷰 작성</h2>
     <div style="text-align: left; display: flex">
       <img :src="productImage" alt="Product Image" style="width: 150px;">
       <p>
@@ -20,8 +20,8 @@
         <span v-if="error" class="error">{{ error }}</span> <!-- 에러 메시지 표시 -->
         <rich-text-editor v-model="reviewContent" ref="richTextEditor" @text-change="handleTextChange"></rich-text-editor>
       </div>
-      <div>
-        <button type="submit">리뷰 작성</button>
+      <div class="btn-container">
+        <button type="submit" class="btn btn-green">리뷰 작성</button>
       </div>
     </form>
   </div>
@@ -29,6 +29,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import '../assets/styles.css';
 import StarRating from 'vue3-star-ratings'; // 기본 내보내기로 수정
 import RichTextEditor from '@/components/RichTextEditor.vue';
 

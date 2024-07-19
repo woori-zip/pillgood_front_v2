@@ -64,7 +64,7 @@
           <div v-else>발급 완료</div>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn color="info" small @click="openEditDialog(item)">수정</v-btn>
+          <v-btn color="info" small @click="openEditDialog(item)">수정</v-btn>&nbsp;
           <v-btn color="error" small @click="confirmDeleteMember(item.memberUniqueId)">삭제</v-btn>
         </template>
       </v-data-table>
@@ -92,15 +92,15 @@ export default {
       editDialog: false,
       editingMember: null,
       headers: [
-        { title: '회원명', value: 'name' },
-        { title: '이메일', value: 'email' },
-        { title: '휴대폰번호', value: 'phoneNumber' },
-        { title: '성별', value: 'gender' },
-        { title: '가입일', value: 'registrationDate' },
-        { title: '구독상태', value: 'subscriptionStatus' },
-        { title: '레벨', value: 'memberLevel' },
-        { title: '쿠폰 발급', value: 'coupon' },
-        { title: '관리', value: 'actions' },
+        { title: '회원명', value: 'name', align: 'center'},
+        { title: '이메일', value: 'email', align: 'center' },
+        { title: '휴대폰번호', value: 'phoneNumber', align: 'center' },
+        { title: '성별', value: 'gender', align: 'center' },
+        { title: '가입일', value: 'registrationDate', align: 'center' },
+        { title: '구독상태', value: 'subscriptionStatus', align: 'center' },
+        { title: '레벨', value: 'memberLevel', align: 'center' },
+        { title: '쿠폰 발급', value: 'coupon', align: 'center' },
+        { title: '관리', value: 'actions', align: 'center' },
       ],
       filters: [
         { title: '회원명', value: 'memberName' },

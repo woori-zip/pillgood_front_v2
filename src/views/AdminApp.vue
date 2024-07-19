@@ -2,18 +2,52 @@
   <v-app>
     <v-navigation-drawer app v-model="drawer" :permanent="isPermanent" class="grey lighten-4">
       <v-list dense>
+        <v-list-item link to="/admin">
+            <v-icon>mdi-home-outline</v-icon>
+        </v-list-item>
+
         <v-list-item link to="/admin/members">
           <v-list-item-icon>
             <v-icon>mdi-account-group</v-icon>
           </v-list-item-icon>
           <v-list-item-title>회원 관리</v-list-item-title>
         </v-list-item>
+
         <v-list-item link to="/admin/products">
           <v-list-item-icon>
             <v-icon>mdi-package-variant-closed</v-icon>
           </v-list-item-icon>
           <v-list-item-title>상품 관리</v-list-item-title>
         </v-list-item>
+
+        <v-list-item link to="/admin/notices">
+          <v-list-item-icon>
+            <v-icon>mdi-bulletin-board</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>공지사항 관리</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item link to="/admin/reviews">
+          <v-list-item-icon>
+            <v-icon>mdi-comment</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>후기 관리</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item link to="/admin/inquirys">
+          <v-list-item-icon>
+            <v-icon>mdi-comment</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>문의 관리</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item link to="/admin/coupons">
+          <v-list-item-icon>
+            <v-icon>mdi-comment</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>쿠폰 관리</v-list-item-title>
+        </v-list-item>
+
       </v-list>
     </v-navigation-drawer>
     <v-app-bar app>

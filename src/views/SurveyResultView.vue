@@ -13,10 +13,11 @@
           </tr>
         </table>
         <div class="def-container">
-          <div v-for="(deficiency, index) in uniqueDeficiencies" :key="index" class="def-id box-shadow">
-            <h2>#{{ getDeficiencyName(deficiency) }}</h2>
+          <div v-for="(deficiency, index) in uniqueDeficiencies" :key="index" class="def-id">
+            <h4>#{{ getDeficiencyName(deficiency) }}</h4>
           </div>
         </div>
+        <hr class="line">
         <h4 class="text-melon">{{ surveyResult?.name }} 님을 위한 추천 제품</h4>
         <div class="product-container">
           <div v-for="(product, index) in recommendedProducts" :key="index" class="product-grid-item">
@@ -34,6 +35,10 @@
             </div>
           </div>
         </div>
+        <!-- 추가된 부분 시작 -->
+        <h4 class="text-melon">나이대별 부족한 영양소 통계</h4>
+        <AgeGroupDeficiencyChart :userAge="surveyResult.age" />
+        <!-- 추가된 부분 끝 -->
       </div>
       <div v-else>
         <p>설문 결과를 불러오는 중입니다...</p>
@@ -46,9 +51,13 @@
 import { computed, onMounted, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import AgeGroupDeficiencyChart from '@/components/AgeGroupDeficiencyChart'; // 추가된 부분
 
 export default {
   name: 'SurveyResultView',
+  components: {
+    AgeGroupDeficiencyChart // 추가된 부분
+  },
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -96,11 +105,11 @@ export default {
       await store.dispatch('deficiency/fetchDeficiencies');
       await store.dispatch('survey/fetchProductsByDeficiency', uniqueDeficiencies.value);
       await store.dispatch('product/fetchProducts');
-
-      console.log('recommendedProducts from surveyResult:', surveyResult.value.recommendedProducts);
-      // recommendedProducts를 로그로 출력하여 값이 제대로 설정되었는지 확인
+      // 여기 recommendedProducts를 로그로 출력하여 값이 제대로 설정되었는지 확인
       const recommendedProducts = store.getters['survey/recommendedProducts'];
       console.log('recommendedProducts after fetch:', recommendedProducts);
+
+      await store.dispatch('survey/fetchAgeGroupDeficiencyData'); // 추가된 부분
     });
 
     const addToCart = async (productId) => {
@@ -133,33 +142,23 @@ export default {
 };
 </script>
 
-
 <style scoped>
 @import '../assets/styles.css';
-
-.result-table {
-  border: 0;
-}
 
 .def-container {
   margin-top: 10px;
   margin-bottom: 30px;
   padding: 10px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
   gap: 20px;
+  justify-content: center;
 }
 
-.def-id {
-  background-color: #B4D9A9;
-  padding: 10px;
-  text-align: center;
-  border-radius: 30px; /* 둥근 모서리 추가 */
-}
-
-.def-id h2 {
+.def-id h4 {
   color: white;
+  /* font-weight: bold; */
   margin: 0;
+  display: inline;
 }
 
 .product-container {
@@ -178,6 +177,7 @@ export default {
   width: 100%;
   padding: 7px;
   text-align: center;
+  justify-content: center;
 }
 
 .product-image {
@@ -189,6 +189,7 @@ export default {
 
 .btn {
   margin-top: 10px;
+  display: inline-block;
 }
 
 /* 반응형 디자인을 위한 미디어 쿼리 */
@@ -198,5 +199,3 @@ export default {
   }
 }
 </style>
-
-

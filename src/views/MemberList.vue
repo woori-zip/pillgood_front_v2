@@ -60,7 +60,7 @@ import { mapActions, mapGetters } from 'vuex';
 import axios from '../axios'; // axios 인스턴스 가져오기
 
 export default {
-  name: 'MemberList',
+  name: 'AdminMemberList',
   data() {
     return {
       selectedFilter: '',

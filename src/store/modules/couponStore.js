@@ -16,7 +16,7 @@ const actions = {
     try {
       const response = await axios.get('/api/coupons/list');
       console.log('쿠폰 컨트롤러 응답:', response.data); // 응답 로그
-      commit('setCoupons', response);
+      commit('setCoupons', response.data);
     } catch (error) {
       console.error('쿠폰 요청 실패:', error); // 실패 로그
     }
@@ -68,6 +68,30 @@ const actions = {
       throw error;
     }
   },
+  async createCoupon({ commit }, coupon) {
+    try {
+      const response = await axios.post('/admin/coupons/create', coupon);
+      commit('newCoupon', response.data);
+    } catch (error) {
+      console.error('쿠폰 생성 실패:', error);
+    }
+  },
+  async updateCoupon({ commit }, updatedCoupon) {
+    try {
+      const response = await axios.put(`/admin/coupons/${updatedCoupon.couponId}`, updatedCoupon);
+      commit('updateCoupon', response.data);
+    } catch (error) {
+      console.error('쿠폰 업데이트 실패:', error);
+    }
+  },
+  async deleteCoupon({ commit }, couponId) {
+    try {
+      await axios.delete(`/admin/coupons/${couponId}`);
+      commit('removeCoupon', couponId);
+    } catch (error) {
+      console.error('쿠폰 삭제 실패:', error);
+    }
+  },
 };
 
 const mutations = {
@@ -82,6 +106,16 @@ const mutations = {
   addOwnedCoupon: (state, ownedCoupon) => {
     console.log('addOwnedCoupon 호출:', ownedCoupon); // 커밋 로그
     // 필요한 경우, 상태를 업데이트
+  },
+  newCoupon: (state, coupon) => state.coupons.push(coupon),
+  updateCoupon: (state, updatedCoupon) => {
+    const index = state.coupons.findIndex(coupon => coupon.couponId === updatedCoupon.couponId);
+    if (index !== -1) {
+      state.coupons.splice(index, 1, updatedCoupon);
+    }
+  },
+  removeCoupon: (state, couponId) => {
+    state.coupons = state.coupons.filter(coupon => coupon.couponId !== couponId);
   },
 };
 

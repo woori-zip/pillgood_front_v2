@@ -3,7 +3,6 @@
     <div v-if="inquiry" class="box-container box-shadow">
       <div>
         <div class="bttn-container">
-          <button @click="goBack" class="btn btn-green">목록으로</button>
           <button v-if="!isEditing" @click="editInquiry" class="btn btn-gray">수정</button>
           <button v-if="isEditing" @click="saveInquiry" class="btn btn-green">저장</button>
           <button v-if="isEditing" @click="cancelEdit" class="btn btn-gray">취소</button>
@@ -135,9 +134,6 @@ export default {
       'updateAnswer',
       'deleteAnswer'
     ]),
-    goBack() {
-      this.$router.push('/inquiries');
-    },
     editInquiry() {
       this.isEditing = true;
       this.editableInquiry = { ...this.inquiry };

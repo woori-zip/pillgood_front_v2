@@ -5,21 +5,24 @@
       <router-view />
     </main>
     <FooterView v-if="showHeaderAndFooter" />
+    <BackToTop />
   </div>
 </template>
 
 <script>
 import { provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import HeaderView from './components/HeaderView.vue'
-import FooterView from './components/FooterView.vue'
-import { mapActions, mapState } from 'vuex'
+import HeaderView from './components/HeaderView.vue';
+import FooterView from './components/FooterView.vue';
+import BackToTop from './components/BackToTop.vue';
+import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'App',
   components: {
     HeaderView,
-    FooterView
+    FooterView,
+    BackToTop
   },
   setup() {
     const route = useRoute()

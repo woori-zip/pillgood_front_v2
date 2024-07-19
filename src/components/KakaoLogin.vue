@@ -1,6 +1,7 @@
 <template>
   <div class="social-login-container">
-    <h4>소셜 로그인</h4>
+    <!-- <h4>소셜 로그인</h4> -->
+    <br>
     <a :href="kakaoLoginUrl" @click.prevent="kakaoLogin">
       <img :src="kakaoLoginImage" alt="카카오 로그인">
     </a>

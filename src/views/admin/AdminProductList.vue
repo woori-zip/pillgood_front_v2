@@ -26,9 +26,9 @@
             ></v-text-field>
           </v-col>
           <v-col cols="12" sm="3">
-            <v-btn color="primary" @click="resetFilters">초기화</v-btn>
-            <v-btn color="primary" @click="createProduct">+ 제품 등록</v-btn>
-            <v-btn color="primary" @click="editNutrient">성분 관리</v-btn>
+            <v-btn color="primary" @click="resetFilters">초기화</v-btn>&nbsp;
+            <v-btn color="primary" @click="createProduct">+ 제품 등록</v-btn>&nbsp;
+            <v-btn color="primary" @click="openNutrientDialog">성분 관리</v-btn>
           </v-col>
         </v-row>
       </v-card-subtitle>
@@ -36,7 +36,7 @@
       <v-data-table
         :headers="headers"
         :items="filteredProducts"
-        class="elevation-1"
+        class="elevation-1 mytable"
       >
         <template v-slot:[`item.nutrient`]="{ item }">
           <span>{{ getNutrientName(item.nutrientId) }}</span>
@@ -53,16 +53,33 @@
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn color="info" small @click="openEditDialog(item)">수정</v-btn>
         </template>
+        <template v-slot:[`item.productName`]="{ item }">
+          <div
+            @mouseover="showImage(item, $event)"
+            @mouseleave="hideImage"
+            @mousemove="moveImage($event)"
+          >
+            {{ item.productName }}
+          </div>
+        </template>
       </v-data-table>
     </v-card>
 
-    <v-dialog v-model="editDialog" max-width="800px">
+    <v-dialog v-model="editDialog" max-width="800px" max-height="900px">
       <AdminProductEdit :product="editingProduct" @save="onProductSave" @cancel="editDialog = false" />
     </v-dialog>
 
-    <v-dialog v-model="createDialog" max-width="800px">
+    <v-dialog v-model="createDialog" max-width="800px" max-height="900px">
       <AdminProductCreate @save="onProductSave" @cancel="createDialog = false" />
     </v-dialog>
+
+    <v-dialog v-model="nutrientDialog" max-width="800px" max-height="900px">
+      <NutrientRelationManager @close="nutrientDialog = false" />
+    </v-dialog>
+
+    <div v-if="hoveredImage" :style="{ top: tooltipPosition.y + 'px', left: tooltipPosition.x + 'px' }" class="image-tooltip">
+      <img :src="hoveredImage" alt="Product Image" />
+    </div>
   </v-container>
 </template>
 
@@ -70,10 +87,11 @@
 import { mapActions, mapGetters, mapState } from 'vuex';
 import AdminProductEdit from './AdminProductEdit.vue';
 import AdminProductCreate from './AdminProductCreate.vue';
+import NutrientRelationManager from './NutrientRelationManager.vue';
 
 export default {
   name: 'AdminProductList',
-  components: { AdminProductEdit, AdminProductCreate },
+  components: { AdminProductEdit, AdminProductCreate, NutrientRelationManager },
   data() {
     return {
       selectedFilter: '',
@@ -81,15 +99,18 @@ export default {
       selectedCoupons: {},
       editDialog: false,
       createDialog: false,
+      nutrientDialog: false,
       editingProduct: null,
+      hoveredImage: null,
+      tooltipPosition: { x: 0, y: 0 },
       headers: [
-        { title: '제품명', value: 'productName' },
-        { title: '성분', value: 'nutrient' },
-        { title: '가격', value: 'price' },
-        { title: '재고', value: 'stock' },
-        { title: '대상', value: 'target' },
-        { title: '상태', value: 'active' },
-        { title: '관리', value: 'actions' },
+        { title: '제품명', value: 'productName', align: 'center' },
+        { title: '성분', value: 'nutrient', align: 'center' },
+        { title: '가격', value: 'price', align: 'center' },
+        { title: '재고', value: 'stock', align: 'center' },
+        { title: '대상', value: 'target', align: 'center' },
+        { title: '상태', value: 'active', align: 'center' },
+        { title: '관리', value: 'actions', align: 'center' },
       ],
       filters: [
         { title: '제품명', value: 'productName' },
@@ -143,6 +164,9 @@ export default {
     openCreateDialog() {
       this.createDialog = true;
     },
+    openNutrientDialog() {
+      this.nutrientDialog = true;
+    },
     onProductSave() {
       this.editDialog = false;
       this.createDialog = false;
@@ -164,11 +188,36 @@ export default {
       this.selectedFilter = '';
       this.searchQuery = '';
     },
-    createProduct() {
-      this.openCreateDialog();
+    async showImage(item, event) {
+      const productId = item.productId;
+      try {
+        const productDetails = await this.fetchProductDetails(productId);
+        if (!productDetails || !productDetails.productImage) {
+          throw new Error('No product description found');
+        }
+
+        const firstImage = this.extractFirstImage(productDetails.productImage);
+        if (!firstImage) {
+          throw new Error('No image found in the product image field');
+        }
+
+        this.hoveredImage = firstImage;
+        this.tooltipPosition = { x: event.clientX + 15, y: event.clientY + 15 }; // 초기 위치 설정
+      } catch (error) {
+        console.error('이미지를 불러오는 데 실패했습니다:', error.message);
+      }
     },
-    editNutrient() {
-      this.$router.push('/nutrientedit');
+    hideImage() {
+      this.hoveredImage = null;
+    },
+    moveImage(event) {
+      this.tooltipPosition = { x: event.clientX + 15, y: event.clientY + 15 };
+    },
+    extractFirstImage(htmlString) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlString, 'text/html'); 
+      const imgTag = doc.querySelector('img');
+      return imgTag ? imgTag.src : null;
     }
   }
 };
@@ -204,5 +253,14 @@ export default {
 
 .line-table tr:hover {
   background-color: #f1f1f1;
+}
+
+.image-tooltip {
+  position: fixed;
+  z-index: 1000;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 </style>

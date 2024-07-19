@@ -1,6 +1,6 @@
 <template>
-  <div class="main-container box-shadow">
-    
+  <div class="main-container">
+    <h2 class="text-melon">마이 페이지</h2>
     <!-- mypage nav bar -->
     <div class="btn-container">
       <button @click="checkSurveyResult" class="btn-link">나의 건강 분석</button>
@@ -9,25 +9,24 @@
       <router-link to="/reviewlist" class="btn-link">후기</router-link>
       <router-link to="/myinquiries" class="btn-link">1:1 문의</router-link>
     </div>
-    <div class="box-container">
-      <h4 class="text-melon">마이페이지</h4>
+    <div class="box-container-no-shade">
       <div>
         <div v-if="user">
           <table class="mypage">
             <tr>
-              <td><label for="email">이메일:</label></td>
+              <td><label for="email">이메일 </label></td>
               <td><input type="email" v-model="user.email" :readonly="!isEditing"/></td>
             </tr>
             <tr>
-              <td><label for="name">이름:</label></td>
+              <td><label for="name">이름 </label></td>
               <td><input type="text" v-model="user.name" :readonly="!isEditing"/></td>
             </tr>
             <tr>
-              <td><label for="age">나이:</label></td>
+              <td><label for="age">나이 </label></td>
               <td><input type="text" :value="user.age" readonly/></td>
             </tr>
             <tr>
-              <td><label for="gender">성별:</label></td>
+              <td><label for="gender">성별 </label></td>
               <td>
                 <select v-model="user.gender" v-if="isEditing" required>
                   <option value="N">성별을 선택하세요</option>
@@ -38,15 +37,15 @@
               </td>
             </tr>
             <tr>
-              <td><label for="phoneNumber">전화번호:</label></td>
+              <td><label for="phoneNumber">전화번호 </label></td>
               <td><input type="text" v-model="user.phoneNumber" :readonly="!isEditing"/></td>
             </tr>
             <tr>
-              <td><label for="subscriptionStatus">구독 상태:</label></td>
-              <td><input type="text" :value="user.subscriptionStatus" readonly/></td>
+              <td><label for="subscriptionStatus">구독 상태 </label></td>
+              <td><input type="text" :value="subscriptionStatusText" readonly/></td>
             </tr>
             <tr>
-              <td><label for="registrationDate">가입 일자:</label></td>
+              <td><label for="registrationDate">가입 일자 </label></td>
               <td><input type="text" :value="formatDate(user.registrationDate)" readonly/></td>
             </tr>
           </table>
@@ -65,7 +64,7 @@
     <!-- 비밀번호 확인 모달창 -->
     <div v-if="showPasswordModal" class="modal">
       <div class="box-container box-shadow">
-        <h4>비밀번호 확인</h4>
+        <h4 class="text-melon">비밀번호 확인</h4>
         <input type="password" v-model="password" placeholder="비밀번호를 입력하세요" />
         <div class="btn-container">
           <button class="btn btn-green" @click="verifyPassword">비밀번호 확인</button>
@@ -80,6 +79,7 @@
 import axios from '../axios';
 import { useRouter } from 'vue-router';
 import { mapState, mapActions, useStore } from 'vuex';
+import '../assets/styles.css';
 
 export default {
   name: 'MyPage',
@@ -122,6 +122,9 @@ export default {
     ...mapState('member', ['member']),
     user() {
       return this.member;
+    },
+    subscriptionStatusText() {
+      return this.user.subscriptionStatus ? '구독 중' : '해당 사항 없음';
     }
   },
   created() {

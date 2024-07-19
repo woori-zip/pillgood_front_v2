@@ -37,7 +37,7 @@
         </div>
       </div>
 
-      <div v-else-if="currentStep === 'questions'">
+      <div v-else-if="currentStep === 'questions'" class="survey">
         <h2 class="text-melon">🔎</h2>
         <div v-if="currentQuestion">
           <p class="text-bold question-text">{{ currentQuestionIndex + 1 }}. {{ currentQuestion.questionContent }}</p>
@@ -59,11 +59,11 @@
         </div>
       </div>
 
-      <div v-else-if="currentStep === 'detailed-questions'">
+      <div v-else-if="currentStep === 'detailed-questions'" class="survey">
         <h2 class="text-melon">🔎</h2>
-        <p class="text-bold">해당하는 것을 모두 선택하세요</p>
+        <p class="text-bold">· 해당하는 것을 모두 선택하세요</p>
         <div v-for="dq in currentDetailedQuestionsGroup" :key="dq.detailedQuestionId">
-          <div class="check-container">
+          <div class="check-container-vertical">
             <input type="checkbox" :id="'answer-' + dq.detailedQuestionId" :value="dq.detailedQuestionId" v-model="detailedAnswers[dq.detailedQuestionId]">
             <label :for="'answer-' + dq.detailedQuestionId">{{ dq.questionContent }}</label>
           </div>
@@ -179,9 +179,22 @@ export default {
 <style scoped>
 /* 기존 스타일 유지 */
 
-.btn-container {
+/* .btn-container {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
+} */
+
+.line-table {
+  width: 60%;
+  border-collapse: collapse;
+  }
+
+.line-table td, tr, th {
+    border: none;
+}
+
+.survey {
+  font-size: 20px;
 }
 </style>
