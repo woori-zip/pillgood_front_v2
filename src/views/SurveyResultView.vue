@@ -39,6 +39,9 @@
         <h4 class="text-melon">나이대별 부족한 영양소 통계</h4>
         <AgeGroupDeficiencyChart :userAge="surveyResult.age" />
         <!-- 추가된 부분 끝 -->
+        <!-- AgeGroupTopProducts 추가 -->
+        <h4 class="text-melon">고객 선호 제품</h4>
+        <AgeGroupTopProducts />
       </div>
       <div v-else>
         <p>설문 결과를 불러오는 중입니다...</p>
@@ -52,11 +55,13 @@ import { computed, onMounted, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import AgeGroupDeficiencyChart from '@/components/AgeGroupDeficiencyChart'; // 추가된 부분
+import AgeGroupTopProducts from '@/components/AgeGroupTopProducts'; // 추가된 부분
 
 export default {
   name: 'SurveyResultView',
   components: {
-    AgeGroupDeficiencyChart // 추가된 부분
+    AgeGroupDeficiencyChart, // 추가된 부분
+    AgeGroupTopProducts // 추가된 부분
   },
   setup() {
     const store = useStore();
@@ -74,21 +79,13 @@ export default {
     };
 
     const getDeficiencyName = (id) => {
-      const deficiency = deficiencies.value.find(def => def.deficiencyId === id);
-      if (deficiency) {
-        console.log(`Deficiency found: ${deficiency.deficiencyName} for ID: ${id}`);
-      } else {
-        console.log(`Deficiency not found for ID: ${id}`);
-        console.log('Current deficiencies:', deficiencies.value); // 현재 deficiencies 배열 출력
-      }
+      const deficiency = deficiencies.value?.find(def => def.deficiencyId === id);
       return deficiency ? deficiency.deficiencyName : 'Unknown';
     };
 
     const uniqueDeficiencies = computed(() => {
       const ids = [surveyResult.value?.deficiencyId1, surveyResult.value?.deficiencyId2, surveyResult.value?.deficiencyId3];
-      const uniqueIds = [...new Set(ids)].filter(id => id !== null); // 중복 제거 및 null 필터링
-      console.log('Unique deficiencies:', uniqueIds); // uniqueDeficiencies 배열 출력
-      return uniqueIds;
+      return [...new Set(ids)].filter(id => id !== null); // 중복 제거 및 null 필터링
     });
 
     const genderDisplay = computed(() => {
@@ -109,18 +106,13 @@ export default {
         return;
       }
 
-      await store.dispatch('deficiency/fetchDeficiencies'); // 여기서부터 고우리 수정
-
-      // deficiencies 배열 출력
-      console.log('Loaded deficiencies:', deficiencies.value);
-      
+      await store.dispatch('deficiency/fetchDeficiencies');
       await store.dispatch('product/fetchProducts');
-
-      const deficienciesArray = [surveyResult.value.deficiencyId1, surveyResult.value.deficiencyId2, surveyResult.value.deficiencyId3];
-      await store.dispatch('survey/fetchProductsByDeficiency', deficienciesArray);
-      // console.log('Recommended Products:', store.getters['survey/recommendedProducts']);  // 추천 제품 로그 출력
+      await store.dispatch('survey/fetchProductsByDeficiency', uniqueDeficiencies.value);
+      console.log('recommendedProducts after fetch:', store.getters['survey/recommendedProducts']);
 
       await store.dispatch('survey/fetchAgeGroupDeficiencyData'); // 추가된 부분
+      await store.dispatch('survey/fetchTopProductsByAgeGroup'); // 추가된 부분
     });
 
     const addToCart = async (productId) => {
@@ -152,8 +144,13 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 @import '../assets/styles.css';
+
+.result-table {
+  border: 0;
+}
 
 .def-container {
   margin-top: 10px;
@@ -164,9 +161,17 @@ export default {
   justify-content: center;
 }
 
+.def-id {
+  background-color: #B4D9A9;
+  padding: 20px;
+  text-align: center;
+  border-radius: 35px; /* 둥근 모서리 추가 */
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .def-id h4 {
   color: white;
-  /* font-weight: bold; */
   margin: 0;
   display: inline;
 }
