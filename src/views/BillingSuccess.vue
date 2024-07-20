@@ -9,7 +9,7 @@
         <p>결제 금액: {{ response.totalAmount }} 원</p>
       </div>
       <button @click="goHome" class="btn btn-green">홈으로 돌아가기</button>
-    </div>
+    </div> 
     <div v-else>
       <p>로딩 중...</p>
     </div>

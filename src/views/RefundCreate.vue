@@ -1,42 +1,50 @@
 <template>
   <div class="main-container">
     <div class="box-container box-shadow">
-      <h2 class="order-no">{{ orderNo }}</h2>
+      <h2 class="text-melon">환불</h2>
       <div class="return-exchange-info">
         <div class="return-exchange-title">
-          반품/환불 안내
-        </div>
-        <p class="return-exchange-description">
           반품 및 환불 신청 페이지에 모든 항목을 기재하신 후, 상품을 우체국으로 이용해 착불로 보내주세요.
-        </p>
+        </div>
       </div>
-
+        
       <form @submit.prevent="handleSubmit">
-        <div class="form-group check-container">
+        <div class="check-container">
           <label><input type="radio" v-model="requestType" value="반품"> 반품</label>
           <label><input type="radio" v-model="requestType" value="환불"> 환불</label>
         </div>
-        
-        <div class="form-group">
-          <label>상세 사유 입력 (선택사항)</label>
-          <textarea v-model="detailedReason" @focus="clearTextArea"></textarea>
+        <table class="line-table">
+          <colgroup>
+            <col style="width:30%">
+            <col style="width:70%">
+          </colgroup>
+          <tr>
+            <td>주문 번호</td>
+            <td>{{ orderNo }}</td>
+          </tr>
+          <tr>
+            <td>사유</td>
+            <td>
+              <rich-text-editor v-model="detailedReason" ref="richTextEditor" @text-change="handleTextChange"></rich-text-editor>
+            </td>
+          </tr>
+          <tr>
+            <td><label>은행명</label></td>
+            <td><input v-model="bankName" type="text"></td>
+          </tr>
+          <tr>
+            <td><label>계좌번호</label></td>
+            <td><input v-model="accountNumber" type="text"></td>
+          </tr>
+          <tr>
+            <td><label>예금주</label></td>
+            <td><input v-model="accountHolder" type="text"></td>
+          </tr>
+        </table>
+        <div class="btn-container">
+          <button class="btn btn-green" type="submit">제출</button>
+          <button class="btn btn-gray" @click="goOrderHistory">돌아가기</button>
         </div>
-        
-        <div class="form-group">
-          <label>은행명</label>
-          <input v-model="bankName" type="text">
-        </div>
-        
-        <div class="form-group">
-          <label>계좌번호</label>
-          <input v-model="accountNumber" type="text">
-        </div>
-        
-        <div class="form-group">
-          <label>예금주</label>
-          <input v-model="accountHolder" type="text">
-        </div>
-        <button class="btn btn-green" type="submit">제출</button>
       </form>
     </div>
   </div>
@@ -44,6 +52,8 @@
 
 <script>
 import axios from '../axios';
+import RichTextEditor from '@/components/RichTextEditor.vue';
+import '../assets/styles.css';
 
 export default {
   props: {
@@ -51,6 +61,9 @@ export default {
       type: Number,
       required: true
     }
+  },
+  components: {
+    'rich-text-editor': RichTextEditor,
   },
   data() {
     return {
@@ -91,13 +104,14 @@ export default {
       } catch (error) {
         console.error('환불 정보 저장 중 오류가 발생했습니다:', error);
       }
+    },
+    goOrderHistory() {
+      this.$router.push({ name: 'OrderHistory' });
     }
   }
 };
 </script>
 
 <style scoped>
-.main-container {
-  padding: 20px;
-}
+
 </style>

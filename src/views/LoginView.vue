@@ -1,6 +1,7 @@
 <template>
   <div class="main-container">
     <div class="login-box">
+      <!-- 위쪽 -->
       <div class="form-container">
         <!-- 기존 로그인 폼 -->
         <form @submit.prevent="handleLogin" class="login-form">
@@ -17,21 +18,18 @@
             <button type="submit" class="btn btn-green">로그인</button>
           </div>
         </form>
+        <!-- 중앙에 세로 선 -->
+        <div class="vertical-line"></div>
+        <!-- 카카오 로그인 컴포넌트 추가 -->
+        <div class="social-container">
+          <h4 class="text-melon">소셜 로그인</h4>
+          <KakaoLogin @loginSuccess="handleKakaoLoginSuccess" />
+        </div>
       </div>
-
-      <!-- 중앙에 세로 선 추가 -->
-      <div class="vertical-line"></div>
-
-      <!-- 카카오 로그인 컴포넌트 추가 -->
-      <div class="social-container">
-        <h4 class="text-melon">소셜 로그인</h4>
-        <KakaoLogin @loginSuccess="handleKakaoLoginSuccess" />
-      </div>
-
+      <!-- 회원가입 버튼/비밀번호 찾기 -->
       <div class="btn-container2">
         <button type="button" class="btn btn-gray" @click="navigateToRegister">회원가입</button>
       </div>
-
       <div class="check-container">
         <input id="chk_all" type="checkbox" v-model="rememberEmail">
         <label for="chk_all" class="text-gray">이메일 기억하기</label>
@@ -66,6 +64,7 @@ export default {
     KakaoLogin // 카카오 로그인 컴포넌트 추가
   },
   mounted() {
+    this.checkSessionStatus();
     this.email = getEmailFromLocalStorage(); // 페이지 로드 시 저장된 이메일 불러오기
     this.handleKakaoCallback(); // 카카오 로그인 콜백 처리 추가
   },
@@ -102,6 +101,20 @@ export default {
     },
     navigateToRegister() {
       this.$router.push('/register');
+    },
+    async checkSessionStatus() {
+      try {
+        const response = await axios.get('/api/members/status', { withCredentials: true });
+        console.log("서버로부터 상태를 받아옴: ", response.data);
+        if (!response.data.isLoggedIn) {
+          this.$store.dispatch('clearUserState');
+        } else {
+          this.$store.commit('setLoginState', response.data);
+        }
+      } catch (error) {
+        console.error("상태 확인 요청 에러: ", error);
+        this.$store.dispatch('clearUserState');
+      }
     },
     async handleKakaoCallback() { // 카카오 로그인 콜백 처리 함수 추가
       const code = this.$route.query.code;
@@ -170,12 +183,12 @@ export default {
 
 .login-box {
   display: flex;
-  flex-direction: column; /* 세로 정렬 */
-  align-items: center; /* 수평 중앙 정렬 */
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
   border-radius: 10px;
-  width: 100%; /* 너비를 부모 요소에 맞추기 */
-  max-width: 600px; /* 최대 너비 설정 */
+  width: 100%;
+  max-width: 600px;
   background-color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -213,10 +226,11 @@ export default {
   justify-content: center;
 }
 
-.btn-container2,
-.check-container {
+.btn-container2 {
+  text-align: center;
+  display: flex;
+  justify-content: center;
   margin-top: 20px;
-  text-align: center; /* 중앙 정렬 */
 }
 
 .check-container {
@@ -227,31 +241,46 @@ export default {
 
 .vertical-line {
   width: 80%;
-  height: 1px; /* 선의 높이 */
-  background-color: #ddd; /* 선의 색상 */
-  margin: 20px 0; /* 위아래 마진 */
+  height: 1px;
+  background-color: #B4D9A9;
+  margin: 20px 0;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 1200px) {
   .login-box {
-    flex-direction: row; /* 큰 화면에서는 가로 정렬 */
+    flex-direction: column; /* 큰 화면에서도 세로 정렬 */
     justify-content: space-between;
+    max-width: 1200px;
+    height: auto;
   }
 
-  .vertical-line {
-    width: 1px; /* 높이 대신 너비를 1px로 설정 */
-    height: auto; /* 높이를 자동으로 설정 */
-    margin: 0 20px; /* 좌우 마진 */
+  .form-container {
+    display: flex;
+    flex-direction: row; /* 가로 정렬 */
+    justify-content: space-between;
+    width: 100%;
   }
 
-  .form-container,
-  .social-container {
+ .vertical-line {
+  width: 20%;
+  height: 1px;
+  background-color: #B4D9A9;
+  rotate: 90deg;
+}
+
+  .form-container .login-form,
+  .form-container .social-container {
     width: 45%;
   }
 
+  .btn-container2,
   .check-container {
     width: 100%;
-    justify-content: space-between;
+    text-align: center;
+  }
+
+  .check-container {
+    justify-content: center;
   }
 }
 </style>
