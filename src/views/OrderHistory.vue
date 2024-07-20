@@ -13,7 +13,7 @@
           <span style="font-size:20px;">총액: {{ order.totalAmount }}원</span><br>
           <router-link :to="{ name: 'OrderDetail', params: { orderNo: order.orderNo }}">주문상세보기</router-link>
         </p>
-        <div v-if="order.orderStatus !== '구매확정' && order.orderStatus !== '취소완료'" class="btn-container">
+        <div v-if="order.orderStatus !== '구매확정' && order.orderStatus !== '취소완료' && order.orderStatus !== '환불완료'" class="btn-container">
           <button class="btn btn-green" @click="confirmPurchase(order.orderNo)">구매확정</button>
           <button class="btn btn-gray" @click="goToReturnPage(order)">환불요청</button>
         </div>

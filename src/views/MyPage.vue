@@ -5,7 +5,7 @@
     <div class="btn-container">
       <button @click="checkSurveyResult" class="btn-link">나의 건강 분석</button>
       <router-link to="/order-history" class="btn-link">주문 | 배송</router-link>
-      <router-link to="/#" class="btn-link">배송지 관리</router-link>
+      <router-link to="/myaddress" class="btn-link">배송지 관리</router-link>
       <router-link to="/mycoupon" class="btn-link">보유 쿠폰</router-link>
       <router-link to="/reviewlist" class="btn-link">후기</router-link>
       <router-link to="/myinquiries" class="btn-link">1:1 문의</router-link>

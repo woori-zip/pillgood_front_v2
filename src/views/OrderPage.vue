@@ -58,7 +58,6 @@
     <table class="line-table" style="padding: 10px">
       <colgroup>
         <col style="width:170px">
-        <col style="width:*">
       </colgroup>
       <tbody>
         <tr>
@@ -72,26 +71,36 @@
             </div>
           </td>
         </tr>
-        <tr v-if="addressType === 'existing'">
-          <td style="text-align: left;">배송지명</td>
-          <td>
-            <select v-model="selectedAddress">
-              <option v-for="address in addresses" :key="address.id" :value="address">{{ address.name }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr v-if="addressType === 'new'">
+        <tr>
           <td style="text-align: left;"><label for="recipient">수령인 이름</label></td>
           <td>
             <input type="text" id="recipient" v-model="recipient" @input="validateRecipient" />
             <p v-if="errors.recipient" class="error">{{ errors.recipient }}</p>
           </td>
         </tr>
-        <tr v-if="addressType === 'new'">
+        <tr>
           <td style="text-align: left"><label for="phoneNumber">수령인 연락처</label></td>
           <td>
             <input type="text" id="phoneNumber" v-model="phoneNumber" @input="validatePhoneNumber" />
             <p v-if="errors.phoneNumber" class="error">{{ errors.phoneNumber }}</p>
+          </td>
+        </tr>
+        <tr v-if="addressType === 'existing'">
+          <td style="text-align: left;">배송지명</td>
+          <td>
+            <select v-model="selectedAddress">
+              <option v-for="address in addresses" :key="address.shippingAddrId" :value="address">{{ address.shippingName }}</option>
+            </select>
+          </td>
+        </tr>
+        <tr v-if="addressType === 'existing'">
+          <td style="text-align: left;"><label for="existingAddressPostalCode">주소</label></td>
+          <td>
+            <input type="text" id="existingAddressPostalCode" v-model="postalCode" class="postal-code-field" readonly />
+            <input type="text" id="existingAddress" v-model="address" readonly />
+            <p v-if="errors.address" class="error">{{ errors.address }}</p>
+            <input type="text" id="existingDetailedAddress" v-model="detailedAddress" @input="validateDetailedAddress" />
+            <p v-if="errors.detailedAddress" class="error">{{ errors.detailedAddress }}</p>
           </td>
         </tr>
         <tr class="postal-code-group" v-if="addressType === 'new'">
@@ -196,11 +205,12 @@ export default {
     this.setRecipientAndPhoneNumber();
     this.calculateTotalAmount();
     await this.fetchTotalPoints(); // 총 포인트 가져오기
-    this.fetchAddresses(); // 기존 배송지 목록을 가져오는 함수 호출
+    await this.fetchAddresses(); // 기존 배송지 목록을 가져오는 함수 호출
   },
   methods: {
     ...mapActions('order', ['fetchUserProfile', 'fetchCoupons', 'fetchOrderDetails', 'placeOrder']),
     ...mapActions('billing', ['fetchBillingKey']),
+    ...mapActions('shipping', ['fetchAddresses']), // 추가
     async fetchTotalPoints() {
       try {
         const response = await axios.get('/api/points/totalPoints', { withCredentials: true });
@@ -209,12 +219,13 @@ export default {
         console.error('Error fetching total points:', error);
       }
     },
-    fetchAddresses() {
-      // API 호출 또는 데이터를 가져오는 로직
-      this.addresses = [
-        { id: 1, name: '배송지1', recipient: '홍길동', phoneNumber: '010-1234-5678', postalCode: '12345', address: '서울시 강남구', detailedAddress: '역삼동 123-45' },
-        { id: 2, name: '배송지2', recipient: '김철수', phoneNumber: '010-8765-4321', postalCode: '54321', address: '서울시 서초구', detailedAddress: '서초동 67-89' }
-      ];
+    async fetchAddresses() {
+      try {
+        const response = await axios.get('/api/shipping-addresses/findbyid', { withCredentials: true });
+        this.addresses = response.data;
+      } catch (error) {
+        console.error('배송지 목록을 가져오는 중 오류 발생:', error);
+      }
     },
     applyCoupon() {
       const selectedCoupon = this.coupons.find(coupon => coupon.ownedCouponId === this.ownedCouponId);
@@ -441,6 +452,13 @@ export default {
     foldDaumPostcode() {
       const elementWrap = this.$refs.wrap;
       elementWrap.style.display = 'none';
+    },
+    fillAddressFields() {
+      if (this.selectedAddress) {
+        this.postalCode = this.selectedAddress.postalCode;
+        this.address = this.selectedAddress.address;
+        this.detailedAddress = this.selectedAddress.detailedAddress;
+      }
     }
   },
   watch: {
@@ -464,11 +482,13 @@ export default {
     },
     address() {
       this.validateAddress();
+    },
+    selectedAddress() {
+      this.fillAddressFields();
     }
   }
 };
 </script>
-
 
 <style scoped>
 .item-info {
@@ -608,7 +628,7 @@ export default {
 }
 
 select {
-  width: 100; /* select 요소의 너비를 부모 요소에 맞게 설정 */
+  width: 100%; /* select 요소의 너비를 부모 요소에 맞게 설정 */
   box-sizing: border-box; /* 패딩과 테두리를 포함한 너비 계산 */
   margin-left: 0;
 }

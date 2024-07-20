@@ -15,6 +15,7 @@ import refund from './modules/refunds';
 
 import inquiry from './modules/inquiryStore';
 import coupon from './modules/couponStore';
+import shipping from './modules/shippingStore';
 
 
 import notice from './modules/notice';
@@ -35,6 +36,7 @@ export default createStore({
     coupon,
     home,
     refund,
-    billing
+    billing,
+    shipping
   }
 });
