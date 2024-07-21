@@ -9,6 +9,7 @@
         <v-tab value="DeficiencyNutrient">영양제 부족</v-tab>
       </v-tabs>
       <v-tabs-window v-model="tab">
+        <!-- 영양제  Section -->
         <v-tabs-window-item value="NutrientEfficiency">
           <v-card flat>
             <v-card-title>
@@ -25,6 +26,7 @@
                 ></v-select>
               </v-col>
               <v-col cols="5">
+                <!-- 효능 추가 -->
                 <v-select
                   v-model="filterEfficiency"
                   :items="efficiencyItems"
@@ -32,16 +34,70 @@
                   item-value="value"
                   label="효능 필터"
                   dense
-                ></v-select>
+                >
+                  <template v-slot:item="{ item, attrs, on }">
+                    <v-list-item v-bind="attrs">
+                      <v-row align="center" justify="space-between" v-on="{ ...on, click: () => { filterEfficiency = item.value } }">
+                        <v-col cols="9">
+                          <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        </v-col>
+                        <v-col cols="3" class="text-right">
+                          <v-btn icon @click.stop="confirmDeleteEfficiency(item.value)">
+                            <v-icon color="red">mdi-delete</v-icon>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-list-item>
+                  </template>
+                  <template v-slot:append-item>
+                    <v-list-item @click="toggleAddEfficiencyDialog">
+                      <v-list-item-content>
+                        <v-list-item-title>
+                          + Add New Efficiency
+                        </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                </v-select>
+              <!-- 효능 추가 끝 -->
+
               </v-col>
               <v-col cols="2">
                 <v-btn color="primary" @click="resetFilters">초기화</v-btn>
               </v-col>
             </v-row>
+            <!-- 효능 추가 -->
+            <v-dialog v-model="showAddEfficiencyDialog" max-width="600px">
+              <v-card>
+                <v-card-title>
+                  <span class="text-h5">새 효능 추가</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-form @submit.prevent="addEfficiency">
+                    <v-row>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="newEfficiency.efficiencyName"
+                          label="효능 이름"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" type="submit">저장</v-btn>
+                      <v-btn color="grey" @click="toggleAddEfficiencyDialog">취소</v-btn>
+                    </v-card-actions>
+                  </v-form>
+                </v-card-text>
+              </v-card>
+            </v-dialog>
+            <!-- 효능 추가 끝 -->
+            
             <v-row align="center" justify="center">
-                <v-col class="text-center" cols="12">
-                    <v-btn color="primary" @click="toggleAddForm('efficiency')" width="50%">추가하기</v-btn>
-                </v-col>
+              <v-col class="text-center" cols="12">
+                  <v-btn color="primary" @click="toggleAddForm('efficiency')" width="50%">추가하기</v-btn>
+              </v-col>
             </v-row>
             <v-data-table
               :headers="efficiencyHeaders"
@@ -100,10 +156,11 @@
             </v-dialog>
           </v-card>
         </v-tabs-window-item>
+
+        <!-- Deficiency Nutrient Section -->
         <v-tabs-window-item value="DeficiencyNutrient">
           <v-card flat>
-            <v-card-title>
-            </v-card-title>
+            <v-card-title></v-card-title>
             <v-row>
               <v-col cols="5">
                 <v-select
@@ -116,6 +173,7 @@
                 ></v-select>
               </v-col>
               <v-col cols="5">
+                <!-- 부족 select -->
                 <v-select
                   v-model="filterDeficiency"
                   :items="deficiencyItems"
@@ -123,16 +181,41 @@
                   item-value="value"
                   label="부족 필터"
                   dense
-                ></v-select>
+                >
+                  <template v-slot:item="{ item, attrs, on }">
+                    <v-list-item v-bind="attrs">
+                      <v-row align="center" justify="space-between" v-on="{ ...on, click: () => { filterDeficiency = item.value } }">
+                        <v-col cols="9">
+                          <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        </v-col>
+                        <v-col cols="3" class="text-right">
+                          <v-btn icon @click.stop="confirmDeleteDeficiency(item.value)">
+                            <v-icon color="red">mdi-delete</v-icon>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-list-item>
+                  </template>
+                  <template v-slot:append-item>
+                    <v-list-item @click="toggleAddDeficiencyDialog">
+                      <v-list-item-content>
+                        <v-list-item-title>
+                          + Add New Deficiency
+                        </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                </v-select>
+                <!-- 부족 select 끝 -->
               </v-col>
               <v-col cols="2">
                 <v-btn color="primary" @click="resetFilters2">초기화</v-btn>
               </v-col>
             </v-row>
             <v-row align="center" justify="center">
-                <v-col class="text-center" cols="12">
-                    <v-btn color="primary" @click="toggleAddForm('deficiency')" width="50%">추가하기</v-btn>                
-                </v-col>
+              <v-col class="text-center" cols="12">
+                <v-btn color="primary" @click="toggleAddForm('deficiency')" width="50%">추가하기</v-btn>                
+              </v-col>
             </v-row>
             <v-data-table
               :headers="deficiencyHeaders"
@@ -149,10 +232,11 @@
                 <v-btn color="error" @click="handleDeleteDeficiencyNutrient(item.deficiencyNutrientId)">삭제</v-btn>
               </template>
             </v-data-table>
+            <!-- 영양제-부족 관계 추가 모달창 -->
             <v-dialog v-model="showAddForm.deficiency" max-width="600px">
               <v-card>
                 <v-card-title>
-                  <span class="text-h5">부족 추가</span>
+                  <span class="text-h5">영양제-부족 관계 추가</span>
                 </v-card-title>
                 <v-card-text>
                   <v-form @submit.prevent="addDeficiencyNutrient">
@@ -189,6 +273,34 @@
                 </v-card-text>
               </v-card>
             </v-dialog>
+            <!-- 영양제-부족 관계 추가 모달창 끝 -->
+            <!-- 부족 추가 모달창 -->
+            <v-dialog v-model="showAddDeficiencyDialog" max-width="600px">
+              <v-card>
+                <v-card-title>
+                  <span class="text-h5">새 부족 추가</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-form @submit.prevent="addDeficiency">
+                    <v-row>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="newDeficiency.deficiencyName"
+                          label="부족 이름"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" type="submit">저장</v-btn>
+                      <v-btn color="grey" @click="toggleAddDeficiencyDialog">취소</v-btn>
+                    </v-card-actions>
+                  </v-form>
+                </v-card-text>
+              </v-card>
+            </v-dialog>
+            <!-- 부족 추가 모달창 끝 -->
           </v-card>
         </v-tabs-window-item>
       </v-tabs-window>
@@ -207,6 +319,18 @@ export default {
         efficiency: false,
         deficiency: false
       },
+      // 효능 추가
+      showAddEfficiencyDialog: false,
+      newEfficiency: {
+        efficiencyName: ''
+      },
+      // 효능 추가 끝
+      // 부족 추가
+      showAddDeficiencyDialog: false,
+      newDeficiency: {
+        deficiencyName: ''
+      },
+      // 부족 추가 끝
       newNutrientEfficiency: {
         nutrientId: '',
         efficiencyId: ''
@@ -299,12 +423,18 @@ export default {
       'createNutrientEfficiency',
       'deleteNutrientEfficiency'
     ]),
-    ...mapActions('efficiency', ['fetchEfficiencies']),
+    ...mapActions('efficiency', [
+      'fetchEfficiencies', 
+      'createEfficiency',
+      'deleteEfficiency',
+    ]),
     ...mapActions('deficiency', [
       'fetchDeficiencies',
       'fetchDeficiencyNutrients',
+      'createDeficiency',
       'createDeficiencyNutrient',
-      'deleteDeficiencyNutrient'
+      'deleteDeficiency',
+      'deleteDeficiencyNutrient',
     ]),
     async loadData() {
       await this.fetchNutrients();
@@ -390,6 +520,72 @@ export default {
     toggleAddForm(type) {
       this.showAddForm[type] = !this.showAddForm[type];
     },
+    // 효능 추가
+    toggleAddEfficiencyDialog() {
+      this.showAddEfficiencyDialog = !this.showAddEfficiencyDialog;
+    },
+    async addEfficiency() {
+      try {
+        await this.createEfficiency({ efficiencyName: this.newEfficiency.efficiencyName });
+        this.newEfficiency.efficiencyName = '';
+        this.showAddEfficiencyDialog = false;
+        await this.loadData();
+      } catch (error) {
+        console.error('Failed to create efficiency:', error);
+      }
+    },
+    async confirmDeleteEfficiency(id) {
+      const isAssociated = this.nutrientEfficiencies.some((ne) => ne.efficiencyId === id);
+      if (isAssociated) {
+        alert('This efficiency cannot be deleted as it is associated with existing nutrient-efficiency relationships.');
+      } else {
+        if (confirm('Are you sure you want to delete this efficiency?')) {
+          await this.handleDeleteEfficiency(id);
+        }
+      }
+    },
+    async handleDeleteEfficiency(id) {
+      try {
+        await this.deleteEfficiency(id);
+        await this.loadData();
+      } catch (error) {
+        console.error('Failed to delete efficiency:', error);
+      }
+    },
+    // 효능 추가 끝
+    // 부족 추가
+    toggleAddDeficiencyDialog() {
+      this.showAddDeficiencyDialog = !this.showAddDeficiencyDialog;
+    },
+    async addDeficiency() {
+      try {
+        await this.createDeficiency({ deficiencyName: this.newDeficiency.deficiencyName });
+        this.newDeficiency.deficiencyName = '';
+        this.showAddDeficiencyDialog = false;
+        await this.loadData();
+      } catch (error) {
+        console.error('Failed to create deficiency:', error);
+      }
+    },
+    async confirmDeleteDeficiency(id) {
+      const isAssociated = this.deficiencyNutrients.some((dn) => dn.deficiencyId === id);
+      if (isAssociated) {
+        alert('This deficiency cannot be deleted as it is associated with existing nutrient-deficiency relationships.');
+      } else {
+        if (confirm('Are you sure you want to delete this deficiency?')) {
+          await this.handleDeleteDeficiency(id);
+        }
+      }
+    },
+    async handleDeleteDeficiency(id) {
+      try {
+        await this.deleteDeficiency(id);
+        await this.loadData();
+      } catch (error) {
+        console.error('Failed to delete deficiency:', error);
+      }
+    },
+    // 부족 추가 끝
     cancelAddForm(type) {
       this.showAddForm[type] = false;
       this.errorMessage[type] = '';
@@ -409,38 +605,3 @@ export default {
 };
 </script>
 
-<style scoped>
-.main-container {
-  padding: 20px;
-}
-.table-container {
-  margin-bottom: 20px;
-}
-.scrollable-table {
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid grey;
-}
-.scroll-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.scroll-table th, .scroll-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-.scroll-table th {
-  background-color: #f2f2f2;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-.small-btn {
-  padding: 5px 10px;
-  font-size: 12px;
-}
-.error {
-  color: red;
-  font-weight: bold;
-}
-</style>

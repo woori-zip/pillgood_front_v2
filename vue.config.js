@@ -24,7 +24,7 @@ module.exports = {
         esModule: false,
       })
       .end();
-  },
+  }
 };
 
 const { defineConfig } = require('@vue/cli-service')
