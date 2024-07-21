@@ -6,6 +6,7 @@ import AdminNoticeList from '../views/admin/AdminNoticeList.vue';
 import AdminReviewList from '../views/admin/AdminReviewList.vue';
 import AdminInquiryList from '../views/admin/AdminInquiryList.vue';
 import AdminCouponList from '../views/admin/AdminCouponList.vue';
+import AdminSurveyList from '../views/admin/AdminSurveyManagement.vue';
 
 import store from '../store';
 
@@ -19,6 +20,7 @@ const routes = [
     { path: '/admin/reviews', component: AdminReviewList },
     { path: '/admin/inquirys', component: AdminInquiryList },
     { path: '/admin/coupons', component: AdminCouponList },
+    { path: '/admin/surveys', component: AdminSurveyList },
     { path: '/:pathMatch(.*)*', redirect: '/admin' }
   ];
 
