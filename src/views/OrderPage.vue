@@ -2,147 +2,165 @@
   <div class="main-container">
     <h2 class="text-melon">주문하기</h2>
     <div class="box-container">
-    <table class="line-table">
-    <thead>
-      <tr>
-        <th>상품 정보</th>
-        <th>수량</th>
-        <th>가격</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="item in items" :key="item.productId">
-        <td class="item-info" colspan="2"><div class="item-image"><img :src="item.productImage" alt="Product Image" /></div>
-        {{ item.productName }}</td>
-        <td>{{ item.productQuantity }}</td>
-        <td>{{ item.price * item.productQuantity }} 원</td>
-      </tr>
-    </tbody>
-  </table>
-  <div style="display: flex; align-items: flex-end; flex-direction: column; margin-top: 10px;">
-    <h6>배송비 {{ shippingFeeMessage }}</h6>
-    <hr style="width: 200px">
-    <h4 class="text-melon">합계: {{ totalAmount }} 원</h4>
-  </div>
-  <hr class="line">
+      <table class="line-table">
+        <thead>
+          <tr>
+            <th>상품 정보</th>
+            <th>수량</th>
+            <th>가격</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in items" :key="item.productId">
+            <td class="item-info" colspan="2">
+              <div class="item-image">
+                <img :src="item.productImage" alt="Product Image" />
+              </div>
+              {{ item.productName }}
+            </td>
+            <td>{{ item.productQuantity }}</td>
+            <td>{{ item.price * item.productQuantity }} 원</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="display: flex; align-items: flex-end; flex-direction: column; margin-top: 10px;">
+        <h6>배송비 {{ shippingFeeMessage }}</h6>
+        <hr style="width: 200px" />
+        <h4 class="text-melon">합계: {{ totalAmount }} 원</h4>
+      </div>
+      <hr class="line" />
 
-  <div class="box-container-no-shade">
-    <label for="ownedCouponId"><h4 class="text-melon">쿠폰 / 포인트 사용</h4></label>
-    <select id="ownedCouponId" v-model="ownedCouponId" @change="applyCoupon">
-      <option value="">보유중인 쿠폰 선택하기</option>
-      <option v-for="coupon in coupons" :key="coupon.ownedCouponId" :value="coupon.ownedCouponId">
-        {{ coupon.couponName }}
-      </option>
-    </select>
-    <p v-if="coupons.length === 0">보유중인 쿠폰이 없습니다.</p>
-  </div>
-  <div class="box-container-no-shade btn-container">
-    <div class="point-wrapper">
-    <input type="number" id="usePoints" v-model.number="usePoints" :readonly="pointsApplied" /> P&nbsp;/&nbsp;<span style="color: red">{{ totalPoints }}</span>&nbsp;P&nbsp;  
-    <button @click="applyPoints" :disabled="pointsApplied || usePoints < 1000" class="btn btn-green" style="height: 30px">적용하기</button></div>
-    <span class="text-info">포인트는 최소 1000 포인트 보유 시, 1000 포인트 이상 사용 가능합니다.</span>
-    <span v-if="pointsError" class="text-danger">{{ pointsError }}</span>
-  </div>
+      <div class="box-container-no-shade">
+        <label for="ownedCouponId"><h4 class="text-melon">쿠폰 / 포인트 사용</h4></label>
+        <select id="ownedCouponId" v-model="ownedCouponId" @change="applyCoupon">
+          <option value="">보유중인 쿠폰 선택하기</option>
+          <option v-for="coupon in coupons" :key="coupon.ownedCouponId" :value="coupon.ownedCouponId">
+            {{ coupon.couponName }}
+          </option>
+        </select>
+        <p v-if="coupons.length === 0">보유중인 쿠폰이 없습니다.</p>
+      </div>
+      <div class="box-container-no-shade btn-container">
+        <div class="point-wrapper">
+          <input type="number" id="usePoints" v-model.number="usePoints" :readonly="pointsApplied" /> P&nbsp;/&nbsp;<span style="color: red">{{ totalPoints }}</span>&nbsp;P&nbsp;
+          <button @click="applyPoints" :disabled="pointsApplied || usePoints < 1000" class="btn btn-green" style="height: 30px">적용하기</button>
+        </div>
+        <span class="text-info">포인트는 최소 1000 포인트 보유 시, 1000 포인트 이상 사용 가능합니다.</span>
+        <span v-if="pointsError" class="text-danger">{{ pointsError }}</span>
+      </div>
 
-  <hr class="line" style="background: white">
+      <hr class="line" style="background: white" />
 
-  <div style="display: flex; align-items: flex-end; flex-direction: column;">
-    <h6>(3만원 이상 구매시 배송비 무료)</h6>
-    <h4 class="text-melon">총 결제액: {{ totalAmount }} 원</h4>
-  </div>
+      <div style="display: flex; align-items: flex-end; flex-direction: column;">
+        <h6>(3만원 이상 구매시 배송비 무료)</h6>
+        <h4 class="text-melon">총 결제액: {{ totalAmount }} 원</h4>
+      </div>
 
-  <hr class="line">
+      <hr class="line" />
 
-  <div class="order-details">
-    <h4 class="text-melon">배송 정보</h4>
-    <table class="line-table" style="padding: 10px">
-      <colgroup>
-        <col style="width:170px">
-      </colgroup>
-      <tbody>
-        <tr>
-          <td style="text-align: left;">배송지 선택</td>
-          <td>
-            <div class="radio-container">
-              <input type="radio" id="existingAddress" value="existing" v-model="addressType" />
-              <label for="existingAddress">기존 배송지</label>
-              <input type="radio" id="newAddress" value="new" v-model="addressType" />
-              <label for="newAddress">새로운 배송지</label>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td style="text-align: left;"><label for="recipient">수령인 이름</label></td>
-          <td>
-            <input type="text" id="recipient" v-model="recipient" @input="validateRecipient" />
-            <p v-if="errors.recipient" class="error">{{ errors.recipient }}</p>
-          </td>
-        </tr>
-        <tr>
-          <td style="text-align: left"><label for="phoneNumber">수령인 연락처</label></td>
-          <td>
-            <input type="text" id="phoneNumber" v-model="phoneNumber" @input="validatePhoneNumber" />
-            <p v-if="errors.phoneNumber" class="error">{{ errors.phoneNumber }}</p>
-          </td>
-        </tr>
-        <tr v-if="addressType === 'existing'">
-          <td style="text-align: left;">배송지명</td>
-          <td>
-            <select v-model="selectedAddress">
-              <option v-for="address in addresses" :key="address.shippingAddrId" :value="address">{{ address.shippingName }}</option>
-            </select>
-          </td>
-        </tr>
-        <tr v-if="addressType === 'existing'">
-          <td style="text-align: left;"><label for="existingAddressPostalCode">주소</label></td>
-          <td>
-            <input type="text" id="existingAddressPostalCode" v-model="postalCode" class="postal-code-field" readonly />
-            <input type="text" id="existingAddress" v-model="address" readonly />
-            <p v-if="errors.address" class="error">{{ errors.address }}</p>
-            <input type="text" id="existingDetailedAddress" v-model="detailedAddress" @input="validateDetailedAddress" />
-            <p v-if="errors.detailedAddress" class="error">{{ errors.detailedAddress }}</p>
-          </td>
-        </tr>
-        <tr class="postal-code-group" v-if="addressType === 'new'">
-          <td style="text-align: left"><label for="postalCode">주소</label></td>
-          <td>
-            <div class="postal-code-input">
-              <input type="text" id="postalCode" v-model="postalCode" class="postal-code-field" readonly />
-              <button @click="openDaumPostcode" class="btn btn-green" style="display: inline-block; white-space: nowrap;">우편 번호 찾기</button>
-            </div>
-            <div ref="wrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
-              <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" @click="foldDaumPostcode" alt="접기 버튼">
-            </div>
-            <input type="text" id="address" v-model="address" readonly />
-            <p v-if="errors.address" class="error">{{ errors.address }}</p>
-            <input type="text" id="detailedAddress" v-model="detailedAddress" @input="validateDetailedAddress" />
-            <p v-if="errors.detailedAddress" class="error">{{ errors.detailedAddress }}</p>
-          </td>
-        </tr>
-        <tr>
-          <td style="text-align: left"><label for="orderRequest">배송 요청사항</label></td>
-          <td>
-            <input type="text" id="orderRequest" v-model="orderRequest" placeholder=" 배송 요청 사항을 입력해 주세요." />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      <div class="order-details">
+        <h4 class="text-melon">배송 정보</h4>
+        <table class="line-table" style="padding: 10px">
+          <colgroup>
+            <col style="width:170px" />
+          </colgroup>
+          <tbody>
+            <tr>
+              <td style="text-align: left;">배송지 선택</td>
+              <td>
+                <div class="radio-container">
+                  <input type="radio" id="existingAddress" value="existing" v-model="addressType" />
+                  <label for="existingAddress">기존 배송지</label>
+                  <input type="radio" id="newAddress" value="new" v-model="addressType" />
+                  <label for="newAddress">새로운 배송지</label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: left;"><label for="recipient">수령인 이름</label></td>
+              <td>
+                <input type="text" id="recipient" v-model="recipient" @input="validateRecipient" />
+                <p v-if="errors.recipient" class="error">{{ errors.recipient }}</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><label for="phoneNumber">수령인 연락처</label></td>
+              <td>
+                <input type="text" id="phoneNumber" v-model="phoneNumber" @input="validatePhoneNumber" />
+                <p v-if="errors.phoneNumber" class="error">{{ errors.phoneNumber }}</p>
+              </td>
+            </tr>
+            <tr v-if="addressType === 'existing'">
+              <td style="text-align: left;">배송지명</td>
+              <td>
+                <select v-model="selectedAddress">
+                  <option v-for="address in addresses" :key="address.shippingAddrId" :value="address">{{ address.shippingName }}</option>
+                </select>
+              </td>
+            </tr>
+            <tr v-if="addressType === 'existing'">
+              <td style="text-align: left;"><label for="existingAddressPostalCode">주소</label></td>
+              <td>
+                <input type="text" id="existingAddressPostalCode" v-model="postalCode" class="postal-code-field" readonly />
+                <input type="text" id="existingAddress" v-model="address" readonly />
+                <p v-if="errors.address" class="error">{{ errors.address }}</p>
+                <input type="text" id="existingDetailedAddress" v-model="detailedAddress" @input="validateDetailedAddress" />
+                <p v-if="errors.detailedAddress" class="error">{{ errors.detailedAddress }}</p>
+              </td>
+            </tr>
+            <tr class="postal-code-group" v-if="addressType === 'new'">
+              <td style="text-align: left"><label for="postalCode">주소</label></td>
+              <td>
+                <div class="postal-code-input">
+                  <input type="text" id="postalCode" v-model="postalCode" class="postal-code-field" readonly />
+                  <button @click="openDaumPostcode" class="btn btn-green" style="display: inline-block; white-space: nowrap;">우편 번호 찾기</button>&nbsp;&nbsp;
+                  <button type="button" @click="openAddressModal" class="btn btn-green" style="display: inline-block; white-space: nowrap;">저장</button>
+                </div>
+                <div ref="wrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
+                  <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" @click="foldDaumPostcode" alt="접기 버튼">
+                </div>
+                <input type="text" id="address" v-model="address" readonly />
+                <p v-if="errors.address" class="error">{{ errors.address }}</p>
+                <input type="text" id="detailedAddress" v-model="detailedAddress" @input="validateDetailedAddress" />
+                <p v-if="errors.detailedAddress" class="error">{{ errors.detailedAddress }}</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><label for="orderRequest">배송 요청사항</label></td>
+              <td>
+                <input type="text" id="orderRequest" v-model="orderRequest" placeholder=" 배송 요청 사항을 입력해 주세요." />
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-    <div class="subscription-options">
-      <label>
-        <input type="radio" v-model="subscriptionStatus" :value="true" />
-        <span class="subscription-button">정기구독</span>
-      </label>
-      <label>
-        <input type="radio" v-model="subscriptionStatus" :value="false" />
-        <span class="subscription-button">한번만 구매하기</span>
-      </label>
+        <div class="subscription-options">
+          <label>
+            <input type="radio" v-model="subscriptionStatus" :value="true" />
+            <span class="subscription-button">정기구독</span>
+          </label>
+          <label>
+            <input type="radio" v-model="subscriptionStatus" :value="false" />
+            <span class="subscription-button">한번만 구매하기</span>
+          </label>
+        </div>
+      </div>
+      <div id="payment-method" class="w-100"></div>
+      <div id="agreement" class="w-100"></div>
+      <button id="payment-request-button" @click="preparePayment" class="order-button btn btn-green">결제하기</button>
     </div>
   </div>
-  <div id="payment-method" class="w-100"></div>
-  <div id="agreement" class="w-100"></div>
-  <button id="payment-request-button" @click="preparePayment" class="order-button btn btn-green">결제하기</button>
-  </div>
+
+  <!-- 배송지 저장 모달창 -->
+  <div v-if="showAddressModal" class="modal">
+    <div class="box-container box-shadow">
+      <h4 class="text-melon">새로운 배송지 추가</h4>
+      <input type="text" v-model="newAddressName" placeholder="배송지명을 입력하세요" />
+      <div class="btn-container">
+        <button class="btn btn-green" @click="saveNewAddress">저장</button>
+        <button class="btn btn-gray" @click="closeAddressModal">취소</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -181,7 +199,9 @@ export default {
         phoneNumber: '',
         address: '',
         detailedAddress: ''
-      }
+      },
+      showAddressModal: false, // 모달 창 표시 여부
+      newAddressName: '', // 새로운 배송지명
     };
   },
   computed: {
@@ -210,7 +230,7 @@ export default {
   methods: {
     ...mapActions('order', ['fetchUserProfile', 'fetchCoupons', 'fetchOrderDetails', 'placeOrder']),
     ...mapActions('billing', ['fetchBillingKey']),
-    ...mapActions('shipping', ['fetchAddresses']), // 추가
+    ...mapActions('shipping', ['fetchAddresses', 'addAddress']), // 추가
     async fetchTotalPoints() {
       try {
         const response = await axios.get('/api/points/totalPoints', { withCredentials: true });
@@ -459,6 +479,39 @@ export default {
         this.address = this.selectedAddress.address;
         this.detailedAddress = this.selectedAddress.detailedAddress;
       }
+    },
+    openAddressModal() {
+      this.validateAddress();
+      this.validateDetailedAddress();
+      
+      if (!this.errors.address && !this.errors.detailedAddress) {
+        this.showAddressModal = true;
+      } else {
+        alert('주소 정보를 정확히 입력해 주세요.');
+      }
+    },
+    closeAddressModal() {
+      this.showAddressModal = false;
+      this.newAddressName = '';
+    },
+    async saveNewAddress() {
+      if (!this.newAddressName) {
+        alert('배송지명을 입력해 주세요.');
+        return;
+      }
+      const newAddress = {
+        shippingName: this.newAddressName,
+        postalCode: this.postalCode,
+        address: this.address,
+        detailedAddress: this.detailedAddress
+      };
+      try {
+        await this.addAddress(newAddress);
+        this.closeAddressModal();
+        await this.fetchAddresses();
+      } catch (error) {
+        console.error('새로운 배송지 추가 중 오류 발생:', error);
+      }
     }
   },
   watch: {
@@ -498,7 +551,7 @@ export default {
   align-items: center;
 }
 
-.item-image{
+.item-image {
   width: 100px;
   height: 100px;
   object-fit: cover;
@@ -517,7 +570,9 @@ export default {
   object-fit: cover;
 }
 
-.box-container-no-shade label, select, p {
+.box-container-no-shade label,
+select,
+p {
   margin: 10px;
 }
 
@@ -530,12 +585,11 @@ export default {
   white-space: nowrap;
   display: flex;
   align-items: center;
-
 }
 
 .text-info {
   font-size: 0.9em;
-  color: gray
+  color: gray;
 }
 
 .postal-code-input {
@@ -568,7 +622,7 @@ export default {
   cursor: pointer;
 }
 
-.subscription-options input[type="radio"] {
+.subscription-options input[type='radio'] {
   display: none;
 }
 
@@ -581,15 +635,15 @@ export default {
   transition: background-color 0.3s;
 }
 
-.subscription-options input[type="radio"]:checked + .subscription-button {
-  background-color: #B4D9A9;
+.subscription-options input[type='radio']:checked + .subscription-button {
+  background-color: #b4d9a9;
   color: white;
 }
 
 .order-button {
   width: 100%;
   padding: 10px;
-  background-color: #B4D9A9;
+  background-color: #b4d9a9;
   color: white;
   border: none;
   border-radius: 4px;
@@ -597,7 +651,7 @@ export default {
 }
 
 .order-button:hover {
-  background-color: #B4D9A9;
+  background-color: #b4d9a9;
 }
 
 .product-image {
@@ -612,16 +666,16 @@ export default {
 }
 
 .radio-container {
- display: flex;
- align-items: center;
- justify-content: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .radio-container label {
   margin-right: 20px; /* 라벨 사이의 간격 조절 */
 }
 
-.radio-container input[type="radio"] {
+.radio-container input[type='radio'] {
   width: 15px;
   height: 15px;
   margin-right: 5px; /* 라디오 버튼과 라벨 사이의 간격 조절 */
@@ -631,5 +685,29 @@ select {
   width: 100%; /* select 요소의 너비를 부모 요소에 맞게 설정 */
   box-sizing: border-box; /* 패딩과 테두리를 포함한 너비 계산 */
   margin-left: 0;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+.modal .box-container {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.modal .btn-container {
+  display: flex;
+  justify-content: space-between;
 }
 </style>
