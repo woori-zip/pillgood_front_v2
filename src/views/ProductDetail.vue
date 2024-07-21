@@ -31,7 +31,6 @@
     </div>
     <div class="tabs">
       <button @click="activeTab = 'description'" :class="{ active: activeTab === 'description' }">상품설명</button>
-      <button @click="activeTab = 'details'" :class="{ active: activeTab === 'details' }">상세정보</button>
       <button @click="activeTab = 'reviews'" :class="{ active: activeTab === 'reviews' }">후기</button>
       <button @click="activeTab = 'inquiryinfo'" :class="{ active: activeTab === 'inquiryinfo' }">문의</button>
       <button @click="activeTab = 'scrinfo'" :class="{ active: activeTab === 'scrinfo' }">배송/취소/환불</button>

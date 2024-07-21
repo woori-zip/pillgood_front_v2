@@ -115,7 +115,7 @@ export default {
         { title: '리뷰 내용', value: 'reviewContent', align: 'center' },
         { title: '평점', value: 'rating', align: 'center' },
         { title: '회원 이름', value: 'memberName', align: 'center' },
-        { title: '작성일', value: 'reviewDate', align: 'center' },
+        { title: '작성일', value: 'reviewDate', align: 'center', sortable: true },
         { title: '수정/삭제', value: 'actions', align: 'center', sortable: false },
         { title: '쿠폰 발급', value: 'coupon', align: 'center', sortable: false },
       ],
@@ -125,14 +125,17 @@ export default {
     ...mapGetters('review', ['reviews']),
     ...mapGetters('coupon', ['activeCoupons']),
     filteredReviews() {
+      let filtered = this.reviews;
+
       if (this.searchQuery) {
         const lowerQuery = this.searchQuery.toLowerCase();
-        return this.reviews.filter(review =>
+        filtered = filtered.filter(review =>
           review.product.productName.toLowerCase().includes(lowerQuery) ||
           review.memberName.toLowerCase().includes(lowerQuery)
         );
       }
-      return this.reviews;
+
+      return filtered.sort((a, b) => new Date(b.reviewDate) - new Date(a.reviewDate));
     },
     couponItems() {
       return this.activeCoupons.map(coupon => ({

@@ -14,7 +14,7 @@
 
     <!-- 정렬 -->
     <div style="display: flex;">
-      <label for="sortOrder">정렬:</label>
+      <label for="sortOrder" style="white-space: nowrap;">정렬:</label>&nbsp;
       <select id="sortOrder" v-model="sortOrder" @change="sortReviews">
         <option value="latest">최신순</option>
         <option value="oldest">오래된순</option>
@@ -24,7 +24,7 @@
     </div>
 
     <!-- 후기 -->
-    <div v-for="review in sortedReviews" :key="review.reviewId" class="box-shadow" style="padding: 20px 50px 20px 50px;">
+    <div v-for="review in sortedReviews" :key="review.reviewId" class="box-container" style="margin-bottom: 5px;">
       <!-- 작성자/작성일자 -->
       <p style="text-align: left; color: gray">
         작성자: {{ getMemberName(review.memberUniqueId) }} <br>
