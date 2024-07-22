@@ -1,20 +1,25 @@
 <template>
   <div class="main-container">
+   <div class="box-container">
     <h2 class="text-melon">결제 취소 요청</h2>
-    <div class="box-container-no-shade">
-      <div class="input-group">
-        <label for="paymentKey">결제 번호</label>
-        <input type="text" id="paymentKey" v-model="paymentKey" readonly />
+      <table class="line-table">
+        <tr>
+          <td><label for="paymentKey">결제 번호</label></td>
+          <td><input type="text" id="paymentKey" v-model="paymentKey" readonly /></td>
+        </tr>
+        <tr>
+          <td><label for="cancelAmount">취소 금액</label></td>
+          <td><input type="number" id="cancelAmount" v-model="cancelAmount" readonly/></td>
+        </tr>
+        <tr>
+          <td><label for="cancelReason">취소 사유</label></td>
+          <td><input type="text" id="cancelReason" v-model="cancelReason" /></td>
+        </tr>
+      </table>
+      <div class="btn-container">
+        <button class="btn btn-green" @click="cancelPayment">결제 취소</button>
+        <button class="btn btn-gray" @click="$router.go(-1)">돌아가기</button>
       </div>
-      <div class="input-group">
-        <label for="cancelAmount">취소 금액</label>
-        <input type="number" id="cancelAmount" v-model="cancelAmount" readonly/>
-      </div>
-      <div class="input-group">
-        <label for="cancelReason">취소 사유</label>
-        <input type="text" id="cancelReason" v-model="cancelReason" />
-      </div>
-      <button class="btn btn-green" @click="cancelPayment">결제 취소</button>
     </div>
   </div>
 </template>
@@ -68,45 +73,9 @@ export default {
 </script>
 
 <style scoped>
-.main-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+@import '../assets/styles.css';
 
-.input-group {
-  margin-bottom: 20px;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.input-group input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.btn {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  background-color: #5cb85c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  text-align: center;
-}
-
-.btn:hover {
-  background-color: #4cae4c;
+.line-table {
+  width: 60%;
 }
 </style>

@@ -1,46 +1,101 @@
 <template>
   <div class="main-container">
     <div class="box-container-no-shade">
-    <!-- <h3 class="text-melon">주문 상세 내역</h3> -->
-
-    <!-- 주문 상세 -->
-    <div v-if="order" class="box-container">
-    <p style="text-align: left;">
-      <span style="font-weight: bold; font-size: 20px;">{{ order.orderStatus }}</span> {{ order.orderNo }}
-    </p>
-    <!-- 주문상세 리스트 -->
-    <table class="line-table">
-      <thead>
-        <tr>
-          <th>주문 날짜</th>
-          <th>제품명</th>
-          <th>금액</th>
-          <th>리뷰 쓰기/재구매</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="detail in order.details" :key="detail.orderDetailNo">
-          <td>{{ formatDate(order.orderDate) }}</td>
-          <td>{{ getProductName(detail.productId) }}</td>
-          <td>{{ detail.amount }}원</td>
-          <td v-if="order.orderStatus === '구매확정'">
-            <div class="btn-container">
-              <button v-if="hasReview(detail.orderDetailNo)" class="btn btn-green" @click="goToReviewDetail(order, detail)">내 리뷰 보기</button>
-              <button v-else class="btn btn-green" @click="goToReviewPage(order, detail)">리뷰쓰기</button>
-              <button class="btn btn-gray" @click="addToCart(detail.productId, 1)">재구매</button>
-            </div>
-          </td>
-          <td v-else>구매 확정을 완료해 주세요</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  </div>
+      <!-- 주문 상세 -->
+      <div v-if="order" class="box-container">
+        <h4 class="text-melon">상세 정보</h4>
+        <div class="container">
+          주문 일자: <strong>{{ formatDate(order.orderDate) }}</strong> | 주문 번호: <strong>{{ order.orderNo }}</strong>
+        </div>
+        <div class="table-container">
+          <table class="line-table">
+            <colgroup>
+              <col style="width:30%">
+              <col style="width:20%">
+              <col style="width:10%">
+              <col style="width:20%">
+              <col style="width:20%">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>제품명</th>
+                <th>판매가</th>
+                <th>수량</th>
+                <th>구매가</th>
+                <th>상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="detail in orderDetails" :key="detail.orderDetailNo">
+                <td>
+                  <img :src="getProductImage(detail.productId)" alt="Product Image" class="product-image">
+                  <strong>{{ getProductName(detail.productId) }}</strong>
+                </td>
+                <td>{{ getProductPrice(detail.productId) }} 원</td>
+                <td>{{ detail.quantity }}</td>
+                <td>{{ calculateTotalAmount(detail) }} 원</td>
+                  <div class="btn-container">
+                    <td v-if="order.orderStatus === '구매확정'">
+                  <button v-if="hasReview(detail.orderDetailNo)" class="btn btn-green" @click="goToReviewDetail(order, detail)">내 리뷰 보기</button>
+                  <button v-else class="btn btn-green" @click="goToReviewPage(order, detail)">리뷰쓰기</button>
+                  <button class="btn btn-gray" @click="addToCart(detail.productId, 1)">재구매</button>
+              </td>
+              <td v-else>
+                <button class="btn btn-green" @click="confirmPurchase(order.orderNo)">구매확정</button>
+                <button class="btn btn-gray" @click="goToReturnPage(order)">환불요청</button>
+              </td>
+                  </div>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <hr class="line">
+        <h4 class="text-melon" style="text-align: left; margin-left: 10px;">배송지 정보</h4>
+        <div>
+          <table class="line-table">
+            <colgroup>
+              <col style="width:30%">
+              <col style="width:70%">
+            </colgroup>
+            <tr>
+              <td>수령인</td>
+              <td>(수령인 이름)</td>
+            </tr>
+            <tr>
+              <td>연락처</td>
+              <td>연락처</td>
+            </tr>
+            <tr>
+              <td>주소</td>
+              <td>주소</td>
+            </tr>
+          </table>
+        </div>
+        <hr class="line">
+        <h4 class="text-melon" style="text-align: left; margin-left: 10px;">결제 정보</h4>
+        <div>
+          <table class="line-table">
+            <tr>
+              <td>주문 금액</td>
+              <td>쿠폰 할인 금액</td>
+              <td>포인트 결제</td>
+            </tr>
+            <tr>
+              <td colspan="3">총 결제 금액</td>
+            </tr>
+          </table>
+        </div>
+        <hr class="line">
+        <div class="btn-container">
+          <button class="btn btn-green" @click="$router.go(-1)">목록으로</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from '../axios'; // 'axios.js' 설정 파일을 import
+import axios from '../axios';
 import { mapActions } from 'vuex';
 import '../assets/styles.css';
 
@@ -54,6 +109,7 @@ export default {
   data() {
     return {
       order: null,
+      orderDetails: [],
       products: {}, // 제품 정보를 저장할 객체
       reviews: [], // 리뷰 정보를 저장할 배열
       loading: true,
@@ -62,27 +118,26 @@ export default {
   methods: {
     ...mapActions('cart', ['addToCart']),
     async fetchOrderDetails() {
+      console.log('Order No in fetchOrderDetails:', this.orderNo);
+      if (!this.orderNo) {
+        console.error('orderNo prop이 전달되지 않았습니다.');
+        return;
+      }
       try {
-        console.log(`Received order number: ${this.orderNo}`); // 콘솔에 주문 번호 출력
         const response = await axios.get(`/api/orders/${this.orderNo}`);
         console.log(`주문 번호 ${this.orderNo}의 상세 내역:`, response.data);
         this.order = response.data;
 
-        // 각 주문의 상세 내역을 가져옵니다.
         const detailsResponse = await axios.get(`/api/order-details/order/${this.orderNo}`);
-        this.order.details = detailsResponse.data;
-        console.log(`주문 상세 내역:`, detailsResponse.data);
+        this.orderDetails = detailsResponse.data;
 
-        // 각 제품에 대한 상세 정보를 병렬로 가져옵니다.
-        await Promise.all(this.order.details.map(async (detail) => {
+        await Promise.all(this.orderDetails.map(async (detail) => {
           if (!this.products[detail.productId]) {
             const productResponse = await axios.get(`/api/products/detail/${detail.productId}`);
-            console.log(`제품 ID ${detail.productId}의 상세 정보:`, productResponse.data);
             this.products[detail.productId] = productResponse.data;
           }
         }));
 
-        // 모든 리뷰를 가져옵니다.
         await this.fetchReviews();
       } catch (error) {
         console.error('Failed to fetch order details:', error);
@@ -92,9 +147,8 @@ export default {
     },
     async fetchReviews() {
       try {
-        const response = await axios.get('/api/reviews/list'); // 새로운 엔드포인트 사용
+        const response = await axios.get('/api/reviews/list');
         this.reviews = response.data;
-        console.log("리뷰 테이블에서 불러온 정보:", this.reviews);
       } catch (error) {
         console.error('리뷰 데이터를 가져오는 데 실패했습니다:', error);
       }
@@ -103,7 +157,19 @@ export default {
       return this.reviews.some(review => review.orderDetailNo === orderDetailNo);
     },
     getProductName(productId) {
-      return this.products[productId] ? this.products[productId].productName : 'Loading...';
+      const product = this.products[productId];
+      console.log('Product details for getProductName:', product); // 제품 정보 출력
+      return product ? product.productName : 'Loading...';
+    },
+    getProductPrice(productId) {
+      const product = this.products[productId];
+      console.log('Product details for getProductPrice:', product); // 제품 정보 출력
+      return product ? product.price : 'Loading...';
+    },
+    calculateTotalAmount(detail) {
+      const product = this.products[detail.productId];
+      console.log('Product details for calculateTotalAmount:', product); // 제품 정보 출력
+      return product ? (product.price * detail.quantity) : 'Loading...';
     },
     getProductImage(productId) {
       if (this.products[productId]) {
@@ -115,10 +181,18 @@ export default {
       return '';
     },
     formatDate(dateString) {
-      const options = { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+      const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
       const date = new Date(dateString);
-      return `${date.toLocaleDateString('ko-KR', options).replace(/\./g, '.').replace(/\s/g, '').slice(0, -1)} 주문`;
+      return date.toLocaleDateString('ko-KR', options).replace(/\./g, '.');
     },
+    async confirmPurchase(orderNo) {
+    try {
+      await axios.put(`/api/orders/update-status/${orderNo}`, { status: '구매확정' });
+      this.order.orderStatus = '구매확정'; // 주문 상태를 업데이트
+    } catch (error) {
+      console.error('Failed to confirm purchase:', error);
+    }
+  },
     goToReviewPage(order, detail) {
       const queryParams = {
         orderNo: order.orderNo,
@@ -126,10 +200,8 @@ export default {
         productId: detail.productId,
         productName: this.getProductName(detail.productId),
         productImage: this.getProductImage(detail.productId),
-        orderDetailNo: detail.orderDetailNo // orderDetailNo 추가
+        orderDetailNo: detail.orderDetailNo
       };
-      console.log("ReviewCreate 페이지로 넘기는 정보:", queryParams);
-
       this.$router.push({
         name: 'ReviewCreate',
         query: queryParams
@@ -145,12 +217,10 @@ export default {
           productId: detail.productId,
           productName: this.getProductName(detail.productId),
           productImage: this.getProductImage(detail.productId),
-          orderDetailNo: detail.orderDetailNo.toString(), // orderDetailNo를 문자열로 변환
+          orderDetailNo: detail.orderDetailNo.toString(),
           reviewContent: review.reviewContent,
           rating: review.rating
         };
-        console.log("ReviewDetail 페이지로 넘기는 정보:", queryParams);
-
         this.$router.push({
           name: 'ReviewDetail',
           query: queryParams
@@ -159,7 +229,7 @@ export default {
     },
     goToReturnPage(order, detail, requestType) {
       this.$router.push({
-        name: 'RefundCreate', // 기존 ReturnCreate를 RefundCreate로 변경
+        name: 'RefundCreate',
         query: {
           orderNo: order.orderNo,
           orderDate: order.orderDate,
@@ -168,40 +238,124 @@ export default {
           productImage: detail ? this.getProductImage(detail.productId) : null,
           orderDetailNo: detail ? detail.orderDetailNo : null,
           requestType: requestType,
-          refundAmount: detail ? detail.amount : null // 환불 금액을 쿼리 파라미터로 전달
+          refundAmount: detail ? detail.amount : null
         }
       });
     },
     async addToCart(productId, quantity) {
-    try {
-      const cartItem = {
-        productId,
-        productQuantity: quantity
-      };
-
-      const response = await this.$store.dispatch('cart/addToCart', cartItem);
-      if (response.status === 201) {
-        console.log('Product added to cart successfully:', productId);
-        this.$router.push({ name: 'Cart' }); // 장바구니 페이지로 이동
-      } else {
-        console.error('Failed to add product to cart:', productId);
+      try {
+        const cartItem = {
+          productId,
+          productQuantity: quantity
+        };
+        const response = await this.$store.dispatch('cart/addToCart', cartItem);
+        if (response.status === 201) {
+          this.$router.push({ name: 'Cart' });
+        } else {
+          console.error('Failed to add product to cart:', productId);
+        }
+      } catch (error) {
+        console.error('Error adding product to cart:', error);
       }
-    } catch (error) {
-      console.error('Error adding product to cart:', error);
-    }}
+    }
   },
   async created() {
-    console.log("OrderDetail created with orderNo:", this.orderNo);
+    console.log('Order No in created:', this.orderNo);
     await this.fetchOrderDetails();
   }
 };
 </script>
 
 <style scoped>
-  .main-container {
-    padding: 0;
-    margin-top: 5px;
-  }
+.text-melon {
+  text-align: left;
+  margin-left: 10px;
+}
+.line-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
 
+.line-table th, .line-table td {
+  padding: 10px;
+  text-align: left;
+  text-align: center;
+  word-wrap: break-word;
+}
 
+.line-table img {
+  max-width: 50px;
+  max-height: 50px;
+  margin-right: 10px;
+}
+
+.main-container {
+  padding: 0;
+  margin-top: 5px;
+}
+
+.box-container {
+  margin-top: 20px;
+   display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container {
+  display: flex;
+  text-align: center;
+  padding: 15px;
+  border: 2px solid #EBF7F0;
+  border-radius: 10px;
+  white-space: nowrap;
+  margin-bottom: 20px;
+}
+
+.btn-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (min-width: 1200px) {
+  .line-table {
+  width: 100%;
+}
+
+.line-table tr, td {
+  padding: 30px;
+}
+
+.line-table img {
+  max-width: 100px;
+  max-height: 100px;
+  margin-right: 10px;
+}
+
+.main-container {
+  padding: 0;
+  margin-top: 5px;
+}
+
+.box-container {
+  margin-top: 20px;
+}
+
+.container {
+  display: inline-block;
+  text-align: left;
+  padding: 15px;
+  border: 2px solid #EBF7F0;
+  border-radius: 10px;
+  margin: 20px;
+  white-space: nowrap;
+}
+
+.btn-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+}
 </style>

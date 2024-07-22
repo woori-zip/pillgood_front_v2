@@ -22,7 +22,7 @@
               <tr v-for="item in localCartItems" :key="item.cartNo">
                 <td><input type="checkbox" v-model="item.selected" /></td>
                 <td ><div class="item-image"><img :src="item.productImage || '../assets/product_01.png'" alt=""></div></td>
-                <td>{{ item.productName }}</td>
+                <td><strong>{{ item.productName }}</strong></td>
                 <td>
                   <div class="item-quantity">
                     <button @click="decreaseQuantity(item)">-</button>
@@ -178,9 +178,16 @@ export default {
   height: 100%;
 }
 
-.item-image img {
+.item-image {
   width: 200px;
   height: 200px;
+  margin-bottom: 10px;
+  border-radius: 15px;
+}
+
+.item-image img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   border-radius: 8px;
 }

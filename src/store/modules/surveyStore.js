@@ -260,7 +260,12 @@ const actions = {
       for (const deficiencyId of deficiencies) {
         await dispatch('survey/fetchProductsByDeficiency', deficiencyId);
         const fetchedProducts = rootState.product.products.filter(product => product.nutrientId === deficiencyId);
-        recommendedProducts = recommendedProducts.concat(fetchedProducts.map(product => product.productId));
+        const productsWithImages = fetchedProducts.map(product => ({
+          productId: product.productId,
+          productName: product.productName,
+          productImage: product.productImage
+        }));
+        recommendedProducts = recommendedProducts.concat(productsWithImages.map(product => product.productId));
       }
 
       // 중복된 값 제거
