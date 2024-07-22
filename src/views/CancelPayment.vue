@@ -13,7 +13,7 @@
         </tr>
         <tr>
           <td><label for="cancelReason">취소 사유</label></td>
-          <td><input type="text" id="cancelReason" v-model="cancelReason" /></td>
+          <td><input type="text" placeholder="선택 사항입니다" id="cancelReason" v-model="cancelReason" /></td>
         </tr>
       </table>
       <div class="btn-container">

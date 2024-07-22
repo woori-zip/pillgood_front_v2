@@ -234,9 +234,18 @@ td {
   text-align: left !important;
 }
 
-/* -------------------------------------------------------------icon */
+/* -------------------------------------------------------------icon + line */
 .icon {
   transform: rotate(90deg);
+}
+
+.line {
+  width: 100%;
+  color: #B4D9A9;
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
 /* -------------------------------------------------------------calender */

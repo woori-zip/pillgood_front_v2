@@ -43,7 +43,7 @@
                     <img v-if="!product.isDummy" @click="viewProduct(product.productId)" :src="product.productImage" class="card-img-top" alt="Product Image">
                     <div class="card-body">
                       <h6 class="card-title">{{ product.isDummy ? 'Placeholder' : product.productName }}</h6>
-                      <p class="card-text">{{ product.isDummy ? '' : product.price + '원' }}</p>
+                      <p class="card-text">{{ product.isDummy ? '' : formatPrice(product.price) + ' 원' }}</p>
                     </div>
                   </div>
                 </div>
@@ -61,7 +61,7 @@
         </div>
         <hr style="color: #94B58B; margin-bottom: 50px;">
         <h4 style="margin-bottom: 30px;">🔥New!</h4>
-        <div id="latestCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div id="latestCarousel" class="carousel slide" data-bs-ride="carousel" style="display: flex; align-item: center">
           <div class="carousel-inner">
             <div class="carousel-item" :class="{ active: index === 0 }" v-for="(chunk, index) in chunkedLatestProducts" :key="index">
               <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
@@ -70,19 +70,19 @@
                     <img v-if="!product.isDummy" @click="viewProduct(product.productId)" :src="product.productImage" class="card-img-top" alt="Product Image">
                     <div class="card-body">
                       <h6 class="card-title">{{ product.isDummy ? 'Placeholder' : product.productName }}</h6>
-                      <p class="card-text">{{ product.isDummy ? '' : product.price + '원' }}</p>
+                      <p class="card-text">{{ product.isDummy ? '' : formatPrice(product.price) + ' 원' }}</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#latestCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <button id="carousel-control-prev" class="carousel-control-prev" type="button" data-bs-target="#latestCarousel" data-bs-slide="prev">
+            <span id="carousel-control-prev-icon" class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
           </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#latestCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <button id="carousel-control-next" class="carousel-control-next" type="button" data-bs-target="#latestCarousel" data-bs-slide="next">
+            <span id="carousel-control-next-icon" class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
           </button>
         </div>
@@ -100,20 +100,20 @@ export default {
     return {
       slides: [
         {
-          image: require('@/assets/banner1.gif'),
-          headline: '멀리 갈 필요 없이'
-        },
-        {
-          image: require('@/assets/banner3.gif'),
-          headline: '고민할 필요 없이'
-        },
-        {
           image: require('@/assets/banner2.gif'),
           headline: '지금 나에게 필요한',
           content: '모든 상품 보러 가기',
           buttonText: '건강 분석 바로 가기',
           route: '/survey', // 라우터 경로 설정
           captionClass: 'text-start'
+        },
+        {
+          image: require('@/assets/banner1.gif'),
+          headline: '멀리 갈 필요 없이'
+        },
+        {
+          image: require('@/assets/banner3.gif'),
+          headline: '고민할 필요 없이'
         }
       ]
     }
@@ -133,6 +133,9 @@ export default {
     ...mapActions('home', ['fetchTopSellingProducts', 'fetchLatestProducts']),
     viewProduct(productId) {
       this.$router.push({ name: 'ProductDetail', params: { id: productId } });
+    },
+    formatPrice(value) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     chunkArray(array, size) {
       const chunkedArr = [];
@@ -219,4 +222,25 @@ export default {
   background-color: #f8f9fa; /* Light grey background for dummy cards */
   border: 1px dashed #ddd; /* Dashed border for visual distinction */
 }
+
+/* 기존 스타일 정의 부분 */
+#carousel-control-prev,
+#carousel-control-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1; /* 다른 요소 위에 표시되도록 z-index 설정 */
+  border: none;
+  padding: 10px;
+  border-radius: 50%; /* 둥근 버튼 */
+}
+
+#carousel-control-prev {
+  left: -150px; /* 왼쪽 위치 조정 */
+}
+
+#carousel-control-next {
+  right: -150px; /* 오른쪽 위치 조정 */
+}
+
 </style>

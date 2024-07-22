@@ -19,41 +19,43 @@
               {{ item.productName }}
             </td>
             <td>{{ item.productQuantity }}</td>
-            <td>{{ item.price * item.productQuantity }} 원</td>
+            <td>{{ formatPrice(item.price * item.productQuantity) }} 원</td>
           </tr>
         </tbody>
       </table>
       <div style="display: flex; align-items: flex-end; flex-direction: column; margin-top: 10px;">
         <h6>배송비 {{ shippingFeeMessage }}</h6>
         <hr style="width: 200px" />
-        <h4 class="text-melon">합계: {{ totalAmount }} 원</h4>
+        <h4 class="text-melon">합계: {{ formatPrice(totalAmount) }} 원</h4>
       </div>
       <hr class="line" />
 
       <div class="box-container-no-shade">
         <label for="ownedCouponId"><h4 class="text-melon">쿠폰 / 포인트 사용</h4></label>
+        <div v-if="coupons.length === 0"><p>보유 중인 쿠폰이 없습니다.</p></div>
+        <div v-else>
         <select id="ownedCouponId" v-model="ownedCouponId" @change="applyCoupon">
-          <option value="">보유중인 쿠폰 선택하기</option>
+          <option value="">보유 중인 쿠폰 선택하기</option>
           <option v-for="coupon in coupons" :key="coupon.ownedCouponId" :value="coupon.ownedCouponId">
             {{ coupon.couponName }}
           </option>
         </select>
-        <p v-if="coupons.length === 0">보유중인 쿠폰이 없습니다.</p>
+        </div>
       </div>
       <div class="box-container-no-shade btn-container">
         <div class="point-wrapper">
           <input type="number" id="usePoints" v-model.number="usePoints" :readonly="pointsApplied" /> P&nbsp;/&nbsp;<span style="color: red">{{ totalPoints }}</span>&nbsp;P&nbsp;
           <button @click="applyPoints" :disabled="pointsApplied || usePoints < 1000" class="btn btn-green" style="height: 30px">적용하기</button>
         </div>
-        <span class="text-info">포인트는 최소 1000 포인트 보유 시, 1000 포인트 이상 사용 가능합니다.</span>
+        <span class="text-info">포인트는 최소 1,000 포인트 보유 시, 1,000 포인트 이상 사용 가능합니다.</span>
         <span v-if="pointsError" class="text-danger">{{ pointsError }}</span>
       </div>
 
       <hr class="line" style="background: white" />
 
       <div style="display: flex; align-items: flex-end; flex-direction: column;">
-        <h6>(3만원 이상 구매시 배송비 무료)</h6>
-        <h4 class="text-melon">총 결제액: {{ totalAmount }} 원</h4>
+        <h6>(3만 원 이상 구매시 배송비 무료)</h6>
+        <h4 class="text-melon">총 결제액: {{ formatPrice(totalAmount) }} 원</h4>
       </div>
 
       <hr class="line" />
@@ -238,6 +240,9 @@ export default {
       } catch (error) {
         console.error('Error fetching total points:', error);
       }
+    },
+    formatPrice(value) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     async fetchAddresses() {
       try {
