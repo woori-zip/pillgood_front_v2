@@ -1,7 +1,6 @@
 <template>
   <div class="social-login-container">
     <!-- <h4>소셜 로그인</h4> -->
-    <br>
     <a :href="kakaoLoginUrl" @click.prevent="kakaoLogin">
       <img :src="kakaoLoginImage" alt="카카오 로그인">
     </a>
@@ -36,7 +35,7 @@ export default {
   text-align: center;
 }
 .social-login-container img {
-  width: 200px;
+  width: 150px;
   cursor: pointer;
 }
 </style>

@@ -37,7 +37,7 @@
         </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn color="info" small @click="openEditDialog(item)">수정</v-btn>&nbsp;
-          <v-btn color="error" small @click="confirmDelete(item.id)">삭제</v-btn>
+          <v-btn color="error" small @click="confirmDelete(item)">삭제</v-btn>
         </template>
       </v-data-table>
     </v-card>
@@ -93,14 +93,15 @@ export default {
   },
   methods: {
     ...mapActions('adminSurvey', ['fetchQuestions', 'deleteQuestion']),
-    async confirmDelete(questionId) {
-      if (confirm('이 질문을 삭제하시겠습니까? 관련된 모든 답변도 삭제됩니다.')) {
+    async confirmDelete(question) {
+      if (confirm('이 질문을 삭제하시겠습니까? 답변이 남아있는 경우 삭제할 수 없습니다.')) {
         try {
-          await this.deleteQuestion(questionId);
+          await this.deleteQuestion(question.id);
           alert('질문이 삭제되었습니다.');
+          await this.fetchQuestions();
         } catch (error) {
           console.error('질문 삭제 실패:', error);
-          alert('질문 삭제에 실패했습니다.');
+          alert('답변이 남아있어 질문을 삭제할 수 없습니다.');
         }
       }
     },
@@ -154,7 +155,5 @@ export default {
 
 .clickable {
   cursor: pointer;
-  color: blue;
-  text-decoration: underline;
 }
 </style>
