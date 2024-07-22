@@ -13,6 +13,7 @@ import RefundList from '../views/RefundList.vue'; // 추가된 import
 import MemberList from '../views/MemberList.vue';
 import MemberEdit from '../views/MemberEdit.vue';
 import MyPage from '../views/MyPage.vue';
+import ShippingAddressManager from '../views/ShippingAddressManager.vue';
 
 // product
 import ProductCreate from '../views/product/ProductCreate.vue';
@@ -120,6 +121,7 @@ const routes = [
   { path: '/reviewdetail', name: 'ReviewDetail', component: ReviewDetail },
 
   { path: '/mycoupon', name: 'MyCoupon', component: MyCoupon },
+  { path: '/myaddress', name: 'ShippingAddressManager', component: ShippingAddressManager },
 
   // inquiry
   { path: '/inquiries', component: InquiryList },

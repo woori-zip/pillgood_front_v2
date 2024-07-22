@@ -4,6 +4,7 @@ import member from './modules/memberStore';
 import nutrient from './modules/nutrientStore';
 import product from './modules/productStore';
 import survey from './modules/surveyStore';
+import adminSurvey from './modules/adminSurveyStore';
 import cart from './modules/cartStore';
 import order from './modules/orderStore';
 import billing from './modules/billingStore';
@@ -15,6 +16,7 @@ import refund from './modules/refunds';
 
 import inquiry from './modules/inquiryStore';
 import coupon from './modules/couponStore';
+import shipping from './modules/shippingStore';
 
 
 import notice from './modules/notice';
@@ -35,6 +37,8 @@ export default createStore({
     coupon,
     home,
     refund,
-    billing
+    billing,
+    shipping,
+    adminSurvey
   }
 });

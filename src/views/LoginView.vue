@@ -1,42 +1,39 @@
 <template>
   <div class="main-container">
-    <div class="login-box">
-      <!-- 위쪽 -->
-      <div class="form-container">
-        <!-- 기존 로그인 폼 -->
-        <form @submit.prevent="handleLogin" class="login-form">
-          <h4 class="text-melon">로그인</h4>
-          <div class="input-container">
-            <label for="email" class="text-melon">이메일</label>
-            <input type="email" id="email" v-model="email" required />
-          </div>
-          <div class="input-container">
-            <label for="password" class="text-melon">비밀번호</label>
-            <input type="password" id="password" v-model="password" required />
-          </div>
-          <div class="btn-container">
-            <button type="submit" class="btn btn-green">로그인</button>
-          </div>
-        </form>
-        <!-- 중앙에 세로 선 -->
-        <div class="vertical-line"></div>
-        <!-- 카카오 로그인 컴포넌트 추가 -->
-        <div class="social-container">
-          <h4 class="text-melon">소셜 로그인</h4>
-          <KakaoLogin @loginSuccess="handleKakaoLoginSuccess" />
+  <div class="login-container">
+    <div class="login-header">
+      <h2 class="text-melon">로그인</h2>
+      <p class="login-subtitle">필굿의 다양한 서비스와 혜택을 누리세요</p>
+    </div>
+    <form @submit.prevent="handleLogin" class="login-form">
+      <ul>
+        <li>
+          <input type="email" id="email" v-model="email" placeholder="이메일을 입력해 주세요" required />
+        </li>
+        <li>
+          <input type="password" id="password" v-model="password" placeholder="비밀번호를 입력해 주세요" required />
+        </li>
+      </ul>
+      <div class="options-container">
+        <div class="remember-me">
+          <input type="checkbox" id="rememberMe" v-model="rememberEmail" style="width: 10px; height: 10px;"/>
+          <label for="rememberMe">이메일 저장</label>
+        </div>
+        <div class="links">
+         <router-link to="/forgotpassword">비밀번호 재설정</router-link>
         </div>
       </div>
-      <!-- 회원가입 버튼/비밀번호 찾기 -->
-      <div class="btn-container2">
-        <button type="button" class="btn btn-gray" @click="navigateToRegister">회원가입</button>
+      <div class="bttn-container">
+      <button type="submit" class="btn btn-green">로그인</button>
+      <div style="display: flex; gap: 50px;align-items: center;"><p class="social-login-text">카카오로 간편하게 시작하기</p>
+      <KakaoLogin @loginSuccess="handleKakaoLoginSuccess" /></div>
       </div>
-      <div class="check-container">
-        <input id="chk_all" type="checkbox" v-model="rememberEmail">
-        <label for="chk_all" class="text-gray">이메일 기억하기</label>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <router-link to="/forgotpassword">비밀번호 재설정</router-link>
+      <hr>
+      <div class="btn-container">
+      <button type="button" class="btn btn-gray" @click="navigateToRegister">회원가입</button>
       </div>
-    </div>
+    </form>
+  </div>
   </div>
 </template>
 
@@ -173,114 +170,92 @@ export default {
 </script>
 
 <style scoped>
-.main-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+.login-container {
+  width: 400px;
+  margin: 0 auto;
   padding: 20px;
+  text-align: center;
 }
 
-.login-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  border-radius: 10px;
-  width: 100%;
-  max-width: 600px;
-  background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.login-header {
+  margin-bottom: 20px;
 }
 
-.form-container,
-.social-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.login-subtitle {
+  font-size: 14px;
+  color: #777;
 }
 
-.login-form {
-  width: 100%;
+.login-form ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 20px;
 }
 
-.input-container {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
-}
-
-.input-container label {
+.login-form label {
+  display: block;
   margin-bottom: 5px;
 }
 
-.input-container input {
+.login-form input {
+  width: 100%;
+  height: 50px;
   padding: 10px;
+  font-size: 14px;
   border: 1px solid #ddd;
   border-radius: 5px;
 }
 
-.btn-container {
+.options-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.btn-container2 {
-  text-align: center;
+.remember-me {
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.check-container {
-  display: flex;
-  justify-content: center;
   align-items: center;
 }
 
-.vertical-line {
-  width: 80%;
-  height: 1px;
-  background-color: #B4D9A9;
-  margin: 20px 0;
+.remember-me input {
+  margin-right: 5px;
 }
 
-@media (min-width: 1200px) {
-  .login-box {
-    flex-direction: column; /* 큰 화면에서도 세로 정렬 */
-    justify-content: space-between;
-    max-width: 1200px;
-    height: auto;
-  }
-
-  .form-container {
-    display: flex;
-    flex-direction: row; /* 가로 정렬 */
-    justify-content: space-between;
-    width: 100%;
-  }
-
- .vertical-line {
-  width: 20%;
-  height: 1px;
-  background-color: #B4D9A9;
-  rotate: 90deg;
+.links {
+  display: flex;
+  gap: 5px;
+  font-size: 15px;
+  color: #777;
 }
 
-  .form-container .login-form,
-  .form-container .social-container {
-    width: 45%;
-  }
+.links a {
+  text-decoration: none;
+  color: #777;
+}
 
-  .btn-container2,
-  .check-container {
-    width: 100%;
-    text-align: center;
-  }
+.links a:hover {
+  text-decoration: underline;
+}
 
-  .check-container {
-    justify-content: center;
-  }
+.btn-green {
+  width: 100%;
+}
+
+.btn-gray {
+  width: 100%;
+}
+
+.social-login-text {
+  font-size: 14px;
+  color: #777;
+}
+
+.bttn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 </style>

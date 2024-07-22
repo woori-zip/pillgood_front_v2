@@ -49,7 +49,7 @@
             </tbody>
           </table>
         </div>
-        <hr class="line">
+        <!-- <hr class="line">
         <h4 class="text-melon" style="text-align: left; margin-left: 10px;">배송지 정보</h4>
         <div>
           <table class="line-table">
@@ -70,8 +70,8 @@
               <td>주소</td>
             </tr>
           </table>
-        </div>
-        <hr class="line">
+        </div> -->
+        <!-- <hr class="line">
         <h4 class="text-melon" style="text-align: left; margin-left: 10px;">결제 정보</h4>
         <div>
           <table class="line-table">
@@ -84,7 +84,7 @@
               <td colspan="3">총 결제 금액</td>
             </tr>
           </table>
-        </div>
+        </div> -->
         <hr class="line">
         <div class="btn-container">
           <button class="btn btn-green" @click="$router.go(-1)">목록으로</button>

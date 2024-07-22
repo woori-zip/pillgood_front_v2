@@ -8,11 +8,14 @@
         <img :src="slide.image" class="d-block w-100 custom-banner" alt="Slide image">
         <div class="container">
           <div class="carousel-caption" :class="slide.captionClass">
-            <h1>{{ slide.headline }}</h1>
-            <p>{{ slide.content }}</p>
-            <p v-if="index === 0" class="button-container">
-              <router-link class="btn btn-lg btn-primary" :to="slide.route">{{ slide.buttonText }}</router-link>
-            </p>
+            <div class="headline-container">
+              <h1 style="margin-bottom: 20px">{{ slide.headline }}</h1>
+                <div v-if="slide.route" class="btn-container" style="margin-top: 20px; margin-bottom: 20px;">
+                  <router-link class="btn btn-green" :to="slide.route">{{ slide.buttonText }}</router-link>
+                  <hr>
+                </div>
+              <a href="/productlist"><p>{{ slide.content }}</p></a>
+            </div>
           </div>
         </div>
       </div>
@@ -97,28 +100,20 @@ export default {
     return {
       slides: [
         {
-          image: require('@/assets/banner1.png'),
-          headline: 'Example headline.',
-          content: 'Some representative placeholder content for the first slide of the carousel.',
-          buttonText: '설문 조사 바로 가기',
+          image: require('@/assets/banner1.gif'),
+          headline: '멀리 갈 필요 없이'
+        },
+        {
+          image: require('@/assets/banner3.gif'),
+          headline: '고민할 필요 없이'
+        },
+        {
+          image: require('@/assets/banner2.gif'),
+          headline: '지금 나에게 필요한',
+          content: '모든 상품 보러 가기',
+          buttonText: '건강 분석 바로 가기',
           route: '/survey', // 라우터 경로 설정
           captionClass: 'text-start'
-        },
-        {
-          image: require('@/assets/banner2.jpg'),
-          headline: 'Another example headline.',
-          content: 'Some representative placeholder content for the second slide of the carousel.',
-          buttonText: 'Learn more',
-          link: '#',
-          captionClass: ''
-        },
-        {
-          image: require('@/assets/banner3.jpg'),
-          headline: 'One more for good measure.',
-          content: 'Some representative placeholder content for the third slide of this carousel.',
-          buttonText: 'Browse gallery',
-          link: '#',
-          captionClass: 'text-end'
         }
       ]
     }
@@ -160,6 +155,31 @@ export default {
 </script>
 
 <style scoped>
+.headline-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.headline-container h1 {
+  color: white;
+  font-weight: bold;
+
+}
+
+.headline-container a {
+  text-decoration: none;
+  color: white;
+}
+.btn-container {
+  box-shadow: 8px 8px 82px -46px rgba(66, 68, 90, 1);
+}
+
+.btn-green {
+  background-color: #4cae4c;
+}
+
 .album {
   padding: 2rem 0;
 }
