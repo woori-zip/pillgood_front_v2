@@ -53,6 +53,7 @@ export default {
     ...mapActions('member', ['fetchMemberInfo']),
   },
   async created() {
+    await this.fetchMemberInfo(this.memberId)
     // try {
     //   await this.checkLoginStatus()
     //   if (this.isLoggedIn && this.memberId) {

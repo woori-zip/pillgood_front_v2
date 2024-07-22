@@ -7,7 +7,6 @@ import { QuillEditor } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css'; // CSS 경로
 import { setupCalendar, Calendar, DatePicker } from 'v-calendar';
 import 'v-calendar/dist/style.css'; // CSS
-import BackToTop from './components/BackToTop.vue';
 import axios from 'axios';
 axios.defaults.baseURL = process.env.VUE_APP_API_URL || 'http://localhost:9095'; // 기본 URL 설정
 
@@ -36,9 +35,6 @@ adminApp.component('QuillEditor', QuillEditor);
 // V-calendar 전역으로 등록
 adminApp.component('VCalendar', Calendar);
 adminApp.component('VDatePicker', DatePicker);
-
-// BackToTop 컴포넌트를 전역 등록
-adminApp.component('BackToTop', BackToTop);
 
 // Vuex와 Router 등록 후 애플리케이션 마운트
 adminApp.use(store);

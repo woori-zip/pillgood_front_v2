@@ -1,4 +1,11 @@
-module.exports = {
+const { defineConfig } = require('@vue/cli-service')
+
+module.exports = defineConfig({
+  transpileDependencies: true,
+  filenameHashing: false, // build 파일 해싱 제거
+  productionSourceMap: true, // js source map 생성
+  css: { sourceMap: true }, // css source map 생성
+
   pages: {
     index: {
       entry: 'src/main.js',
@@ -13,7 +20,7 @@ module.exports = {
       title: 'Admin Page',
     },
   },
-  transpileDependencies: true,
+
   chainWebpack: config => {
     config.module
       .rule('raw')
@@ -25,12 +32,4 @@ module.exports = {
       })
       .end();
   }
-};
-
-const { defineConfig } = require('@vue/cli-service')
-module.exports = defineConfig({
-  transpileDependencies: true,
-  filenameHashing: false, // build 파일 해싱 제거
-  productionSourceMap: true, // js source map 생성
-  css: {sourceMap: true}    // css source map 생성
-})
+});
