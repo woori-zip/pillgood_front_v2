@@ -27,7 +27,7 @@
           </v-col>
           <v-col cols="12" sm="3">
             <v-btn color="primary" @click="resetFilters">초기화</v-btn>&nbsp;
-            <v-btn color="primary" @click="createProduct">+ 제품 등록</v-btn>&nbsp;
+            <v-btn color="primary" @click="openCreateDialog">+ 제품 등록</v-btn>&nbsp;
             <v-btn color="primary" @click="openNutrientDialog">성분 관리</v-btn>
           </v-col>
         </v-row>

@@ -8,7 +8,7 @@
       <v-card-subtitle>
         <v-row align="center">
           <v-col cols="12" sm="2">
-            <v-select v-model="searchStatus" :items="statusOptions" label="상태 선택" dense></v-select>
+            <v-select v-model="searchStatus" :items="displayStatusOptions" item-text="title" item-value="value" label="상태 선택" dense></v-select>
           </v-col>
           <v-col cols="12" sm="6">
             <v-text-field v-model="searchQuery" label="검색어 입력" dense></v-text-field>
@@ -31,7 +31,7 @@
           <span>{{ item.discountAmount }}</span>
         </template>
         <template v-slot:[`item.couponStatus`]="{ item }">
-          <span>{{ item.couponStatus }}</span>
+          <span>{{ getCouponStatus(item.couponStatus) }}</span>
         </template>
         <template v-slot:[`item.validityPeriod`]="{ item }">
           <span>{{ item.validityPeriod }}일</span>
@@ -76,9 +76,9 @@ export default {
         { title: '유효 기간', value: 'validityPeriod', align: 'center' },
         { title: '수정/삭제', value: 'actions', align: 'center', sortable: false },
       ],
-      statusOptions: [
-        { title: '활성', value: 'Active' },
-        { title: '비활성', value: 'Inactive' },
+      displayStatusOptions: [
+        { title: '활성', value: 'T' },
+        { title: '비활성', value: 'F' },
       ],
     };
   },
@@ -87,8 +87,7 @@ export default {
     filteredCoupons() {
       return this.allCoupons.filter(coupon => {
         const matchesQuery = this.searchQuery
-          ? coupon.couponName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-            coupon.couponStatus.toLowerCase().includes(this.searchQuery.toLowerCase())
+          ? coupon.couponName.toLowerCase().includes(this.searchQuery.toLowerCase())
           : true;
         const matchesStatus = this.searchStatus ? coupon.couponStatus === this.searchStatus : true;
         return matchesQuery && matchesStatus;
@@ -97,6 +96,10 @@ export default {
   },
   methods: {
     ...mapActions('coupon', ['fetchCoupons', 'deleteCoupon']),
+    getCouponStatus(status) {
+      const statusOption = this.displayStatusOptions.find(option => option.value === status);
+      return statusOption ? statusOption.title : status;
+    },
     openEditDialog(coupon) {
       this.selectedCoupon = coupon;
       this.editDialog = true;

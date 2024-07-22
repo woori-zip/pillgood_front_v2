@@ -94,6 +94,18 @@ const actions = {
       console.error('Error deleting deficiency nutrient:', error);
       throw error;
     }
+  },
+  async fetchDeficiencyNutrients({ commit }) {
+    try {
+      const response = await axios.get('/api/deficiency-nutrients/list');
+      if (response.status === 200) {
+        commit('setDeficiencyNutrients', response.data);
+      } else {
+        throw new Error('Failed to fetch deficiency nutrients');
+      }
+    } catch (error) {
+      console.error('Error fetching deficiency nutrients:', error);
+    }
   }
 };
 

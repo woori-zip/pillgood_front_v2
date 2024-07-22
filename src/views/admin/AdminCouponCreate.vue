@@ -4,11 +4,11 @@
       <h2>쿠폰 등록</h2>
     </v-card-title>
     <v-card-text>
-      <v-form ref="form">
+      <v-form ref="form" v-model="valid">
         <v-text-field v-model="coupon.couponName" label="쿠폰 이름" required></v-text-field>
         <v-text-field v-model="coupon.discountAmount" label="할인 금액" type="number" required></v-text-field>
         <v-text-field v-model="coupon.discountDescription" label="할인 설명"></v-text-field>
-        <v-select v-model="coupon.couponStatus" :items="statusOptions" label="상태" required></v-select>
+        <v-select v-model="coupon.couponStatus" :items="displayStatusOptions" item-text="text" item-value="value" label="상태" required></v-select>
         <v-text-field v-model="coupon.validityPeriod" label="유효 기간 (일)" type="number" required></v-text-field>
       </v-form>
     </v-card-text>
@@ -26,6 +26,7 @@ export default {
   name: 'AdminCouponCreate',
   data() {
     return {
+      valid: false,
       coupon: {
         couponName: '',
         discountAmount: 0,
@@ -33,13 +34,16 @@ export default {
         couponStatus: '',
         validityPeriod: 0,
       },
-      statusOptions: ['Active', 'Inactive'],
+      displayStatusOptions: [
+        { title: '활성', value: 'T' },
+        { title: '비활성', value: 'F' },
+      ],
     };
   },
   methods: {
     ...mapActions('coupon', ['createCoupon']),
     async saveCoupon() {
-      if (this.$refs.form.validate()) {
+      if (this.valid) {
         try {
           await this.createCoupon(this.coupon);
           this.$emit('save');
