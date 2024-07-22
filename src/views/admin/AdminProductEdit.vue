@@ -58,13 +58,13 @@
         </v-row>
         <v-row>
           <v-col cols="12">
-            <RichTextEditor v-model="localProduct.productImage" />
+            <RichTextEditor v-model="localProduct.productImage" @update:modelValue="onProductImageUpdate" />
           </v-col>
         </v-row>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" type="submit">저장</v-btn>
-          <v-btn color="grey" @click="$emit('cancel')">취소</v-btn>
+          <v-btn color="primary" @click="handleUpdateAndSaveProduct">저장</v-btn>
+          <v-btn color="grey" @click="cancel">취소</v-btn>
         </v-card-actions>
       </v-form>
     </v-card-text>
@@ -90,7 +90,7 @@ export default {
     return {
       localProduct: { ...this.product },
       newNutrientName: '',
-      newNutrientDescription: ''
+      newNutrientDescription: '',
     };
   },
   computed: {
@@ -130,16 +130,27 @@ export default {
       }
     },
     async handleUpdateProduct() {
-      if (this.localProduct.nutrientId === 'new') {
-        alert('새 영양제를 저장 후 다시 시도해주세요.');
-        return;
-      }
       try {
+        console.log('Local Product before update:', this.localProduct);
         await this.updateProduct(this.localProduct);
-        this.$emit('save');
+        console.log('Product updated successfully');
       } catch (error) {
         console.error('제품 수정 실패:', error);
       }
+    },
+    async handleUpdateAndSaveProduct() {
+      console.log('Save button clicked');
+      await this.handleUpdateProduct();
+      console.log('Emitting save event');
+      this.$emit('save');
+    },
+    async onProductImageUpdate(value) {
+      console.log('Product image updated:', value);
+      this.localProduct.productImage = value;
+    },
+    cancel() {
+      console.log('Cancel button clicked');
+      this.$emit('cancel');
     }
   }
 };

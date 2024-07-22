@@ -100,7 +100,9 @@ const actions = {
     try {
       const response = await axios.get('/api/products/top-selling');
       if (response.status === 200) {
-        const products = response.data;
+        console.log('Original top selling products:', response.data);
+        const products = response.data.filter(product => product.active === true);
+        console.log('Filtered top selling products:', products); // Add this line to check filtering
         for (let product of products) {
           await fetchProductImage(product);
         }
@@ -117,7 +119,9 @@ const actions = {
     try {
       const response = await axios.get('/api/products/latest');
       if (response.status === 200) {
-        const products = response.data;
+        console.log('Original latest products:', response.data);
+        const products = response.data.filter(product => product.active === true);
+        console.log('Filtered latest products:', products); // Add this line to check filtering
         for (let product of products) {
           await fetchProductImage(product);
         }
