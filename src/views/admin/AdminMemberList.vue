@@ -6,29 +6,29 @@
       </v-card-title>
 
       <v-card-subtitle>
-        <v-row text-align="center">
-          <v-col cols="12" sm="3">
-            <v-select
-              v-model="selectedFilter"
-              :items="filters"
-              item-text="title"
-              item-value="value"
-              label="필터 선택"
-              dense
-            ></v-select>
-          </v-col>
-          <v-col cols="12" sm="6">
-            <v-text-field
-              v-model="searchQuery"
-              :disabled="!selectedFilter"
-              label="검색어를 입력하세요"
-              dense
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="3">
-            <v-btn color="primary" @click="resetFilters">초기화</v-btn>
-          </v-col>
-        </v-row>
+          <v-row text-align="center">
+            <v-col cols="12" sm="3">
+              <v-select
+                v-model="selectedFilter"
+                :items="filters"
+                item-text="title"
+                item-value="value"
+                label="필터 선택"
+                dense
+              ></v-select>
+            </v-col>
+            <v-col cols="12" sm="6">
+              <v-text-field
+                v-model="searchQuery"
+                :disabled="!selectedFilter"
+                label="검색어를 입력하세요"
+                dense
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="3">
+              <v-btn color="primary" @click="resetFilters">초기화</v-btn>
+            </v-col>
+          </v-row>
       </v-card-subtitle>
 
       <v-data-table
@@ -49,7 +49,7 @@
             <span>{{ levelText(item.memberLevel) }}</span>
         </template>
         <template v-slot:[`item.coupon`]="{ item }">
-          <div v-if="!item.couponIssued">
+          <div v-if="!item.couponIssued" style="display: flex;">
             <v-combobox
               v-model="selectedCoupons[item.memberUniqueId]"
               :items="couponItems"
@@ -64,7 +64,7 @@
           <div v-else>발급 완료</div>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn color="info" small @click="openEditDialog(item)">수정</v-btn>&nbsp;
+          <v-btn small @click="openEditDialog(item)">수정</v-btn>&nbsp;
           <v-btn color="error" small @click="confirmDeleteMember(item.memberUniqueId)">삭제</v-btn>
         </template>
       </v-data-table>

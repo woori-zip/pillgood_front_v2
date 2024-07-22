@@ -75,7 +75,7 @@ export default {
   computed: {
     ...mapGetters('product', ['topSellingProducts', 'latestProducts']),
     filteredProducts() {
-      let filtered = this.products;
+      let filtered = this.products.filter(product => product.active === true);
 
       if (this.activeTab === 'nutrients' && this.selectedNutrient) {
         filtered = filtered.filter(product => product.nutrientId === this.selectedNutrient);
@@ -114,6 +114,7 @@ export default {
       try {
         const response = await axios.get('/api/products/list');
         this.products = response.data;
+        console.log('제품리스트조회:', this.products)
 
         for (let product of this.products) {
           await this.fetchProductImage(product);
@@ -121,8 +122,6 @@ export default {
 
         this.targets = [...new Set(this.products.map(product => product.target))].filter(Boolean);
 
-        console.log('Fetched products with images:', this.products);
-        console.log('Extracted targets:', this.targets);
       } catch (error) {
         console.error('Error fetching products:', error);
       }
@@ -131,7 +130,6 @@ export default {
       try {
         const response = await axios.get('/api/nutrients/list');
         this.nutrients = response.data;
-        console.log('Fetched nutrients:', this.nutrients);
       } catch (error) {
         console.error('Error fetching nutrients:', error);
       }
@@ -139,9 +137,7 @@ export default {
     async fetchDeficiencies() {
       try {
         const response = await axios.get('/api/deficiencies/nutrients');
-        console.log('고민 응답:', response);
         this.deficiencies = response.data;
-        console.log('Fetched deficiencies:', this.deficiencies);
       } catch (error) {
         console.error('Error fetching deficiencies:', error);
       }

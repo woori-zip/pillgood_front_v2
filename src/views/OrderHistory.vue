@@ -38,6 +38,7 @@ export default {
       try {
         const response = await axios.get('/api/orders/member');
         this.orders = response.data.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+        console.log('Orders: ', this.orders);
       } catch (error) {
         console.error('Failed to fetch orders:', error);
       } finally {
@@ -56,9 +57,9 @@ export default {
       this.$router.push({ name: 'CancelPayment', params: { orderNo: order.orderNo } });
     },
     formatDate(dateString) {
-      const options = { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+      const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
       const date = new Date(dateString);
-      return `${date.toLocaleDateString('ko-KR', options).replace(/\./g, '.').replace(/\s/g, '').slice(0, -1)} 주문`;
+      return date.toLocaleDateString('ko-KR', options).replace(/\./g, '.');
     }
   },
   async created() {

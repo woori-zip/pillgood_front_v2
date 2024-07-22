@@ -23,7 +23,7 @@
           <div v-for="(product, index) in recommendedProducts" :key="index" class="product-grid-item">
             <div class="product-item box-shadow">
               <router-link :to="{ name: 'ProductDetail', params: { id: product.productId } }">
-                <img :src="product.productImage" alt="productImg" class="product-image">
+                <div class="item-image" style="background: pink"><img :src="getImageUrl(product.productImage)" alt="productImg"></div>
                 <h5>{{ product.productName }}</h5>
               </router-link>
               <button 
@@ -94,6 +94,13 @@ export default {
       return '';
     });
 
+    const getImageUrl = (htmlString) => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlString, 'text/html');
+      const img = doc.querySelector('img');
+      return img ? img.src : '';
+    };
+
     onMounted(async () => {
       const memberId = store.state.member.memberId;
       console.log('memberId:', memberId);
@@ -138,6 +145,7 @@ export default {
       getDeficiencyName,
       uniqueDeficiencies,
       genderDisplay,
+      getImageUrl,
       isAddedToCart,
       addToCart
     };
@@ -195,11 +203,19 @@ export default {
   justify-content: center;
 }
 
-.product-image {
-  width: 100%;
-  height: auto;
+.item-image {
+  width: 200px;
+  height: 200px;
   display: block;
   margin-bottom: 10px;
+  border-radius: 15px;
+}
+
+.item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 .btn {

@@ -92,7 +92,7 @@ export default {
         { title: 'Type', value: 'inquiryType', align: 'center' },
         { title: 'Title', value: 'inquiryTitle', align: 'center' },
         { title: 'Status', value: 'inquiryStatus', align: 'center' },
-        { title: 'Date', value: 'inquiryDate', align: 'center' },
+        { title: 'Date', value: 'inquiryDate', align: 'center', sortable: true },
       ],
       searchOptions: [
         { title: '제목', value: 'title' },
@@ -114,18 +114,21 @@ export default {
   computed: {
     ...mapGetters('inquiry', ['allInquiries']),
     filteredInquiries() {
-      if (!this.searchQuery) {
-        return this.allInquiries;
+      let filtered = this.allInquiries;
+
+      if (this.searchQuery) {
+        filtered = filtered.filter(inquiry => {
+          if (this.searchOption === 'title') {
+            return inquiry.inquiryTitle.includes(this.searchQuery);
+          } else if (this.searchOption === 'status') {
+            return inquiry.inquiryStatus === this.searchQuery;
+          } else if (this.searchOption === 'type') {
+            return inquiry.inquiryType === this.searchQuery;
+          }
+        });
       }
-      return this.allInquiries.filter(inquiry => {
-        if (this.searchOption === 'title') {
-          return inquiry.inquiryTitle.includes(this.searchQuery);
-        } else if (this.searchOption === 'status') {
-          return inquiry.inquiryStatus === this.searchQuery;
-        } else if (this.searchOption === 'type') {
-          return inquiry.inquiryType === this.searchQuery;
-        }
-      });
+
+      return filtered.sort((a, b) => new Date(b.inquiryDate) - new Date(a.inquiryDate));
     }
   },
   methods: {

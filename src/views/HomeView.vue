@@ -121,10 +121,12 @@ export default {
   computed: {
     ...mapGetters('home', ['topSellingProducts', 'latestProducts']),
     chunkedTopSellingProducts() {
-      return this.chunkArray(this.topSellingProducts, 6);
+      console.log('Top selling products before chunking:', this.topSellingProducts);
+      return this.chunkArray(this.topSellingProducts.filter(product => product.active), 6);
     },
     chunkedLatestProducts() {
-      return this.chunkArray(this.latestProducts, 6);
+      console.log('Latest products before chunking:', this.latestProducts);
+      return this.chunkArray(this.latestProducts.filter(product => product.active), 6);
     }
   },
   methods: {
