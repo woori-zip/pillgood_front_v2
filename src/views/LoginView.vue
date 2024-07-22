@@ -61,7 +61,6 @@ export default {
     KakaoLogin // 카카오 로그인 컴포넌트 추가
   },
   mounted() {
-    this.checkSessionStatus();
     this.email = getEmailFromLocalStorage(); // 페이지 로드 시 저장된 이메일 불러오기
     this.handleKakaoCallback(); // 카카오 로그인 콜백 처리 추가
   },
@@ -98,20 +97,6 @@ export default {
     },
     navigateToRegister() {
       this.$router.push('/register');
-    },
-    async checkSessionStatus() {
-      try {
-        const response = await axios.get('/api/members/status', { withCredentials: true });
-        console.log("서버로부터 상태를 받아옴: ", response.data);
-        if (!response.data.isLoggedIn) {
-          this.$store.dispatch('clearUserState');
-        } else {
-          this.$store.commit('setLoginState', response.data);
-        }
-      } catch (error) {
-        console.error("상태 확인 요청 에러: ", error);
-        this.$store.dispatch('clearUserState');
-      }
     },
     async handleKakaoCallback() { // 카카오 로그인 콜백 처리 함수 추가
       const code = this.$route.query.code;

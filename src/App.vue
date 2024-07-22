@@ -50,33 +50,33 @@ export default {
     }),
   },
   methods: {
-    ...mapActions('member', ['checkLoginStatus', 'fetchMemberInfo']),
+    ...mapActions('member', ['fetchMemberInfo']),
   },
   async created() {
-    try {
-      await this.checkLoginStatus()
-      if (this.isLoggedIn && this.memberId) {
-        await this.fetchMemberInfo(this.memberId)
-      } else {
-        console.log('로그인되지 않았거나 memberId가 없음')
-      }
-    } catch (error) {
-      console.error('checkLoginStatus 에러:', error)
-    }
+    // try {
+    //   await this.checkLoginStatus()
+    //   if (this.isLoggedIn && this.memberId) {
+    //     await this.fetchMemberInfo(this.memberId)
+    //   } else {
+    //     console.log('로그인되지 않았거나 memberId가 없음')
+    //   }
+    // } catch (error) {
+    //   console.error('checkLoginStatus 에러:', error)
+    // }
 
-    // 주기적으로 세션 상태 확인
-    setInterval(async () => {
-      try {
-        await this.checkLoginStatus()
-        if (this.isLoggedIn) {
-          await this.fetchMemberInfo(this.memberId)
-        } else {
-          console.log('로그인된 사용자가 없음')
-        }
-      } catch (error) {
-        console.error('세션 상태 확인 중 에러:', error)
-      }
-    }, 600000) // 10분마다 실행
+    // // 주기적으로 세션 상태 확인
+    // setInterval(async () => {
+    //   try {
+    //     await this.checkLoginStatus()
+    //     if (this.isLoggedIn) {
+    //       await this.fetchMemberInfo(this.memberId)
+    //     } else {
+    //       console.log('로그인된 사용자가 없음')
+    //     }
+    //   } catch (error) {
+    //     console.error('세션 상태 확인 중 에러:', error)
+    //   }
+    // }, 600000) // 10분마다 실행
   },
   mounted() {
     // 카카오 SDK 로드 및 초기화

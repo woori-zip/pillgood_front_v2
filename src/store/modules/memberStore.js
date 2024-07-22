@@ -1,5 +1,5 @@
 import axios from '../../axios'; // 설정된 axios 인스턴스 불러오기
-import router from '../../router'; // Vue Router를 가져옵니다.
+// import router from '../../router'; // Vue Router를 가져옵니다.
 
 const state = {
   isLoggedIn: localStorage.getItem('loggedIn') === 'true', // 로컬스토리지 
@@ -24,13 +24,6 @@ const mutations = {
   setRememberedEmail(state, email) {
     state.rememberedEmail = email;
     localStorage.setItem('rememberedEmail', email);
-  },
-  clearState(state) {
-    state.isLoggedIn = false;
-    state.memberId = null;
-    state.member = null;
-    state.isAdmin = false;
-    state.userName = '';
   },
   setMembers(state, members) {
     // 서버에서 받은 members 데이터를 memberId로 변환
@@ -127,48 +120,36 @@ const actions = {
       commit('setLoginState', { isLoggedIn: false, memberId: null, member: null, isAdmin: false });
     }
   },
-  async checkLoginStatus({ commit, dispatch }) { // 로그인 상태 확인 (세션 체크)
-    try {
-      const response = await axios.get('/api/members/check-session', { withCredentials: true });
-      if (response.status === 200) {
-        const memberId = response.data.user.memberUniqueId;
-        await dispatch('fetchMemberInfo', memberId);
-      } else {
-        commit('setLoginState', { isLoggedIn: false, memberId: null, member: null });
-      }
-    } catch (error) {
-      commit('setLoginState', { isLoggedIn: false, memberId: null, member: null });
-    }
-  },
-  async logout({ commit }) { // 로그아웃
-  
-    router.push('/login');
+  async logout({ commit }) {
     try {
       // 기억된 이메일을 임시 변수에 저장
       const rememberedEmail = localStorage.getItem('rememberedEmail');
+      
       // 로그아웃 요청
-      await axios.post('/api/members/logout', {}, { withCredentials: true });
+      await axios.post('/logout', {}, { withCredentials: true }); // 스프링 시큐리티의 기본 로그아웃 URL로 요청
       console.log("로그아웃 요청 완료");
-  
+      
       // 상태 초기화
       commit('setLoginState', { isLoggedIn: false, memberId: null, member: null, isAdmin: false });
-  
+      
       // 전체 로컬 스토리지 초기화
       localStorage.clear();
-  
+      
       // 기억된 이메일이 있으면 로컬 스토리지에 다시 저장
       if (rememberedEmail) {
         localStorage.setItem('rememberedEmail', rememberedEmail);
       }
-  
+      
+      // 쿠키 삭제
+      // deleteAllCookies();
+      
       console.log("로그아웃 후 로컬 스토리지 상태: ", localStorage.getItem('loggedIn'));
       console.log("로그아웃 후 쿠키 상태: ", document.cookie);
-  
-      // 로그인 페이지로 이동
+      
     } catch (error) {
       console.error('로그아웃 에러: ', error);
     }
-  },  
+  },
   async fetchMembers({ commit }) { // 회원 리스트 조회
     try {
       const response = await axios.get('/admin/members/list');
@@ -182,6 +163,7 @@ const actions = {
   async deleteMember({ commit }, memberId) { // 회원 삭제
     try {
       const response = await axios.delete(`/admin/members/delete/${memberId}`);
+      console.log('회원 삭제 응답', response)
       if (response.status === 200) {
         commit('removeMember', memberId);
       }
@@ -217,21 +199,18 @@ const actions = {
     } catch (error) {
       console.error('Error fetching user profile:', error);
     }
-  },
-  clearUserState({ commit }) {
-    commit('clearState');
-    // 이메일 기억 기능을 제외하고 로컬 스토리지를 초기화
-    const rememberedEmail = localStorage.getItem('rememberedEmail'); // 기억된 이메일 저장
-    localStorage.clear(); // 로컬 스토리지 초기화
-    if (rememberedEmail) { // 기억된 이메일이 있으면 로컬 스토리지에 다시 저장
-      localStorage.setItem('rememberedEmail', rememberedEmail); // 기억된 이메일 복원
-    }
-    // 모든 쿠키를 삭제
-    document.cookie.split(";").forEach((c) => {
-      document.cookie = c.trim().split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
-    });
   }
 };
+
+// function deleteAllCookies() {
+//   const cookies = document.cookie.split(";");
+
+//   for (const cookie of cookies) {
+//     const eqPos = cookie.indexOf("=");
+//     const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+//     document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+//   }
+// }
 
 const getters = {
   members: state => state.members,
