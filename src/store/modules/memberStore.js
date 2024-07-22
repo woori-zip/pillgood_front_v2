@@ -1,5 +1,4 @@
 import axios from '../../axios'; // 설정된 axios 인스턴스 불러오기
-// import router from '../../router'; // Vue Router를 가져옵니다.
 
 const state = {
   isLoggedIn: localStorage.getItem('loggedIn') === 'true', // 로컬스토리지 
@@ -54,14 +53,12 @@ const actions = {
     try {
       const response = await axios.post('/api/members/login', { email, password }, { withCredentials: true });
       if (response.status === 200) {
-        const memberId = response.data.memberId;
-        localStorage.setItem('loggedIn', true);
-        localStorage.setItem('memberId', memberId);
-
+        console.log('로그인 응답 데이터: ', response.data); // 응답 데이터 확인
         // 로그인 후 사용자 정보 가져오기
-        const memberResponse = await axios.get(`/api/members/findById`, { params: { memberId } });
+        const memberResponse = await axios.get(`/api/members/findById`, { withCredentials: true });
         if (memberResponse.status === 200) {
           const member = memberResponse.data.user;
+          const memberId = member.memberUniqueId;
           const isAdmin = member.memberLevel === 'ADMIN';
 
           // Vuex 상태 업데이트
@@ -86,7 +83,7 @@ const actions = {
         localStorage.setItem('memberId', memberId);
 
         // 로그인 후 사용자 정보 가져오기
-        const memberResponse = await axios.get(`/api/members/findById`, { params: { memberId } });
+        const memberResponse = await axios.get(`/api/members/findById`, { withCredentials: true });
         if (memberResponse.status === 200) {
           const member = memberResponse.data.user;
           const isAdmin = member.memberLevel === 'ADMIN';
@@ -107,11 +104,11 @@ const actions = {
   async fetchMemberInfo({ state, commit }, memberId) {
     try {
       memberId = memberId || state.memberId;
-      const response = await axios.get(`/api/members/findById`, { params: { memberId } });
+      const response = await axios.get(`/api/members/findById`, { params: { memberId }, withCredentials: true });
       if (response.status === 200) {
         const member = response.data.user;
         const isAdmin = member.memberLevel === 'ADMIN'; // 관리자 여부 확인
-        commit('setLoginState', { isLoggedIn: true, memberId: memberId, member: member, isAdmin: isAdmin });
+        commit('setLoginState', { isLoggedIn: true, memberId: member.memberUniqueId, member, isAdmin });
       }  else {
         commit('setLoginState', { isLoggedIn: false, memberId: null, member: null, isAdmin: false });
       }
@@ -139,9 +136,6 @@ const actions = {
       if (rememberedEmail) {
         localStorage.setItem('rememberedEmail', rememberedEmail);
       }
-      
-      // 쿠키 삭제
-      // deleteAllCookies();
       
       console.log("로그아웃 후 로컬 스토리지 상태: ", localStorage.getItem('loggedIn'));
       console.log("로그아웃 후 쿠키 상태: ", document.cookie);
@@ -201,16 +195,6 @@ const actions = {
     }
   }
 };
-
-// function deleteAllCookies() {
-//   const cookies = document.cookie.split(";");
-
-//   for (const cookie of cookies) {
-//     const eqPos = cookie.indexOf("=");
-//     const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-//     document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-//   }
-// }
 
 const getters = {
   members: state => state.members,
