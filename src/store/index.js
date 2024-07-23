@@ -20,6 +20,7 @@ import shipping from './modules/shippingStore';
 
 import detailedquestion from './modules/detailedquestion';
 
+import subscriptions from './modules/subscriptions'
 
 import notice from './modules/notice';
 
@@ -42,6 +43,7 @@ export default createStore({
     billing,
     shipping,
     adminSurvey,
-    detailedquestion
+    detailedquestion,
+    subscriptions
   }
 });

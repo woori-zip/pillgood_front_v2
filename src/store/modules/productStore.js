@@ -3,7 +3,8 @@ import axios from '../../axios';
 const state = {
   products: [],
   topSellingProducts: [],
-  latestProducts: []
+  latestProducts: [],
+  productNames: {},
 };
 
 const mutations = {
@@ -31,7 +32,13 @@ const mutations = {
       // 기존 제품 정보를 업데이트된 제품 정보로 교체
       state.products.splice(index, 1, updatedProduct);
     }
-  }
+  },
+  setProductName(state, { productId, productName }) {
+    state.productNames = {
+      ...state.productNames,
+      [productId]: productName,
+    };
+  },
 };
 
 const actions = {
@@ -167,7 +174,25 @@ const actions = {
       console.error('제품 업데이트에 실패했습니다: ', error);
       throw error;
     }
-  }
+  },
+  async fetchProductNameById({ commit, state }, productId) {
+    if (state.productNames[productId]) {
+      return state.productNames[productId];
+    }
+    try {
+      const response = await axios.get(`/api/products/detail/${productId}`);
+      if (response.status === 200) {
+        const productName = response.data.productName; // 적절한 필드를 사용하여 제품 이름을 가져옵니다.
+        commit('setProductName', { productId, productName });
+        return productName;
+      } else {
+        throw new Error('제품 이름 조회 실패');
+      }
+    } catch (error) {
+      console.error('제품 이름 조회 에러:', error);
+      throw error;
+    }
+  },
 };
 
 async function fetchProductImage(product) {
@@ -190,7 +215,8 @@ function extractFirstImage(htmlString) {
 const getters = {
   products: state => state.products,
   topSellingProducts: state => state.topSellingProducts,
-  latestProducts: state => state.latestProducts
+  latestProducts: state => state.latestProducts,
+  productNames: state => state.productNames,
 };
 
 export default {

@@ -64,6 +64,9 @@ import InquiryCreate from '../views/InquiryCreate.vue';
 import InquiryDetail from '../views/InquiryDetail.vue';
 import MyInquiries from '../views/MyInquiries.vue';
 
+// subscriptions
+import MySubscriptions from '../views/MySubscriptions.vue';
+
 import store from '../store';
 
 const routes = [
@@ -128,6 +131,9 @@ const routes = [
   { path: '/inquiries/create', component: InquiryCreate, meta: { requiresAuth: true } },
   { path: '/inquiries/:id', name: 'InquiryDetail', component: InquiryDetail, props: true },
   { path: '/myinquiries', name: 'MyInquiries', component: MyInquiries },
+
+  // subscriptions
+  { path: '/mysubscriptions', name: 'MySubscriptions', component: MySubscriptions },
 
 ];
 
