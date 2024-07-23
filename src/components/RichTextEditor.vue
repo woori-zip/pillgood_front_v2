@@ -148,6 +148,14 @@ export default defineComponent({
       }
     };
 
+    const getTextContent = () => {
+      if (quillEditor.value) {
+        const quill = quillEditor.value.getQuill();
+        return quill.getText().trim();
+      }
+      return '';
+    };
+
     watch(content, (newValue) => {
       emit('update:modelValue', newValue);
     });
@@ -208,6 +216,7 @@ export default defineComponent({
       quillEditor,
       images,
       removeImage,
+      getTextContent
     };
   },
 });

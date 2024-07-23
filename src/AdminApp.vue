@@ -23,6 +23,12 @@
           </v-list-item-icon>
           <v-list-item-title>설문 관리</v-list-item-title>
         </v-list-item>
+        <v-list-item link to="/admin/detailedquestion">
+          <v-list-item-icon>
+            <v-icon>mdi-text-box-edit-outline</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>부족 질문 관리</v-list-item-title>
+        </v-list-item>
         <v-list-item link to="/admin/notices">
           <v-list-item-icon>
             <v-icon>mdi-bulletin-board</v-icon>

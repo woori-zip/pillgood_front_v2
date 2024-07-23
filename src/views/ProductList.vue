@@ -9,15 +9,7 @@
         <button @click="setActiveTab('deficiencies')" :class="{ active: activeTab === 'deficiencies' }">고민별</button>
         <button @click="setActiveTab('targets')" :class="{ active: activeTab === 'targets' }">대상별</button>
       </div>
-      <!-- Sort Dropdown -->
-      <div class="sort-dropdown">
-        <label for="sortSelect">정렬:</label>
-        <select id="sortSelect" v-model="sortType" @change="sortProducts">
-          <option value="all">전체</option>
-          <option value="latest">최신순</option>
-          <option value="topSelling">판매순</option>
-        </select>
-      </div>
+      
       <!-- Nutrient Filter Buttons -->
       <div v-if="activeTab === 'nutrients'" class="btn-container">
         <button v-for="nutrient in nutrients" :key="nutrient.nutrientId" @click="filterByNutrient(nutrient.nutrientId)" class="btn btn-gray">
@@ -36,9 +28,18 @@
           {{ target }}
         </button>
       </div>
+      <!-- Sort Dropdown -->
+      <div style="display: flex;">
+        <label for="sortSelect" style="white-space: nowrap; display: flex; align-items: center;">정렬:</label>
+        <select id="sortSelect" v-model="sortType" @change="sortProducts">
+          <option value="all">전체</option>
+          <option value="latest">최신순</option>
+          <option value="topSelling">판매순</option>
+        </select>
+      </div>
       <!-- Tab Content -->
-      <div class="row">
-        <div class="col-lg-2 col-md-4 col-sm-6 text-center mb-3" v-for="product in filteredProducts" :key="product.productId">
+      <div class="product-grid">
+        <div class="product-grid-item" v-for="product in filteredProducts" :key="product.productId">
           <div class="card">
             <img @click="viewProduct(product.productId)" :src="product.productImage" class="card-img-top" alt="Product Image">
             <div class="card-body">
@@ -256,7 +257,6 @@ export default {
 
 .tabs {
   display: flex;
-  /* justify-content: space-around; */
   margin-bottom: 20px;
   border-bottom: 1px solid #ccc;
 }
@@ -287,4 +287,16 @@ export default {
   margin-right: -20px; /* Offset margin to align with parent container */
 }
 
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(6, 1fr); /* 한 행에 최대 6개 */
+  gap: 20px;
+  padding: 10px;
+}
+
+.product-grid-item {
+  display: flex;
+  justify-content: center;
+}
 </style>

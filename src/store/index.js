@@ -18,6 +18,8 @@ import inquiry from './modules/inquiryStore';
 import coupon from './modules/couponStore';
 import shipping from './modules/shippingStore';
 
+import detailedquestion from './modules/detailedquestion';
+
 
 import notice from './modules/notice';
 
@@ -39,6 +41,7 @@ export default createStore({
     refund,
     billing,
     shipping,
-    adminSurvey
+    adminSurvey,
+    detailedquestion
   }
 });
