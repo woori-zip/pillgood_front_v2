@@ -19,8 +19,9 @@
             <button @click="increaseQuantity">+</button>
           </div>
 
+          <hr style="background: gray; max-width: 300px; margin: auto"><br>
           <!-- 버튼 -->
-          <div class="btn-container" style="align-item: center; justify-content: end;">
+          <div class="btn-container" style="margin: auto;">
             <button @click="addToCart" class="btn btn-gray">장바구니 담기</button>
             <button @click="buyNow" class="btn btn-green">바로 구매</button>
           </div>

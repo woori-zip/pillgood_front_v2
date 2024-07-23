@@ -1,11 +1,12 @@
 <template>
   <div class="chart-container">
+    <h4 class="text-melon">{{ ageGroup }} 세가 자주 겪는 고민 Top 3</h4>
     <canvas ref="chartCanvas"></canvas>
   </div>
 </template>
 
 <script>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useStore } from 'vuex';
 import Chart from 'chart.js/auto';
 
@@ -31,13 +32,14 @@ export default {
       return '60+';
     };
 
+    const ageGroup = computed(() => getAgeGroup(props.userAge));
+
     const createChart = (data) => {
       const ctx = chartCanvas.value.getContext('2d');
-      const ageGroup = getAgeGroup(props.userAge);
-      const filteredData = data.filter(item => item[0] === ageGroup);
+      const filteredData = data.filter(item => item[0] === ageGroup.value);
 
       if (filteredData.length === 0) {
-        console.warn(`No data available for age group: ${ageGroup}`);
+        console.warn(`No data available for age group: ${ageGroup.value}`);
         return;
       }
 
@@ -69,14 +71,43 @@ export default {
         data: {
           labels: deficiencies,
           datasets: [{
-            label: `Age Group: ${ageGroup}`,
+            label: `${ageGroup.value}`,
             data: counts,
-            backgroundColor: deficiencies.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`),
-            borderColor: deficiencies.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`),
-            borderWidth: 1
+            backgroundColor: [
+              'rgba(170, 192, 192, 0.5)',
+              'rgba(255, 159, 64, 0.5)',
+              'rgba(153, 102, 255, 0.5)'
+            ],
+            borderWidth: 1,
+            barThickness: 20 // 막대 두께 조정
           }]
         },
         options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              titleFont: {
+                size: 16
+              },
+              bodyFont: {
+                size: 14
+              },
+              footerFont: {
+                size: 12
+              },
+              cornerRadius: 8
+            },
+            legend: {
+              position: 'top',
+              labels: {
+                font: {
+                  size: 14
+                }
+              }
+            }
+          },
           indexAxis: 'y', // 가로 막대형 차트로 변경
           scales: {
             x: {
@@ -84,15 +115,13 @@ export default {
               ticks: {
                 stepSize: 1
               },
-              title: {
-                display: true,
-                text: '인원 수 (명)'
+              grid: {
+                display: false
               }
             },
             y: {
-              title: {
-                display: true,
-                text: '결핍 유형'
+              grid: {
+                display: false
               }
             }
           }
@@ -120,7 +149,8 @@ export default {
     });
 
     return {
-      chartCanvas
+      chartCanvas,
+      ageGroup
     };
   }
 };
@@ -129,7 +159,7 @@ export default {
 <style scoped>
 .chart-container {
   position: relative;
-  height: 500px; /* 차트 높이 조정 */
+  height: 300px; /* 차트 높이 조정 */
   width: 100%;
 }
 </style>

@@ -23,7 +23,7 @@
           <div v-for="(product, index) in recommendedProducts" :key="index" class="product-grid-item">
             <div class="product-item box-shadow">
               <router-link :to="{ name: 'ProductDetail', params: { id: product.productId } }">
-                <div class="item-image" style="background: pink"><img :src="getImageUrl(product.productImage)" alt="productImg"></div>
+                <div class="item-image"><img :src="getImageUrl(product.productImage)" alt="productImg"></div>
                 <h5>{{ product.productName }}</h5>
               </router-link>
               <button 
@@ -35,12 +35,12 @@
             </div>
           </div>
         </div>
+        <br><hr style="background: gray; width: 600px; margin: auto"><br>
         <!-- 추가된 부분 시작 -->
-        <h4 class="text-melon">나이대별 부족한 영양소 통계</h4>
         <AgeGroupDeficiencyChart :userAge="surveyResult.age" />
         <!-- 추가된 부분 끝 -->
+        <br><hr style="background: gray; width: 600px; margin: auto"><br>
         <!-- AgeGroupTopProducts 추가 -->
-        <h4 class="text-melon">고객 선호 제품</h4>
         <AgeGroupTopProducts />
       </div>
       <div v-else>
@@ -193,13 +193,6 @@ export default {
 
 .product-grid-item {
   display: flex;
-  justify-content: center;
-}
-
-.product-item {
-  width: 100%;
-  padding: 7px;
-  text-align: center;
   justify-content: center;
 }
 
