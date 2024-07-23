@@ -2,24 +2,22 @@
   <div class="main-container">
     <h2 class="text-melon">주문 내역</h2>
     <div class="box-container-no-shade">
-      <div v-if="orders && orders.length > 0">
-        <div v-for="order in orders" :key="order.orderNo" class="box-container">
-          <p style="text-align: left;">
-            <span style="font-weight: bold; font-size: 20px;">{{ order.orderStatus }}</span>
-            {{ order.orderNo }}
-            <span style="color:gray;">{{ formatDate(order.orderDate) }}</span><br>
-          </p>
-          <p style="text-align: left;">
-            <span style="font-size:20px;">총액: {{ formatPrice(order.totalAmount) }} 원</span><br>
-            <router-link :to="{ name: 'OrderDetail', params: { orderNo: order.orderNo }}">주문상세보기</router-link>
-          </p>
-          <div v-if="order.orderStatus !== '구매확정' && order.orderStatus !== '취소완료' && order.orderStatus !== '환불완료'" class="btn-container">
-            <button class="btn btn-green" @click="confirmPurchase(order.orderNo)">구매확정</button>
-            <button class="btn btn-gray" @click="goToReturnPage(order)">환불요청</button>
-          </div>
+      <!-- 주문 리스트 -->
+      <div v-for="order in orders" :key="order.orderNo" class="box-container">
+        <p style="text-align: left;">
+          <span style="font-weight: bold; font-size: 20px;">{{ order.orderStatus }}</span>
+          {{ order.orderNo }}
+          <span style="color:gray;">{{ formatDate(order.orderDate) }}</span><br>
+        </p>
+        <p style="text-align: left;">
+          <span style="font-size:20px;">총액: {{ order.totalAmount }}원</span><br>
+          <router-link :to="{ name: 'OrderDetail', params: { orderNo: order.orderNo }}">주문상세보기</router-link>
+        </p>
+        <div v-if="order.orderStatus !== '구매확정' && order.orderStatus !== '취소완료' && order.orderStatus !== '환불완료'" class="btn-container">
+          <button class="btn btn-green" @click="confirmPurchase(order.orderNo)">구매확정</button>
+          <button class="btn btn-gray" @click="goToReturnPage(order)">환불요청</button>
         </div>
       </div>
-      <div v-else><p>주문 내역이 없습니다.</p></div>
     </div>
   </div>
 </template>
@@ -46,9 +44,6 @@ export default {
       } finally {
         this.loading = false;
       }
-    },
-    formatPrice(value) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     async confirmPurchase(orderNo) {
       try {

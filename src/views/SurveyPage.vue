@@ -43,7 +43,7 @@
           <div class="text-bold" style="display: flex; justify-content: center;">{{ currentQuestionIndex + 1 }}. {{ currentQuestion.questionContent }}</div>
           <div class="answer-container">
           <div class="check-container-vertical">
-            <div v-for="answer in getAnswersForQuestion(currentQuestion.id)" :key="answer.id">
+            <div v-for="answer in getAnswersForQuestion(currentQuestion.id)" :key="answer.id" class="form-check">
               <input
                 :id="'answer-' + answer.id"
                 :value="answer.id"
@@ -61,9 +61,9 @@
         </div>
       </div>
 
-      <div v-else-if="currentStep === 'detailed-questions'">
+      <div v-else-if="currentStep === 'detailed-questions'" class="survey">
         <h2 class="text-melon">🔎</h2>
-        <p class="text-bold" style="display: flex; justify-content: center;">· 해당하는 것을 모두 선택하세요</p>
+        <p class="text-bold">· 해당하는 것을 모두 선택하세요</p>
         <div class="answer-container">
         <div v-for="dq in currentDetailedQuestionsGroup" :key="dq.detailedQuestionId">
           <div class="check-container-vertical">

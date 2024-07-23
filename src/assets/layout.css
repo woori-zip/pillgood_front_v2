@@ -256,7 +256,6 @@ button.icon-link {
   padding: 10px;
   height: 130px; /* footer 높이 설정 */
   position: relative;
-  z-index: 1;
 }
 
 .footer-container {

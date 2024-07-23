@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <div class="breadcrumb">
-      <p><a href="/productlist?tab=all">> 목록으로 돌아가기</a></p>
+      <p>카테고리 > [브랜드명] {{ product.productName }}</p>
     </div>
     <div class="product-main">
       <div class="product-image">
@@ -10,8 +10,9 @@
       <div class="product-info" style="justify-content: space-around;">
         <div class="box-container-no-shade">
           <h1 class="product-title">{{ product.productName }}</h1>
-          <p class="product-price">{{ formatPrice(product.price) }} 원</p>
-          <br>
+          <p class="product-price">{{ product.price }}원</p>
+          <p>{{ product.description }}</p>
+          <p> 예시 설명 텍스트 예시 설명 텍스트 </p>
 
           <div class="quantity-selector">
             <button @click="decreaseQuantity">-</button>
@@ -137,9 +138,6 @@ export default {
         console.error('Error adding to cart:', error);
       }
     },
-    formatPrice(value) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    },
     async buyNow() {
       const orderItem = {
         productId: this.product.productId, // 여기에서 this.product.productId를 사용합니다.
@@ -170,12 +168,6 @@ export default {
 }
 
 .breadcrumb {
-  font-size: 0.9rem;
-  color: #888;
-  margin-bottom: 20px;
-}
-
-.breadcrumb a {
   font-size: 0.9rem;
   color: #888;
   margin-bottom: 20px;
