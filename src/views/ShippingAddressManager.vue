@@ -1,6 +1,7 @@
 <template>
   <div class="main-container">
     <h2 class="text-melon">배송지 관리</h2>
+    <div class="box-container-no-shade">
     <div v-if="addresses && addresses.length > 0" class="address-list">
       <ul>
         <li v-for="address in addresses" :key="address.shippingAddrId" class="address-item">
@@ -9,7 +10,7 @@
             :class="{ 'selected': selectedAddressId === address.shippingAddrId }"
             @click="toggleAddressDetails(address.shippingAddrId)"
           >
-            {{ address.shippingName }}: {{ address.address }} {{ address.detailedAddress }} ({{ address.postalCode }})
+            <strong>[{{ address.shippingName }}]</strong> {{ address.address }} {{ address.detailedAddress }} ({{ address.postalCode }})
           </p>
           <div v-if="selectedAddressId === address.shippingAddrId" class="address-details">
             <table>
@@ -36,7 +37,7 @@
               </tr>
               <tr>
                 <td colspan="2">
-                  <div class="button-group">
+                  <div class="btn-container">
                     <button @click="updateExistingAddress" class="btn btn-green">수정</button>
                     <button @click="deleteAddress(address.shippingAddrId)" class="btn btn-red">삭제</button>
                   </div>
@@ -50,10 +51,11 @@
     <div v-else>
       <p>배송지를 등록해 주세요.</p>
     </div>
+    <div class="btn-container">
     <button @click="showAddressForm = true" class="btn btn-green">추가</button>
-
-    <div v-if="showAddressForm" class="address-form">
-      <h3>새로운 배송지 추가</h3>
+    </div>
+    <div v-if="showAddressForm" class="box-container">
+      <h5 class="text-melon">새로운 배송지 추가</h5>
       <form @submit.prevent="addNewAddress">
         <table>
           <tr>
@@ -83,7 +85,7 @@
           </tr>
           <tr>
             <td colspan="2">
-              <div class="button-group">
+              <div class="btn-container">
                 <button type="submit" class="btn btn-green">저장</button>
                 <button type="button" @click="showAddressForm = false" class="btn btn-gray">취소</button>
               </div>
@@ -96,10 +98,12 @@
       <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" @click="foldDaumPostcode" alt="접기 버튼">
     </div>
   </div>
+  </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex';
+import '../assets/styles.css';
 
 export default {
   name: 'ShippingAddressManager',
@@ -239,6 +243,8 @@ export default {
         elementWrap.style.left = `${rect.left + window.scrollX}px`;
       }
 
+      elementWrap.style.zIndex = '1000';
+
       elementWrap.style.display = 'block';
     },
     foldDaumPostcode() {
@@ -294,28 +300,7 @@ export default {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-.button-group {
-  display: flex;
-  gap: 10px;
-}
-.btn {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.btn-green {
-  background-color: #4caf50;
-  color: white;
-}
-.btn-red {
-  background-color: #f44336;
-  color: white;
-}
-.btn-gray {
-  background-color: #9e9e9e;
-  color: white;
-}
+
 .address-form {
   margin-top: 20px;
   padding: 20px;
@@ -323,12 +308,24 @@ export default {
   border-radius: 5px;
   background-color: #fafafa;
 }
-.postal-code-input {
+.box-container-no-shade .postal-code-input {
   display: flex;
+  justify-content: flex-start; 
   align-items: center;
 }
-.postal-code-input input {
+
+.box-container-no-shade .postal-code-input input {
+  display: flex;
+  justify-content: flex-start; 
+  align-items: center;
+  width: 50% !important; 
   margin-right: 10px;
+  box-sizing: border-box; 
+}
+
+.box-container-no-shade .postal-code-input button {
+  flex-shrink: 0; 
+  white-space: nowrap; 
 }
 .postal-code-field {
   margin-right: 10px;

@@ -14,7 +14,7 @@
               
               <div @click="goHome" style="display: flex; align-items: center; cursor: pointer;">
                 <img src="../assets/pillgood_logo.png">&nbsp;
-                <span style="white-space: nowrap;">: 필굿</span>
+                <span style="white-space: nowrap;" class="text-melon">: 필굿</span>
               </div>
             </div>
             <!-- 검색창 -->

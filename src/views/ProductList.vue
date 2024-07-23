@@ -43,7 +43,7 @@
             <img @click="viewProduct(product.productId)" :src="product.productImage" class="card-img-top" alt="Product Image">
             <div class="card-body">
               <h6 class="card-title">{{ product.productName }}</h6>
-              <p class="card-text">{{ product.price }}원</p>
+              <p class="card-text">{{ formatPrice(product.price) }} 원</p>
             </div>
           </div>
         </div>
@@ -125,6 +125,9 @@ export default {
       } catch (error) {
         console.error('Error fetching products:', error);
       }
+    },
+    formatPrice(value) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     async fetchNutrients() {
       try {
