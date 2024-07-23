@@ -8,7 +8,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css'; // CSS 경로
 import { setupCalendar, Calendar, DatePicker } from 'v-calendar';
 import 'v-calendar/dist/style.css'; // CSS
 import axios from 'axios';
-axios.defaults.baseURL = process.env.VUE_APP_API_URL || 'http://localhost:9095'; // 기본 URL 설정
+axios.defaults.baseURL = process.env.VUE_APP_API_URL || 'http://43.202.201.149:9095'; // 기본 URL 설정
 
 import 'vuetify/styles';
 import '@mdi/font/css/materialdesignicons.css';
