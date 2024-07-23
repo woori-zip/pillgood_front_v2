@@ -4,7 +4,7 @@ const state = {
   orderDetails: [],
   currentOrder: null, // 현재 주문 정보 추가
   userProfile: null,
-  coupons: []
+  coupons: [],
 };
 
 const mutations = {

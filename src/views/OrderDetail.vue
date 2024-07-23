@@ -31,9 +31,9 @@
                   <img :src="getProductImage(detail.productId)" alt="Product Image" class="product-image">
                   <strong>{{ getProductName(detail.productId) }}</strong>
                 </td>
-                <td>{{ getProductPrice(detail.productId) }} 원</td>
+                <td>{{ formatPrice(getProductPrice(detail.productId)) }} 원</td>
                 <td>{{ detail.quantity }}</td>
-                <td>{{ calculateTotalAmount(detail) }} 원</td>
+                <td>{{ formatPrice(calculateTotalAmount(detail)) }} 원</td>
                   <div class="btn-container">
                     <td v-if="order.orderStatus === '구매확정'">
                   <button v-if="hasReview(detail.orderDetailNo)" class="btn btn-green" @click="goToReviewDetail(order, detail)">내 리뷰 보기</button>
@@ -48,10 +48,19 @@
               </tr>
             </tbody>
           </table>
+          <hr class="line">
+          <table class="line-table">
+
+            <tr>
+              <td>총 결제 금액</td>
+              <td><strong>{{ formatPrice(order.totalAmount) }} 원</strong></td>
+            </tr>
+          </table>
+          <hr class="line">
         </div>
-        <!-- <hr class="line">
+        
         <h4 class="text-melon" style="text-align: left; margin-left: 10px;">배송지 정보</h4>
-        <div>
+        <div v-if="order">
           <table class="line-table">
             <colgroup>
               <col style="width:30%">
@@ -59,32 +68,18 @@
             </colgroup>
             <tr>
               <td>수령인</td>
-              <td>(수령인 이름)</td>
+              <td>{{ order.recipient }}</td>
             </tr>
             <tr>
               <td>연락처</td>
-              <td>연락처</td>
+              <td>{{ order.phoneNumber }}</td>
             </tr>
             <tr>
               <td>주소</td>
-              <td>주소</td>
+              <td>{{ orderAddress(order) }}</td>
             </tr>
           </table>
-        </div> -->
-        <!-- <hr class="line">
-        <h4 class="text-melon" style="text-align: left; margin-left: 10px;">결제 정보</h4>
-        <div>
-          <table class="line-table">
-            <tr>
-              <td>주문 금액</td>
-              <td>쿠폰 할인 금액</td>
-              <td>포인트 결제</td>
-            </tr>
-            <tr>
-              <td colspan="3">총 결제 금액</td>
-            </tr>
-          </table>
-        </div> -->
+        </div>
         <hr class="line">
         <div class="btn-container">
           <button class="btn btn-green" @click="$router.go(-1)">목록으로</button>
@@ -144,6 +139,12 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    formatPrice(value) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    orderAddress(order) {
+      return `(${order.postalCode}) ${order.address}, ${order.detailedAddress}`;
     },
     async fetchReviews() {
       try {
@@ -227,20 +228,8 @@ export default {
         });
       }
     },
-    goToReturnPage(order, detail, requestType) {
-      this.$router.push({
-        name: 'RefundCreate',
-        query: {
-          orderNo: order.orderNo,
-          orderDate: order.orderDate,
-          productId: detail ? detail.productId : null,
-          productName: detail ? this.getProductName(detail.productId) : null,
-          productImage: detail ? this.getProductImage(detail.productId) : null,
-          orderDetailNo: detail ? detail.orderDetailNo : null,
-          requestType: requestType,
-          refundAmount: detail ? detail.amount : null
-        }
-      });
+    goToReturnPage(order) {
+      this.$router.push({ name: 'CancelPayment', params: { orderNo: order.orderNo } });
     },
     async addToCart(productId, quantity) {
       try {

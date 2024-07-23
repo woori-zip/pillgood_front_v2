@@ -30,7 +30,7 @@
                     <button @click="increaseQuantity(item)">+</button>
                     </div>
                 </td>
-                <td>{{ item.price * item.productQuantity }} 원</td>
+                <td>{{ formatPrice(item.price * item.productQuantity) }} 원</td>
                 <td>
                   <button @click="deleteCartItem(item)" class="btn btn-gray">삭제</button>
                   </td>
@@ -41,7 +41,7 @@
               장바구니에 상품이 없습니다.
           </div>
           <hr class="line">
-          <div class="total-amount" v-if="localCartItems.length > 0">선택한 상품 총 금액: {{ totalAmount }} 원</div>
+          <div class="total-amount" v-if="localCartItems.length > 0">선택한 상품 총 금액: {{ formatPrice(totalAmount) }} 원</div>
           <div class="btn-container" v-if="localCartItems.length > 0">
               <button @click="placeOrder" class="btn btn-green">주문하기</button>
           </div>
@@ -97,6 +97,9 @@ export default {
         console.error(`Error fetching image for product ID ${item.productId}:`, error);
         item.productImage = null; // 기본 이미지로 설정
       }
+    },
+    formatPrice(value) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     extractFirstImage(htmlString) {
       const parser = new DOMParser();

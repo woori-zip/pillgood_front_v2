@@ -5,7 +5,7 @@
       <hr class="line">
       <div>
         <p>주문 번호: {{ orderId }}</p>
-        <h4>결제 금액: {{ amount }} 원</h4>
+        <h4>결제 금액: {{ formatPrice(amount) }} 원</h4>
       </div>
       <hr class="line">
       <div class="btn-container">
@@ -39,6 +39,9 @@ export default {
     }
   },
   methods: {
+    formatPrice(value) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
     async requestPaymentApproval() {
       const paymentApproveRequest = {
         paymentKey: this.paymentKey,
