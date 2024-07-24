@@ -178,6 +178,12 @@ export default {
   margin-bottom: 20px;
 }
 
+.login-form li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .login-form label {
   display: block;
   margin-bottom: 5px;

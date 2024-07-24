@@ -65,8 +65,8 @@ import MyInquiries from '../views/MyInquiries.vue';
 
 // subscriptions
 import MySubscriptions from '../views/MySubscriptions.vue';
-// import CancelSubscriptions from '../views/CancelSubscriptions.vue';
 
+import CancelSubscriptions from '../views/CancelSubscriptions.vue';
 // point
 import MyPoints from '../views/MyPoints.vue';
 
@@ -138,7 +138,8 @@ const routes = [
 
   // subscriptions
   { path: '/mysubscriptions', name: 'MySubscriptions', component: MySubscriptions },
-  // { path: '/cancel-subscription/:memberId', name: 'CancelSubscriptions', component: CancelSubscriptions, props: true },
+
+  { path: '/cancel-subscription/:memberId', name: 'CancelSubscriptions', component: CancelSubscriptions, props: true },
 
   // point
   { path: '/mypoints', name: 'MyPoints', component: MyPoints },

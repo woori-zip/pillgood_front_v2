@@ -23,7 +23,7 @@
           </ul>
         </div>
         <div class="btns">
-          <button class="btn btn-gray" @click="goToReturnPage(subscription)">구독 취소</button>
+          <button class="btn btn-gray" @click="goToCancelSubscription(subscription)">구독 취소</button>
         </div>
       </div>
     </div>
@@ -51,6 +51,7 @@ export default {
   methods: {
     ...mapActions('subscriptions', ['fetchSubscriptions']),
     ...mapActions('product', ['fetchProductNameById']),
+    ...mapActions('billing', ['fetchBillingKey', 'deleteBillingKey']),
     async setProductNames(subscriptions) {
       for (const subscription of subscriptions) {
         if (subscription.orderDetails) {
@@ -89,8 +90,28 @@ export default {
     getStatusColor(status) {
       return status === 'T' ? 'green' : 'red';
     },
-    goToReturnPage(subscription) {
-      this.$router.push({ name: 'CancelPayment', params: { orderNo: subscription.paymentNo } });
+    async goToCancelSubscription(subscription) {
+      if (!subscription.orderDetails || subscription.orderDetails.length === 0) {
+        console.error('No order details found for this subscription.');
+        return;
+      }
+
+      // const orderNo = subscription.orderDetails[0].orderNo; // 첫 번째 orderDetail의 orderNo 사용
+      try {
+        const billingKey = await this.fetchBillingKey(subscription.memberUniqueId);
+        console.log('Billing Key:', billingKey); // 로그 추가
+
+        if (billingKey) {
+          this.$router.push({
+            name: 'CancelSubscriptions',
+            query: { billingKey }
+          });
+        } else {
+          console.error('Failed to fetch billing key.');
+        }
+      } catch (error) {
+        console.error('Failed to fetch billing key:', error);
+      }
     },
     toggleSubscriptionDetails(subscriptionId) {
       if (this.selectedSubscriptionId === subscriptionId) {
@@ -112,6 +133,7 @@ export default {
   async mounted() {
     const memberId = this.$store.state.member.memberId;
     await this.fetchSubscriptions(memberId);
+    console.log('Subscriptions:', this.subscriptions); // 로그 추가
     await this.setProductNames(this.subscriptions);
   },
 };

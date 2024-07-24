@@ -1,24 +1,28 @@
 <template>
-    <div class="main-container box-shadow">
-      <h4 class="payment-title text-melon">결제 승인</h4>
-      <div v-if="currentOrder">
-        <div class="order-summary">
-          <p>주문번호: {{ currentOrder.orderNo }}</p>
-          <p>수령인: {{ currentOrder.recipient }}</p>
-          <p>총 금액: {{ totalAmount }} 원</p>
-          <!-- 기타 필요한 주문 정보를 추가하세요 -->
+    <div class="main-container"> 
+      <h3 class="text-melon">결제 승인</h3>
+      <div class="box-container">
+        <div v-if="currentOrder">
+          <div class="order-summary">
+            <p>주문 번호: <strong>{{ currentOrder.orderNo }}</strong></p>
+            <p>수령인: <strong>{{ currentOrder.recipient }}</strong></p>
+            <p>총 금액: <strong>{{ formatPrice(totalAmount) }} 원</strong></p>
+            <!-- 기타 필요한 주문 정보를 추가하세요 -->
+          </div>
+          <div class="btn-container">
+          <button @click="approvePayment" class="btn btn-green">결제 승인</button></div>
         </div>
-        <button @click="approvePayment" class="btn btn-green">결제 승인</button>
-      </div>
-      <div v-else>
-        <p>로딩 중...</p>
-      </div>
+        <div v-else>
+          <p>로딩 중...</p>
+        </div>
+      </div>  
     </div>
   </template>
   
   <script>
   import { mapState, mapGetters, mapActions } from 'vuex';
   import axios from 'axios';
+  import '../assets/styles.css';
   
   export default {
     name: 'ApprovePayment',
@@ -64,57 +68,15 @@
         } catch (error) {
           console.error('결제 승인 요청 중 오류 발생:', error);
         }
-      }
+      },
+      formatPrice(value) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
     }
   };
   </script>
   
   <style scoped>
-  .main-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
   
-  .payment-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
-  
-  .order-summary {
-    margin-bottom: 20px;
-    font-size: 1rem;
-  }
-  
-  .order-summary p {
-    margin: 10px 0;
-  }
-  
-  .btn {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background-color: #5cb85c;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    text-align: center;
-  }
-  
-  .btn:hover {
-    background-color: #4cae4c;
-  }
-  
-  .loading {
-    font-size: 1.2rem;
-    text-align: center;
-    margin-top: 20px;
-  }
   </style>
   
