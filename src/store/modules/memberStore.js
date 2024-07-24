@@ -3,7 +3,7 @@ import axios from '../../axios'; // 설정된 axios 인스턴스 불러오기
 const state = {
   isLoggedIn: localStorage.getItem('loggedIn') === 'true', // 로컬스토리지 
   memberId: localStorage.getItem('memberId'), // 로컬 스토리지에서 memberId 저장--review에서 쓰임
-  member: null, // 사용자 정보를 저장
+  member: JSON.parse(localStorage.getItem('member')), // 로컬 스토리지에서 사용자 정보 저장
   isAdmin: localStorage.getItem('isAdmin') === 'true', // 관리자 여부를 저장
   members: [], // 회원 목록을 저장
   editingMember: null, // 현재 수정 중인 회원 정보를 저장
@@ -19,6 +19,7 @@ const mutations = {
     localStorage.setItem('loggedIn', payload.isLoggedIn);
     localStorage.setItem('memberId', payload.memberId); // 로컬 스토리지에 memberId를 저장--review에서 쓰임
     localStorage.setItem('isAdmin', payload.isAdmin.toString()); // isAdmin을 문자열로 변환하여 저장
+    localStorage.setItem('member', JSON.stringify(payload.member)); // 로컬 스토리지에 사용자 정보 저장
   },
   setRememberedEmail(state, email) {
     state.rememberedEmail = email;
@@ -45,6 +46,12 @@ const mutations = {
   },
   setUser(state, user) {
     state.member = user;
+  },
+  updateSubscriptionStatus(state, status) {
+    if (state.member) {
+      state.member.subscriptionStatus = status;
+      localStorage.setItem('member', JSON.stringify(state.member)); // 로컬 스토리지에 사용자 정보 저장
+    }
   }
 };
 
@@ -192,6 +199,14 @@ const actions = {
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
+    }
+  },
+  async updateSubscriptionStatus({ commit }, { memberId, status }) {
+    try {
+      await axios.put(`/api/members/updateSubscriptionStatus/${memberId}`, { status });
+      commit('updateSubscriptionStatus', status);
+    } catch (error) {
+      console.error('Failed to update subscription status:', error);
     }
   }
 };

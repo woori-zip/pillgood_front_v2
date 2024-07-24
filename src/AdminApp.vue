@@ -98,3 +98,14 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.v-list-item:hover {
+  background-color: #819682 !important; /* 원하는 배경색으로 변경하세요 */
+}
+
+.v-list-item:hover .v-list-item-title,
+.v-list-item:hover .v-icon {
+  color: white !important; /* 글자색을 하얀색으로 변경 */
+}
+</style>

@@ -1,6 +1,9 @@
 <template>
   <div class="main-container">
         <h2 class="text-melon">보유 쿠폰</h2>
+    <div class="breadcrumb">
+      <p><a href="/mypage">> 마이페이지로 돌아가기</a></p>
+    </div>
     <div class="box-container-no-shade">
     <div v-if="coupons && coupons.length > 0">
       <table class="line-table">
@@ -81,5 +84,17 @@ export default {
 
 .box-shadow {
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.breadcrumb a {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 20px;
 }
 </style>
