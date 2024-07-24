@@ -104,7 +104,7 @@ export default {
           datasets: [{
             label: url.split('/').pop().replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
             data: data,
-            backgroundColor: 'rgb(190, 198, 160, 0.5)',
+            backgroundColor: 'rgba(190, 198, 160, 0.5)',
             borderColor: '#708871',  // 새로운 선 색상
             borderWidth: 2,  // 새로운 선 굵기
             fill: true
