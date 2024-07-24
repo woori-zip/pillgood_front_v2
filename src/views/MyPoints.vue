@@ -1,6 +1,9 @@
 <template>
   <div class="main-container">
     <h2 class="text-melon">나의 포인트</h2>
+    <div class="breadcrumb">
+      <p><a href="/mypage">> 마이페이지로 돌아가기</a></p>
+    </div>
     <div class="box-container-no-shade">
       <table class="line-table">
         <colgroup>
@@ -9,6 +12,11 @@
           <col style="width: 40%">
         </colgroup>
         <thead>
+          <tr>
+            <td colspan="3" style="font-weight: bold; font-size: 20px; text-align: right;">
+              포인트 총액 : {{ formatPoints(totalPoints) }}원
+            </td>
+          </tr>
           <tr>
             <th>금액</th>
             <th>변동일시</th>
@@ -33,16 +41,15 @@
 </template>
 
 <script>
-import axios from '../axios';
 import { mapState, mapActions } from 'vuex';
 import '../assets/styles.css';
 
 export default {
   computed: {
-    ...mapState('point', ['pointsList', 'loading', 'error']),
+    ...mapState('point', ['pointsList', 'totalPoints', 'loading', 'error']),
   },
   methods: {
-    ...mapActions('point', ['fetchPointsList']),
+    ...mapActions('point', ['fetchPointsList', 'fetchTotalPoints']),
     formatDate(dateString) {
       if (!dateString) return 'Invalid Date';
       const date = new Date(dateString);
@@ -55,7 +62,6 @@ export default {
       return points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     formatStatus(statusCode, referenceId) {
-      // console.log('statusCode:', statusCode, 'referenceId:', referenceId); // 로그 추가
       if (statusCode === 'PU') {
         if (referenceId && referenceId.startsWith('REVOKE')) {
           return '결제 취소로 인한 반환';
@@ -68,22 +74,27 @@ export default {
       }
       return '알 수 없음';
     },
-    async fetchTotalPoints() {
-      try {
-        const response = await axios.get('/api/points/totalPoints', { withCredentials: true });
-        this.totalPoints = this.formatPoints(response.data);
-      } catch (error) {
-        console.error('Error fetching total points:', error);
-      }
-    },
   },
   mounted() {
-    this.fetchPointsList({ withCredentials: true })
+    this.fetchPointsList();
+    this.fetchTotalPoints();
   },
 };
 </script>
 
 <style scoped>
+.breadcrumb {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.breadcrumb a {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 20px;
+}
+
 .negative-amount {
   color: red;
 }

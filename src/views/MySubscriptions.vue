@@ -1,6 +1,9 @@
 <template>
   <div class="main-container">
     <h2 class="text-melon">나의 구독</h2>
+    <div class="breadcrumb">
+      <p><a href="/mypage">> 마이페이지로 돌아가기</a></p>
+    </div>
     <div class="box-container-no-shade" v-if="subscriptions.length > 0">
       <div v-for="subscription in subscriptions" :key="subscription.subscriptionId" class="box-container" style="text-align: left;">
         <h4 class="text-melon" style="text-align: left;">
@@ -147,5 +150,17 @@ export default {
   width: 60px;
   white-space: nowrap;
   font-size: small;
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.breadcrumb a {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 20px;
 }
 </style>

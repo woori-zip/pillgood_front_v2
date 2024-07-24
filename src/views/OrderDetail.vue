@@ -40,7 +40,7 @@
                   <button v-else class="btn btn-green" @click="goToReviewPage(order, detail)">리뷰쓰기</button>
                   <button class="btn btn-gray" @click="addToCart(detail.productId, 1)">재구매</button>
               </td>
-              <td v-else>
+              <td v-if="order.orderStatus === '결제완료'">
                 <button class="btn btn-green" @click="confirmPurchase(order.orderNo)">구매확정</button>
                 <button class="btn btn-gray" @click="goToReturnPage(order)">환불요청</button>
               </td>
@@ -82,7 +82,7 @@
         </div>
         <hr class="line">
         <div class="btn-container">
-          <button class="btn btn-green" @click="$router.go(-1)">목록으로</button>
+          <button class="btn btn-green" @click="$router.push('/order-history')">목록으로</button>
         </div>
       </div>
     </div>

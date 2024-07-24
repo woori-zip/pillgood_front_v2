@@ -1,6 +1,9 @@
 <template>
   <div class="main-container">
     <h2 class="text-melon">배송지 관리</h2>
+    <div class="breadcrumb">
+      <p><a href="/mypage">> 마이페이지로 돌아가기</a></p>
+    </div>
     <div class="box-container-no-shade">
     <div v-if="addresses && addresses.length > 0" class="address-list">
       <ul>
@@ -334,5 +337,17 @@ export default {
   color: red;
   font-size: 12px;
   margin-top: 5px;
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.breadcrumb a {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 20px;
 }
 </style>
