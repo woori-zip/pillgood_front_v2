@@ -1,6 +1,9 @@
 <template>
   <div class="main-container">
     <h2 class="text-melon">리뷰 리스트</h2>
+    <div class="breadcrumb">
+      <p><a href="/mypage">> 마이페이지로 돌아가기</a></p>
+    </div>
     <table class="line-table">
       <thead>
         <tr>
@@ -188,13 +191,25 @@ export default {
 </script>
 
 <style scoped>
- .line-table {
+.line-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 30px;
-  }
+}
 
-  .line-table td, tr, th {
-    border: none;
-  }
+.line-table td, tr, th {
+  border: none;
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.breadcrumb a {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 20px;
+}
 </style>

@@ -22,6 +22,8 @@ import detailedquestion from './modules/detailedquestion';
 
 import subscriptions from './modules/subscriptions'
 
+import point from './modules/pointStore';
+
 import notice from './modules/notice';
 
 export default createStore({
@@ -44,6 +46,7 @@ export default createStore({
     shipping,
     adminSurvey,
     detailedquestion,
+    point,
     subscriptions
   }
 });
