@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer app v-model="drawer" :permanent="isPermanent" class="grey lighten-4">
+    <v-navigation-drawer app v-model="drawer" :permanent="isPermanent" class="grey lighten-4" color="#b4d9a9">
       <v-list dense>
         <v-list-item link to="/admin">
           <v-icon>mdi-home-outline</v-icon>
@@ -55,7 +55,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar app>
+    <v-app-bar app color="#b4d9a9">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>관리자 대시보드</v-toolbar-title>
       <button @click="goToUserPage">User Page</button>

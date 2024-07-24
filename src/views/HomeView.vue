@@ -100,7 +100,7 @@ export default {
     return {
       slides: [
         {
-          image: require('@/assets/banner2.gif'),
+          image: require('@/assets/banner2.jpg'),
           headline: '지금 나에게 필요한',
           content: '모든 상품 보러 가기',
           buttonText: '건강 분석 바로 가기',
@@ -108,11 +108,11 @@ export default {
           captionClass: 'text-start'
         },
         {
-          image: require('@/assets/banner1.gif'),
+          image: require('@/assets/banner1.png'),
           headline: '멀리 갈 필요 없이'
         },
         {
-          image: require('@/assets/banner3.gif'),
+          image: require('@/assets/banner3.jpg'),
           headline: '고민할 필요 없이'
         }
       ]
