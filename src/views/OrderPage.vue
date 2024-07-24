@@ -44,7 +44,7 @@
       </div>
       <div class="box-container-no-shade btn-container">
         <div class="point-wrapper">
-          <input type="number" id="usePoints" v-model.number="usePoints" :readonly="pointsApplied" /> P&nbsp;/&nbsp;<span style="color: red">{{ totalPoints }}</span>&nbsp;P&nbsp;
+          <input type="number" id="usePoints" v-model.number="usePoints" :readonly="pointsApplied" /> P&nbsp;/&nbsp;<span style="color: red">{{ formatPrice(totalPoints) }}</span>&nbsp;P&nbsp;
           <button @click="applyPoints" :disabled="pointsApplied || usePoints < 1000" class="btn btn-green" style="height: 30px">적용하기</button>
         </div>
         <span class="text-info">포인트는 최소 1,000 포인트 보유 시, 1,000 포인트 이상 사용 가능합니다.</span>
@@ -353,11 +353,7 @@ export default {
         }
       } catch (error) {
         console.error('결제 준비 중 오류:', error);
-        if (error.response && error.response.data.message) {
-          alert(`결제 준비 중 오류: ${error.response.data.message}`);
-        } else {
-          alert('결제 준비 중 오류가 발생했습니다. 다시 시도하세요.');
-        }
+        alert('결제 준비 중 오류가 발생했습니다. 다시 시도하세요.');
       }
     },
     initializeTossPayments() {
@@ -446,24 +442,17 @@ export default {
     },
     async cancelOrder(orderNo) {
       try {
-        const response = await axios.delete(`/api/orders/cancel/${orderNo}`, { withCredentials: true });
-        if (response.status === 200) {
-          alert('주문이 취소되었습니다.');
-        } else {
-          alert('주문 취소 중 오류가 발생했습니다. 다시 시도하세요.');
-        }
+        await axios.delete(`/api/orders/cancel/${orderNo}`, { withCredentials: true });
+        alert('주문이 취소되었습니다.');
       } catch (error) {
         console.error('주문 취소 중 오류 발생:', error);
-        if (error.response && error.response.data.message) {
-          alert(`주문 취소 중 오류: ${error.response.data.message}`);
-        } else {
-          alert('주문 취소 중 오류가 발생했습니다. 다시 시도하세요.');
-        }
+        alert('주문 취소 중 오류가 발생했습니다. 다시 시도하세요.');
       }
     },
     openDaumPostcode() {
       const elementWrap = this.$refs.wrap;
       const currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+
       new window.daum.Postcode({
         oncomplete: (data) => {
           let addr = '';
@@ -478,17 +467,17 @@ export default {
           document.body.scrollTop = currentScroll;
           this.validateAddress(); // 주소 검색 후 유효성 검사
         },
-        onresize: (size) => {
-          elementWrap.style.height = size.height + 'px';
-        },
         width: '100%',
         height: '100%'
       }).embed(elementWrap);
+
       elementWrap.style.display = 'block';
+      elementWrap.style.height = '400px'; // 고정된 height 설정
     },
     foldDaumPostcode() {
       const elementWrap = this.$refs.wrap;
       elementWrap.style.display = 'none';
+
     },
     fillAddressFields() {
       if (this.selectedAddress) {
@@ -689,18 +678,18 @@ p {
 }
 
 .radio-container label {
-  margin-right: 20px; /* 라벨 사이의 간격 조절 */
+  margin-right: 20px; 
 }
 
 .radio-container input[type='radio'] {
   width: 15px;
   height: 15px;
-  margin-right: 5px; /* 라디오 버튼과 라벨 사이의 간격 조절 */
+  margin-right: 5px;
 }
 
 select {
-  width: 100%; /* select 요소의 너비를 부모 요소에 맞게 설정 */
-  box-sizing: border-box; /* 패딩과 테두리를 포함한 너비 계산 */
+  width: 100%; 
+  box-sizing: border-box; 
   margin-left: 0;
 }
 
@@ -726,5 +715,11 @@ select {
 .modal .btn-container {
   display: flex;
   justify-content: space-between;
+}
+
+#wrap {
+  width: 100%;
+  height: 400px;
+  overflow: auto;
 }
 </style>

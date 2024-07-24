@@ -52,7 +52,6 @@ import CancelSuccess from '../views/CancelSuccess.vue';
 // coupon
 import MyCoupon from '../views/MyCoupon.vue';
 
-
 // review
 import ReviewCreate from '../views/ReviewCreate.vue';
 import ReviewList from '../views/ReviewList.vue';
@@ -66,6 +65,11 @@ import MyInquiries from '../views/MyInquiries.vue';
 
 // subscriptions
 import MySubscriptions from '../views/MySubscriptions.vue';
+import CancelSubscriptions from '../views/CancelSubscriptions.vue';
+
+// point
+import MyPoints from '../views/MyPoints.vue';
+
 
 import store from '../store';
 
@@ -134,6 +138,10 @@ const routes = [
 
   // subscriptions
   { path: '/mysubscriptions', name: 'MySubscriptions', component: MySubscriptions },
+  { path: '/cancel-subscription/:memberId', name: 'CancelSubscriptions', component: CancelSubscriptions, props: true },
+
+  // point
+  { path: '/mypoints', name: 'MyPoints', component: MyPoints },
 
 ];
 

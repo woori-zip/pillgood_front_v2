@@ -12,6 +12,7 @@
               ( BMI: {{ calculateBMI(surveyResult.weight, surveyResult.height) }} )</td>
           </tr>
         </table>
+        <BmiChart :bmi="calculateBMI(surveyResult.weight, surveyResult.height)"/>
         <div class="def-container">
           <div v-for="(deficiency, index) in uniqueDeficiencies" :key="index" class="def-id">
             <h4>#{{ getDeficiencyName(deficiency) }}</h4>
@@ -54,14 +55,16 @@
 import { computed, onMounted, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import AgeGroupDeficiencyChart from '@/components/AgeGroupDeficiencyChart'; // 추가된 부분
-import AgeGroupTopProducts from '@/components/AgeGroupTopProducts'; // 추가된 부분
+import AgeGroupDeficiencyChart from '@/components/AgeGroupDeficiencyChart';
+import AgeGroupTopProducts from '@/components/AgeGroupTopProducts';
+import BmiChart from '@/components/BmiChart.vue'; 
 
 export default {
   name: 'SurveyResultView',
   components: {
-    AgeGroupDeficiencyChart, // 추가된 부분
-    AgeGroupTopProducts // 추가된 부분
+    AgeGroupDeficiencyChart,
+    AgeGroupTopProducts,
+    BmiChart
   },
   setup() {
     const store = useStore();

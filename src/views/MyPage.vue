@@ -3,13 +3,20 @@
     <h2 class="text-melon">마이 페이지</h2>
     <!-- mypage nav bar -->
     <div class="btn-container">
-      <button @click="checkSurveyResult" class="btn-link">나의 건강 분석</button>
-      <router-link to="/order-history" class="btn-link">주문 | 배송</router-link>
-      <router-link to="/mysubscriptions" class="btn-link">나의 구독</router-link>
-      <router-link to="/myaddress" class="btn-link">배송지 관리</router-link>
-      <router-link to="/mycoupon" class="btn-link">보유 쿠폰</router-link>
-      <router-link to="/reviewlist" class="btn-link">후기</router-link>
-      <router-link to="/myinquiries" class="btn-link">1:1 문의</router-link>
+      <table class="table-borderless">
+        <tr>
+        <td><button @click="checkSurveyResult" class="btn-link">나의 건강 분석</button></td>
+        <td><router-link to="/mysubscriptions" class="btn-link">나의 구독</router-link></td>
+        <td><router-link to="/mypoints" class="btn-link">나의 포인트</router-link></td>
+        <td><router-link to="/mycoupon" class="btn-link">보유 쿠폰</router-link></td>
+        </tr>
+        <tr>
+        <td><router-link to="/order-history" class="btn-link">주문 | 배송</router-link></td>
+        <td><router-link to="/reviewlist" class="btn-link">나의 후기</router-link></td>
+        <td><router-link to="/myinquiries" class="btn-link">1:1 문의</router-link></td>
+        <td><router-link to="/myaddress" class="btn-link">배송지 관리</router-link></td>
+        </tr>
+      </table>
     </div>
     <div class="box-container-no-shade">
       <div>
@@ -49,6 +56,10 @@
             <tr>
               <td><label for="registrationDate">가입 일자 </label></td>
               <td><input type="text" :value="formatDate(user.registrationDate)" readonly/></td>
+            </tr>
+            <tr>
+              <td>보유 포인트 </td>
+              <td><input type="text" readonly :value="totalPoints"></td>
             </tr>
           </table>
           <div class="btn-container">
@@ -117,7 +128,8 @@ export default {
       isEditing: false,
       password: '',
       showPasswordModal: false,
-      errors: {}
+      errors: {},
+      totalPoints: 0
     };
   },
   computed: {
@@ -127,13 +139,28 @@ export default {
     },
     subscriptionStatusText() {
       return this.user.subscriptionStatus ? '구독 중' : '해당 사항 없음';
-    }
+    },
+    memberId() {
+    return this.user.memberId;
+  }
   },
   created() {
     this.fetchUserProfile();
+    this.fetchTotalPoints();
   },
   methods: {
     ...mapActions('member', ['fetchUserProfile']),
+    formatPoints(points) {
+    return points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    async fetchTotalPoints() {
+      try {
+        const response = await axios.get('/api/points/totalPoints', { withCredentials: true });
+        this.totalPoints = this.formatPoints(response.data);
+      } catch (error) {
+        console.error('Error fetching total points:', error);
+      }
+    },
     toggleEdit() {
       this.isEditing = !this.isEditing;
     },

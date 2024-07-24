@@ -50,14 +50,14 @@
               </div>
             </div>
           </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#topSellingCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <button id="carousel-control-prev2" class="carousel-control-prev" type="button" data-bs-target="#topSellingCarousel" data-bs-slide="prev">
+            <span id="carousel-control-prev-icon" class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
           </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#topSellingCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <button id="carousel-control-next2" class="carousel-control-next" type="button" data-bs-target="#topSellingCarousel" data-bs-slide="next">
+            <span id="carousel-control-next-icon" class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
-          </button>
+          </button>          
         </div>
         <hr style="color: #94B58B; margin-bottom: 50px;">
         <h4 style="margin-bottom: 30px;">🔥New!</h4>
@@ -77,11 +77,11 @@
               </div>
             </div>
           </div>
-          <button id="carousel-control-prev" class="carousel-control-prev" type="button" data-bs-target="#latestCarousel" data-bs-slide="prev">
+          <button id="carousel-control-prev2" class="carousel-control-prev" type="button" data-bs-target="#latestCarousel" data-bs-slide="prev">
             <span id="carousel-control-prev-icon" class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
           </button>
-          <button id="carousel-control-next" class="carousel-control-next" type="button" data-bs-target="#latestCarousel" data-bs-slide="next">
+          <button id="carousel-control-next2" class="carousel-control-next" type="button" data-bs-target="#latestCarousel" data-bs-slide="next">
             <span id="carousel-control-next-icon" class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
           </button>
@@ -100,7 +100,7 @@ export default {
     return {
       slides: [
         {
-          image: require('@/assets/banner2.jpg'),
+          image: 'https://i.imgur.com/RgYDqGf.gif',
           headline: '지금 나에게 필요한',
           content: '모든 상품 보러 가기',
           buttonText: '건강 분석 바로 가기',
@@ -108,11 +108,11 @@ export default {
           captionClass: 'text-start'
         },
         {
-          image: require('@/assets/banner1.png'),
+          image: 'https://i.imgur.com/DSNhSvE.gif',
           headline: '멀리 갈 필요 없이'
         },
         {
-          image: require('@/assets/banner3.jpg'),
+          image: 'https://imgur.com/k1xAPI2.gif',
           headline: '고민할 필요 없이'
         }
       ]
@@ -224,23 +224,27 @@ export default {
 }
 
 /* 기존 스타일 정의 부분 */
-#carousel-control-prev,
-#carousel-control-next {
+#carousel-control-prev2,
+#carousel-control-next2 {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 1; /* 다른 요소 위에 표시되도록 z-index 설정 */
+  z-index: 1;
   border: none;
+  width: 100px;
   padding: 10px;
-  border-radius: 50%; /* 둥근 버튼 */
+  border-radius: 20%;
+  background: #babcbd;
+  opacity: 10%;
+  box-shadow: 7px 7px 52px -9px rgba(198, 198, 198, 1);
 }
 
-#carousel-control-prev {
-  left: -150px; /* 왼쪽 위치 조정 */
+#carousel-control-prev2 {
+  left: -110px;
 }
 
-#carousel-control-next {
-  right: -150px; /* 오른쪽 위치 조정 */
+#carousel-control-next2 {
+  right: -110px; 
 }
 
 </style>
