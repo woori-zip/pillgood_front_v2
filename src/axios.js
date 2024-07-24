@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'http://localhost:9095', // 백엔드 서버 주소
+  baseURL: 'http://43.202.201.149:9095', // 백엔드 서버 주소
   headers: {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',

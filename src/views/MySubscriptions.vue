@@ -23,7 +23,7 @@
           </ul>
         </div>
         <div class="btns">
-          <button class="btn btn-gray" @click="goToCancelSubscription(subscription)">구독 취소</button>
+          <button class="btn btn-gray" @click="goToCancelSubscription()">구독 취소</button>
         </div>
       </div>
     </div>
@@ -90,28 +90,8 @@ export default {
     getStatusColor(status) {
       return status === 'T' ? 'green' : 'red';
     },
-    async goToCancelSubscription(subscription) {
-      if (!subscription.orderDetails || subscription.orderDetails.length === 0) {
-        console.error('No order details found for this subscription.');
-        return;
-      }
-
-      // const orderNo = subscription.orderDetails[0].orderNo; // 첫 번째 orderDetail의 orderNo 사용
-      try {
-        const billingKey = await this.fetchBillingKey(subscription.memberUniqueId);
-        console.log('Billing Key:', billingKey); // 로그 추가
-
-        if (billingKey) {
-          this.$router.push({
-            name: 'CancelSubscriptions',
-            query: { billingKey }
-          });
-        } else {
-          console.error('Failed to fetch billing key.');
-        }
-      } catch (error) {
-        console.error('Failed to fetch billing key:', error);
-      }
+    async goToCancelSubscription() {
+      alert("구독 취소 시 다음 달부터 배송이 취소됩니다.")
     },
     toggleSubscriptionDetails(subscriptionId) {
       if (this.selectedSubscriptionId === subscriptionId) {

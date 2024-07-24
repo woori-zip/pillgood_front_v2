@@ -9,7 +9,7 @@ import { setupCalendar, Calendar, DatePicker } from 'v-calendar';
 import 'v-calendar/dist/style.css'; // CSS
 import BackToTop from './components/BackToTop.vue';
 import axios from 'axios';
-axios.defaults.baseURL = process.env.VUE_APP_API_URL || 'http://localhost:9095'; // 기본 URL 설정
+axios.defaults.baseURL = process.env.VUE_APP_API_URL || 'http://43.202.201.149:9095'; // 기본 URL 설정
 
 // Kakao SDK 로드
 const kakaoScript = document.createElement('script');
