@@ -104,9 +104,10 @@ export default {
           datasets: [{
             label: url.split('/').pop().replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
             data: data,
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1,
+            backgroundColor: 'rgb(190, 198, 160, 0.5)',
+            borderColor: '#708871',  // 새로운 선 색상
+            borderWidth: 2,  // 새로운 선 굵기
+            fill: true
           }],
         };
       } catch (error) {

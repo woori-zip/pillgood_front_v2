@@ -353,7 +353,11 @@ export default {
         }
       } catch (error) {
         console.error('결제 준비 중 오류:', error);
-        alert('결제 준비 중 오류가 발생했습니다. 다시 시도하세요.');
+        if (error.response && error.response.data.message) {
+          alert(`결제 준비 중 오류: ${error.response.data.message}`);
+        } else {
+          alert('결제 준비 중 오류가 발생했습니다. 다시 시도하세요.');
+        }
       }
     },
     initializeTossPayments() {
@@ -442,11 +446,19 @@ export default {
     },
     async cancelOrder(orderNo) {
       try {
-        await axios.delete(`/api/orders/cancel/${orderNo}`, { withCredentials: true });
-        alert('주문이 취소되었습니다.');
+        const response = await axios.delete(`/api/orders/cancel/${orderNo}`, { withCredentials: true });
+        if (response.status === 200) {
+          alert('주문이 취소되었습니다.');
+        } else {
+          alert('주문 취소 중 오류가 발생했습니다. 다시 시도하세요.');
+        }
       } catch (error) {
         console.error('주문 취소 중 오류 발생:', error);
-        alert('주문 취소 중 오류가 발생했습니다. 다시 시도하세요.');
+        if (error.response && error.response.data.message) {
+          alert(`주문 취소 중 오류: ${error.response.data.message}`);
+        } else {
+          alert('주문 취소 중 오류가 발생했습니다. 다시 시도하세요.');
+        }
       }
     },
     openDaumPostcode() {
