@@ -140,6 +140,6 @@ export default {
 }
 
 .text-melon {
-  color: #ff6f61;
+  color: #94b58b;
 }
 </style>

@@ -4,6 +4,7 @@
       <h2 class="text-melon">결제가 성공적으로 완료되었습니다!</h2>
       <hr class="line">
       <div>
+        <h4 class="text-melon">{{ orderName }}</h4> <!-- 주문 이름 표시 -->
         <p>주문 번호: {{ orderId }}</p>
         <h4>결제 금액: {{ formatPrice(amount) }} 원</h4>
       </div>
@@ -27,11 +28,14 @@ export default {
       orderId: Array.isArray(this.$route.query.orderId) ? this.$route.query.orderId[0] : this.$route.query.orderId,
       amount: Array.isArray(this.$route.query.amount) ? this.$route.query.amount[0] : this.$route.query.amount,
       paymentKey: Array.isArray(this.$route.query.paymentKey) ? this.$route.query.paymentKey.find(key => key) : this.$route.query.paymentKey,
-      customerName: this.$route.query.customerName
+      customerName: this.$route.query.customerName,
+      orderDetails: [],
+      orderName: '상품 정보 없음' // 기본값 설정
     };
   },
   async created() {
     try {
+      await this.fetchOrderDetails();
       await this.requestPaymentApproval();
     } catch (error) {
       console.error('결제 승인 요청 중 오류 발생:', error);
@@ -42,18 +46,40 @@ export default {
     formatPrice(value) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
+    async fetchOrderDetails() {
+      try {
+        const detailsResponse = await axios.get(`/api/order-details/order/${this.orderId}`);
+        this.orderDetails = await Promise.all(detailsResponse.data.map(async (detail) => {
+          const productResponse = await axios.get(`/api/products/detail/${detail.productId}`);
+          detail.productName = productResponse.data.productName || 'Unknown Product';
+          return detail;
+        }));
+        this.orderName = this.formatProductNames(this.orderDetails);
+        console.log('Order Details:', this.orderDetails);
+      } catch (error) {
+        console.error('Failed to fetch order details:', error);
+      }
+    },
+    formatProductNames(orderDetails) {
+      if (!orderDetails || orderDetails.length === 0) return '상품 정보 없음';
+      const firstProductName = orderDetails[0].productName || 'Unknown Product';
+      const additionalProductsCount = orderDetails.length - 1;
+      return additionalProductsCount > 0
+        ? `${firstProductName} 외 ${additionalProductsCount} 개`
+        : firstProductName;
+    },
     async requestPaymentApproval() {
       const paymentApproveRequest = {
         paymentKey: this.paymentKey,
         orderId: this.orderId,
-        amount: parseInt(this.amount, 10), // 문자열을 숫자로 변환
+        amount: parseInt(this.amount, 10),
         customerName: this.customerName,
         email: this.email,
         phoneNumber: this.phoneNumber
       };
 
       try {
-        console.log('결제 승인 요청 전송:', paymentApproveRequest); // 디버깅을 위해 로그 추가
+        console.log('결제 승인 요청 전송:', paymentApproveRequest);
         const approveResponse = await axios.post('/api/payment/approve', paymentApproveRequest);
         if (approveResponse.status === 200) {
           console.log('결제 승인 성공:', approveResponse.data);

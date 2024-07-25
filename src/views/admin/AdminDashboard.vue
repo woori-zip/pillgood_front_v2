@@ -46,18 +46,33 @@ export default {
       dailySubscribersData: null,
       totalSubscribersData: null,
       monthlySalesData: null,
-      totalSalesOptions: this.getChartOptions('month'),
-      dailySalesOptions: this.getChartOptions('hour'),
-      dailySubscribersOptions: this.getChartOptions('hour'),
-      monthlySalesOptions: this.getChartOptions('day'),
-      totalSubscribersOptions: this.getChartOptions('month'),
+      totalSalesOptions: this.getChartOptions('month', '월별 매출 추이'),
+      dailySalesOptions: this.getChartOptions('hour', '일 매출 추이'),
+      dailySubscribersOptions: this.getChartOptions('hour', '일 구독자 추이'),
+      monthlySalesOptions: this.getChartOptions('day', '월 매출 추이'),
+      totalSubscribersOptions: this.getChartOptions('month', '월별 구독자 추이'),
     };
   },
   methods: {
-    getChartOptions(unit) {
+    getChartOptions(unit, title) {
       return {
         responsive: true,
         maintainAspectRatio: false,
+        plugins: {
+          title: {
+            display: true,
+            text: title,
+            color: '#94b58b',
+            font: {
+              size: 20,
+              family: 'Arial',
+              weight: 'bold'
+            }
+          },
+          legend: {
+            display: false,  // 범례를 숨깁니다.
+          }
+        },
         scales: {
           x: {
             type: 'time',
@@ -93,7 +108,7 @@ export default {
         },
       };
     },
-    async fetchData(url, dataProp) {
+    async fetchData(url, dataProp, title) {
       try {
         const response = await axios.get(url);
         const data = response.data.map(item => ({
@@ -102,11 +117,11 @@ export default {
         }));
         this[dataProp] = {
           datasets: [{
-            label: url.split('/').pop().replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            label: title,
             data: data,
             backgroundColor: 'rgba(190, 198, 160, 0.5)',
-            borderColor: '#708871',  // 새로운 선 색상
-            borderWidth: 2,  // 새로운 선 굵기
+            borderColor: '#708871',
+            borderWidth: 2,
             fill: true
           }],
         };
@@ -116,11 +131,11 @@ export default {
     }
   },
   async mounted() {
-    this.fetchData('/admin/dashboard/total-sales', 'totalSalesData');
-    this.fetchData('/admin/dashboard/daily-sales', 'dailySalesData');
-    this.fetchData('/admin/dashboard/daily-subscribers', 'dailySubscribersData');
-    this.fetchData('/admin/dashboard/total-subscribers', 'totalSubscribersData');
-    this.fetchData('/admin/dashboard/monthly-sales', 'monthlySalesData');
+    this.fetchData('/admin/dashboard/total-sales', 'totalSalesData', '월 판매량');
+    this.fetchData('/admin/dashboard/daily-sales', 'dailySalesData', '1시간 판매량');
+    this.fetchData('/admin/dashboard/daily-subscribers', 'dailySubscribersData', '1시간 구독자');
+    this.fetchData('/admin/dashboard/total-subscribers', 'totalSubscribersData', '이번달 총 구독자 수');
+    this.fetchData('/admin/dashboard/monthly-sales', 'monthlySalesData', '일일 총 판매량');
   },
 };
 </script>
@@ -130,7 +145,7 @@ export default {
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 20px;
-  border: 2px solid black;
+  border: 2px solid gray;
 }
 .chart-container {
   height: 300px;

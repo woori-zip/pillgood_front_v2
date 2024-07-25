@@ -8,7 +8,7 @@
         </tr>
         <tr>
           <td colspan="2">
-            <div class="content-cell">{{ notice.noticeContent }}</div>
+            <div class="content-cell" v-html="notice.noticeContent"></div>
           </td>
         </tr>
       </table>
@@ -54,10 +54,14 @@ export default {
 <style scoped>
 .line-table tr td {
   padding: 10px;
+  text-align: left; /* 텍스트를 왼쪽 정렬로 설정 */
+  vertical-align: top; /* 텍스트를 위쪽으로 정렬 */
 }
 
 .content-cell {
   min-height: 300px; /* 내용 부분의 최소 높이 설정 */
-  display: flex;
+  display: block; /* 내용 부분의 레이아웃 설정 */
+  text-align: left; /* 텍스트를 왼쪽 정렬로 설정 */
+  white-space: pre-line; /* 줄바꿈을 반영 */
 }
 </style>

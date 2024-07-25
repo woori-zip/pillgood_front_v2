@@ -147,11 +147,26 @@ export default {
   created() {
     this.fetchUserProfile();
     this.fetchTotalPoints();
+    this.checkAndUpdateSubscriptionStatus(); // 구독 상태 확인 및 업데이트 추가
   },
   methods: {
     ...mapActions('member', ['fetchUserProfile']),
     formatPoints(points) {
     return points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    ...mapActions('subscriptions', ['fetchSubscriptions']),
+    async checkAndUpdateSubscriptionStatus() {
+      const memberId = this.$store.state.member.memberId;
+      await this.fetchSubscriptions(memberId);
+      const subscriptions = this.$store.state.subscriptions.subscriptions;
+      const hasActiveSubscription = subscriptions.some(sub => sub.subscriptionStatus === 'T');
+
+      try {
+        await axios.put(`/api/members/updateSubscriptionStatus/${memberId}`, { status: hasActiveSubscription ? 1 : 0 });
+        this.fetchUserProfile(); // 사용자 프로필 갱신
+      } catch (error) {
+        console.error('Failed to update subscription status:', error);
+      }
     },
     async fetchTotalPoints() {
       try {

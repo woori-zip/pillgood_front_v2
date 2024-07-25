@@ -28,7 +28,7 @@ export default {
   data() {
     return {
       editableCoupon: { ...this.coupon },
-      statusOptions: ['Active', 'Inactive'],
+      statusOptions: ['T', 'F'],
     };
   },
   methods: {

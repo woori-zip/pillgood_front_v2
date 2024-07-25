@@ -10,10 +10,10 @@
           <div class="carousel-caption" :class="slide.captionClass">
             <div class="headline-container">
               <h1 style="margin-bottom: 20px">{{ slide.headline }}</h1>
-                <div v-if="slide.route" class="btn-container" style="margin-top: 20px; margin-bottom: 20px;">
-                  <router-link class="btn btn-green" :to="slide.route">{{ slide.buttonText }}</router-link>
-                  <hr>
-                </div>
+              <div v-if="slide.route" class="btn-container" style="margin-top: 20px; margin-bottom: 20px;">
+                <router-link class="btn btn-green" :to="slide.route">{{ slide.buttonText }}</router-link>
+                <hr>
+              </div>
               <a href="/productlist"><p>{{ slide.content }}</p></a>
             </div>
           </div>
@@ -36,7 +36,7 @@
         <h4 style="margin-bottom: 30px;">🔥Best!</h4>
         <div id="topSellingCarousel" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
-            <div class="carousel-item" :class="{ active: index === 0 }" v-for="(chunk, index) in chunkedTopSellingProducts" :key="index">
+            <div class="carousel-item" :class="{ active: index === 0 }" v-for="(chunk, index) in adjustedTopSellingProducts" :key="index">
               <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
                 <div v-for="product in chunk" :key="product.productId || index" class="col">
                   <div class="card h-100" :class="{ 'dummy-card': product.isDummy }">
@@ -57,13 +57,13 @@
           <button id="carousel-control-next2" class="carousel-control-next" type="button" data-bs-target="#topSellingCarousel" data-bs-slide="next">
             <span id="carousel-control-next-icon" class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
-          </button>          
+          </button>
         </div>
         <hr style="color: #94B58B; margin-bottom: 50px;">
-        <h4 style="margin-bottom: 30px;">🔥New!</h4>
-        <div id="latestCarousel" class="carousel slide" data-bs-ride="carousel" style="display: flex; align-item: center">
+        <h4 style="margin-bottom: 30px;">🚀New!</h4>
+        <div id="latestCarousel" class="carousel slide" data-bs-ride="carousel" style="display: flex; align-items: center">
           <div class="carousel-inner">
-            <div class="carousel-item" :class="{ active: index === 0 }" v-for="(chunk, index) in chunkedLatestProducts" :key="index">
+            <div class="carousel-item" :class="{ active: index === 0 }" v-for="(chunk, index) in adjustedLatestProducts" :key="index">
               <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
                 <div v-for="product in chunk" :key="product.productId || index" class="col">
                   <div class="card h-100" :class="{ 'dummy-card': product.isDummy }">
@@ -120,13 +120,11 @@ export default {
   },
   computed: {
     ...mapGetters('home', ['topSellingProducts', 'latestProducts']),
-    chunkedTopSellingProducts() {
-      console.log('Top selling products before chunking:', this.topSellingProducts);
-      return this.chunkArray(this.topSellingProducts.filter(product => product.active), 6);
+    adjustedTopSellingProducts() {
+      return this.fillChunks(this.chunkArray(this.topSellingProducts.filter(product => product.active), 6));
     },
-    chunkedLatestProducts() {
-      console.log('Latest products before chunking:', this.latestProducts);
-      return this.chunkArray(this.latestProducts.filter(product => product.active), 6);
+    adjustedLatestProducts() {
+      return this.fillChunks(this.chunkArray(this.latestProducts.filter(product => product.active), 6));
     }
   },
   methods: {
@@ -142,12 +140,16 @@ export default {
       for (let i = 0; i < array.length; i += size) {
         chunkedArr.push(array.slice(i, i + size));
       }
-      return chunkedArr.map(chunk => {
-        while (chunk.length < size) {
-          chunk.push({ isDummy: true });
+      return chunkedArr;
+    },
+    fillChunks(chunkedArr) {
+      const filledChunks = chunkedArr.map(chunk => {
+        while (chunk.length < 6) {
+          chunk.push(...this.topSellingProducts.slice(0, 6 - chunk.length));
         }
         return chunk;
       });
+      return filledChunks;
     }
   },
   created() {
@@ -168,7 +170,6 @@ export default {
 .headline-container h1 {
   color: white;
   font-weight: bold;
-
 }
 
 .headline-container a {
@@ -246,5 +247,4 @@ export default {
 #carousel-control-next2 {
   right: -110px; 
 }
-
 </style>

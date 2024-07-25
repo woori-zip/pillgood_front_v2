@@ -229,7 +229,7 @@ export default {
 }
 
 .text-melon {
-  color: #ff6f61;
+  color: #94b58b;
 }
 
 .small-btn {
@@ -262,5 +262,14 @@ export default {
   background-color: #fff;
   padding: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  height: 200px;
+}
+
+.image-tooltip img {
+  width: 100%;
+  height: auto;
+
 }
 </style>
+
