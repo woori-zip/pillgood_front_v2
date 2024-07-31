@@ -67,7 +67,7 @@ export default defineComponent({
                     });
 
                     const url = response.data;
-                    const imageUrl = url.startsWith('http') ? url : `http://43.202.201.149:9095${url}`;
+                    const imageUrl = url.startsWith('http') ? url : `http://localhost:9095${url}`;
 
                     images.value.push({ url: imageUrl, name: file.name });
 
